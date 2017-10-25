@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ajout de device</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Capteur</h1>
+    <form action="#" th:action="@{/add/device}" th:object="${device}" method="post">
+        <p>Numéro de série : <input type="text" pattern="^((([0-9]{1,5}-){7})|(([0-9]{1,5},){7}))([0-9]{1,5}){1}$"  th:field="*{serialStr}" /></p>
+        <p><var>Format : <code>^((([0-9]{1,5}-){7})|(([0-9]{1,5},){7}))([0-9]{1,5}){1}$</code></var></p>
+        <p><var>Exemple : <code>0-0-0-0-21-654-343-9 ou 3,0,56,0,33,654,343,9"</code></var></p>
+        <!-- title="Format: ^((([0-9]{1,5}-){7})|(([0-9]{1,5},){7}))([0-9]{1,5}){1}$
+        Exemple: 0-0-0-0-21-654-343-9 ou 3,0,56,0,33,654,343,9" -->
+        <p>Gateway appiot : <input type="text" th:field="*{gateway}" /></p>
+  		<p>Utilisateur associé: 
+        	<select id="users" th:field="*{userIdStr}">
+        		<option th:each="user : ${users}" 
+        			th:text="${user.lastName + ' ' + user.firstName}"
+        			th:value="${user.id}">
+        		</option>
+        	</select>
+        </p>
+        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
+    </form>
+</body>
+</html>

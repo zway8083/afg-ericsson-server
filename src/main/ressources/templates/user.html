@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Ajout d'utilisateur</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Utilisateur</h1>
+    <form action="#" th:action="@{/add/user}" th:object="${user}" method="post">
+    	<p>Nom: <input type="text" th:field="*{firstName}" /></p>
+        <p>Prénom: <input type="text" th:field="*{lastName}" /></p>
+        <p>Date de naissance: <input type="date" th:field="*{birthStr}" /></p>
+        <p>Rôles:</p>
+        <div th:each="role : ${allRoles}">
+        	<input type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
+        	<label th:text="${role.name}"></label>
+        </div>
+        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
+    </form>
+</body>
+</html>
