@@ -1,5 +1,6 @@
 package server.task;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -49,7 +50,7 @@ public class Email {
 		BodyPart messageBodyPart = new MimeBodyPart();
 		DataSource source = new FileDataSource(file);
 		messageBodyPart.setDataHandler(new DataHandler(source));
-		messageBodyPart.setFileName(file);
+		messageBodyPart.setFileName(new File(file).getName());
 		multipart.addBodyPart(messageBodyPart);
 	}
 

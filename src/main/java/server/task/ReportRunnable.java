@@ -30,12 +30,12 @@ public class ReportRunnable implements Runnable {
 	private String id;
 	private String password;
 	private String host;
-	
+
 	private SensorTypeRepository sensorTypeRepository;
 	private EventRepository eventRepository;
 
-	public ReportRunnable(String path, Device device, DateTime date,
-			SensorTypeRepository sensorTypeRepository, EventRepository eventRepository, int task) {
+	public ReportRunnable(String path, Device device, DateTime date, SensorTypeRepository sensorTypeRepository,
+			EventRepository eventRepository, int task) {
 		super();
 		this.path = path;
 		this.device = device;
@@ -90,6 +90,7 @@ public class ReportRunnable implements Runnable {
 			DateTime endNight = date.withHourOfDay(8);
 			logger.info("Requesting events for: " + endNight.toString("dd/MM/yyy") + " - " + user.getFirstName() + " "
 					+ user.getLastName());
+
 			List<Event> eventMotion = eventRepository.findByDeviceAndTypeAndDateBetween(device,
 					sensorTypeRepository.findByName("motion"), startNight.toDate(), endNight.toDate());
 			List<Event> eventTemp = eventRepository.findByDeviceAndTypeAndDateBetween(device,
@@ -108,6 +109,8 @@ public class ReportRunnable implements Runnable {
 			if ((task & 2) > 0) {
 				try {
 					Email email = new Email(id, password, host);
+					if (user.getEmail() != null)
+						email.addRecipient(user.getEmail());
 					if (files != null)
 						email.addAttachments(files);
 					email.setSubject("Rapport " + new DateTime().toString("dd/MM/yyyy"));

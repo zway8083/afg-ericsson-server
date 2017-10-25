@@ -36,7 +36,7 @@ public class MainTask {
 	@Autowired
 	private EventRepository eventRepository;
 
-	@Scheduled(initialDelay = 500, fixedDelay = 1000000 /* cron = "0 0 9 * * * */)
+	@Scheduled(cron = "0 0 9 * * *")
 	public void run() {
 		logger.info("Report task begin");
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
