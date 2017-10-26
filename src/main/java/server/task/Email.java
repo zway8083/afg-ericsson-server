@@ -27,7 +27,7 @@ public class Email {
 	private String password;
 	private String host;
 	private String subject;
-	private BodyPart bodyPart;
+	private String body;
 	private Multipart multipart;
 	private List<String> recipients;
 
@@ -37,7 +37,7 @@ public class Email {
 		this.host = host;
 		this.multipart = new MimeMultipart();
 		this.subject = null;
-		this.bodyPart = null;
+		this.body = "";
 		this.recipients = new ArrayList<>();
 	}
 
@@ -57,11 +57,9 @@ public class Email {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-
-	public void setBody(String body) throws MessagingException {
-		if (bodyPart == null)
-			bodyPart = new MimeBodyPart();
-		bodyPart.setText(body);
+	
+	public void concatBody(String body) {
+		this.body += body + "\n";
 	}
 
 	public void addRecipient(String emailAdress) {
@@ -86,10 +84,10 @@ public class Email {
 		else
 			message.setSubject(subject);
 
-		if (bodyPart == null)
-			setBody("");
-		else
-			multipart.addBodyPart(bodyPart);
+
+		BodyPart bodyPart = new MimeBodyPart();
+		bodyPart.setText(body);
+		multipart.addBodyPart(bodyPart);
 
 		message.setContent(multipart);
 

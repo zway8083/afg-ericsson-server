@@ -46,7 +46,7 @@ public class Get {
 	
 	@GetMapping(path="/events")
 	public @ResponseBody String event() {
-		Device device = deviceRepository.findOne(2l);
+		Device device = deviceRepository.findOne(1l);
 		Date d1 = new Date(1508556287000l);
 		Date d2 = new Date(1508556793000l);
 		List<Event> events = eventRepository.findByDeviceAndTypeAndDateBetween(device, sensorTypeRepository.findByName("motion"), d1, d2);

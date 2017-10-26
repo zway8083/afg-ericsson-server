@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Ajout de device</title>
+    <title>Ajout de capteur</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
@@ -14,7 +14,7 @@
         Exemple: 0-0-0-0-21-654-343-9 ou 3,0,56,0,33,654,343,9" -->
         <p>Gateway appiot : <input type="text" th:field="*{gateway}" /></p>
   		<p>Utilisateur associé: 
-        	<select id="users" th:field="*{userIdStr}">
+        	<select id="users" th:field="*{userId}">
         		<option th:each="user : ${users}" 
         			th:text="${user.lastName + ' ' + user.firstName}"
         			th:value="${user.id}">

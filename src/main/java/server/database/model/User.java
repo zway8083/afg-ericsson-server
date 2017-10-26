@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -30,13 +31,18 @@ public class User {
 	private Set<Role> roles;
 	@Email
 	private String email;
+	private Date birth;
+	@ManyToMany(fetch=FetchType.EAGER)
+	private Set<User> related;
+
 	@Transient
 	private String roleIdStr;
-	private Date birth;
 	@Transient
 	private String birthStr;
 	@Transient
 	private List<String> checkedRoles;
+	@Transient
+	private List<Long> relatedIds;
 
 	public User() {
 	}
@@ -110,6 +116,14 @@ public class User {
 		this.birth = birth;
 	}
 
+	public Set<User> getRelated() {
+		return related;
+	}
+
+	public void setRelated(Set<User> related) {
+		this.related = related;
+	}
+
 	public void setBirth(String birthStr) {
 		if (birthStr == null || birthStr.isEmpty())
 			this.birth = null;
@@ -149,6 +163,18 @@ public class User {
 		}
 		rolesStr += "]";
 		return rolesStr;
+	}
+
+	public List<Long> getRelatedIds() {
+		return relatedIds;
+	}
+
+	public void setRelatedIds(List<Long> relatedIds) {
+		this.relatedIds = relatedIds;
+	}
+
+	public String getName() {
+		return firstName + " " + lastName;
 	}
 
 	@Override

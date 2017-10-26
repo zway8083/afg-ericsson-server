@@ -10,8 +10,17 @@ import server.database.model.Event;
 import server.database.model.SensorType;
 
 public interface EventRepository extends CrudRepository<Event, Integer> {
-	List<Event> findByDevice(Device device); 
+	List<Event> findByDevice(Device device);
+
 	List<Event> findByDeviceAndType(Device device, SensorType type);
+
 	List<Event> findByDeviceAndTypeAndDateBetween(Device device, SensorType type, Date d1, Date d2);
+
+	List<Event> findByDeviceAndTypeAndBinValueAndDateBetween(Device device, SensorType type, Boolean binValue, Date d1,
+			Date d2);
+
 	List<Event> findByDateBetween(Date d1, Date d2);
+
+	Long countByDeviceAndTypeAndBinValueAndDateBetween(Device device, SensorType type, Boolean binValue, Date d1,
+			Date d2);
 }

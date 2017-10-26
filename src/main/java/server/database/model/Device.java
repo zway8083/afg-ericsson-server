@@ -23,16 +23,16 @@ public class Device {
 	@Transient
 	private String serialStr;
 	@Transient
-	private String userIdStr;
+	private Long userId;
 	@Transient
 	private String gateway;
 
-	public String getUserIdStr() {
-		return userIdStr;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setUserIdStr(String userIdStr) {
-		this.userIdStr = userIdStr;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	public Device() {
@@ -47,12 +47,12 @@ public class Device {
 		return id;
 	}
 
-	public User getUserId() {
+	public User getUser() {
 		return user;
 	}
 
-	public void setUserId(User userId) {
-		this.user = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public int[] getSerial() {
@@ -71,14 +71,6 @@ public class Device {
 		for (int i = 0; i < serialTab.length; i++) {
 			this.serial[i] = Integer.parseInt(serialTab[i]);
 		}
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
 	}
 
 	public String getSerialStr() {

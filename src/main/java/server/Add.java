@@ -52,11 +52,14 @@ public class Add {
 
 		List<Role> allRoles = roleRepository.findAll();
 		model.addAttribute("allRoles", allRoles);
+
+		List<User> users = userRepository.findAll();
+		model.addAttribute("users", users);
 		return "user";
 	}
 
 	@PostMapping(path = "/user")
-	public @ResponseBody User AddUserResult(@ModelAttribute User user) {
+	public @ResponseBody String AddUserResult(@ModelAttribute User user) {
 		List<String> checkedRoles = user.getCheckedRoles();
 		Set<Role> roles = new HashSet<>();
 		for (String roleStr : checkedRoles) {
@@ -64,10 +67,19 @@ public class Add {
 			roles.add(role);
 		}
 		user.setRoles(roles);
+
+		List<Long> ids = user.getRelatedIds();
+		Set<User> related = new HashSet<>();
+		for (Long id : ids) {
+			User rel = userRepository.findOne(id);
+			related.add(rel);
+		}
+		user.setRelated(related);
+
 		user.setBirth(user.getBirthStr());
 		userRepository.save(user);
 		logger.info("User added: " + user.getFirstName() + " " + user.getLastName());
-		return user;
+		return "User added: " + user.getFirstName() + " " + user.getLastName();
 	}
 
 	@GetMapping(path = "/device")
@@ -80,13 +92,13 @@ public class Add {
 
 	@PostMapping(path = "/device")
 	public @ResponseBody String AddDeviceResult(@ModelAttribute(name = "device") Device device) {
-		User user = userRepository.findOne(Long.parseLong(device.getUserIdStr()));
+		User user = userRepository.findOne(device.getUserId());
 		device.setUser(user);
 		device.setSerial(device.getSerialStr());
 		deviceRepository.save(device);
 		AppiotRef appiotRef = new AppiotRef(device, device.getGateway());
 		appiotRefRepository.save(appiotRef);
-		logger.info("Device added: " + device.getSerialStr() + " for user: " + device.getUserIdStr());
+		logger.info("Device added: " + device.getSerialStr() + " for user: " + device.getUserId());
 		return "Device created";
 	}
 
