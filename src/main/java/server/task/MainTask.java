@@ -36,7 +36,7 @@ public class MainTask {
 	@Autowired
 	private EventRepository eventRepository;
 
-	@Scheduled(/* cron = "0 0 9 * * *" */ fixedDelay = 1000000, initialDelay = 500)
+	@Scheduled(cron = "0 0 9 * * *" /* fixedDelay = 1000000, initialDelay = 500 */)
 	public void run() {
 		logger.info("Report task begin");
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
@@ -46,7 +46,7 @@ public class MainTask {
 			if (device.getId() == 3)
 				continue;
 			ReportRunnable runnable = new ReportRunnable(path, device, new DateTime(), sensorTypeRepository,
-					eventRepository, 1 | 2 | 4, id, password, host);
+					eventRepository, id, password, host);
 			executorService.execute(runnable);
 			logger.info("Started report for device id= " + device.getId());
 		}

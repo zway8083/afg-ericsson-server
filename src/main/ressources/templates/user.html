@@ -7,11 +7,11 @@
 <body>
 	<h1>Utilisateur</h1>
     <form action="#" th:action="@{/add/user}" th:object="${user}" method="post">
-    	<p>Nom: <input type="text" th:field="*{lastName}" /></p>
-        <p>Prénom: <input type="text" th:field="*{firstName}" /></p>
-        <p>Date de naissance: <input type="date" th:field="*{birthStr}" /></p>
-        <p>Email: <input type="email" th:field="*{email}" /></p>
-        <p>Rôles:</p>
+    	<p>Nom : <input type="text" th:field="*{lastName}" /></p>
+        <p>Prénom : <input type="text" th:field="*{firstName}" /></p>
+        <p>Date de naissance : <input type="date" th:field="*{birthStr}" /></p>
+        <p>Email : <input type="email" th:field="*{email}" /></p>
+        <p>Rôles :</p>
         <div th:each="role : ${allRoles}">
         	<input type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
         	<label th:text="${role.name}"></label>

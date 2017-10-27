@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Générer un rapport</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Rapport</h1>
+    <form action="#" th:action="@{/report}" th:object="${report}" method="post">
+  		<p>Sujet :	
+        	<select id="userId" th:field="*{id}">
+        		<option th:each="user : ${users}" 
+        			th:text="${user.firstName + ' ' + user.lastName}"
+        			th:value="${user.id}">
+        		</option>
+        	</select>
+        </p>
+        <p>Date : <input type="date" th:field="*{date}" /></p>
+        <p>Action :</p>
+        <div th:each="action : ${actions}">
+        	<input type="checkbox" th:field="*{actions}" th:value="${action}"/>
+        	<label th:text="${action}"></label>
+        </div>
+        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
+    </form>
+</body>
+</html>
