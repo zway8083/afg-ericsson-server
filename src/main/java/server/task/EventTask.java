@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -49,9 +50,68 @@ public class EventTask {
 		this.eventRepository = eventRepository;
 		this.path = path;
 		user = device.getUser();
-		startNight = date.minusDays(1).withHourOfDay(19);
-		endNight = date.withHourOfDay(8);
-		eventLists = getEventLists();
+		setNightLimits();
+		if (startNight == null || endNight == null)
+			eventLists = null;
+		else
+			eventLists = getEventLists();
+	}
+
+	private void setNightLimits() {
+		DateTime startLimit = date.minusDays(1).withHourOfDay(18);
+		DateTime endLimit = date.withHourOfDay(11);
+		List<Event> events = eventRepository.findByDeviceAndTypeAndDateBetween(device,
+				sensorTypeRepository.findByName("luminescence"), startLimit.toDate(), endLimit.toDate());
+
+		if (events.size() == 0)
+			return;
+
+		Double average = eventRepository.getAverageTypeBetween(device.getId(),
+				sensorTypeRepository.findByName("luminescence").getId(), startLimit.toDate(), endLimit.toDate());
+
+		logger.info("Finding " + date.toString("dd/MM/yyyy") + " night limits for user id=" + user.getId()
+				+ " with lux avg=" + average + ", count=" + events.size());
+
+		startNight = findStart(events, average, false);
+		Collections.reverse(events);
+		endNight = findStart(events, average, true);
+
+		logger.info("Found limits (id=" + user.getId() + "): " + "start=" + startNight.toString("dd/MM/yyyy HH:mm")
+				+ ", end=" + endNight.toString("dd/MM/yyyy HH:mm"));
+	}
+
+	private DateTime findStart(List<Event> events, Double average, boolean prec) {
+		int size = events.size();
+		int cur = 0;
+		while (cur < size) {
+			Event lum = events.get(cur);
+			Double value = lum.getdValue();
+			if (value < average) {
+				boolean cnt = false;
+				int i = cur;
+				// 'limit' times low lux value in a row = startNight found
+				int limit = 5;
+				while (i < size && i < cur + limit) {
+					if (events.get(i).getdValue() >= average) {
+						cnt = true;
+						i++;
+						break;
+					}
+					i++;
+				}
+				while (cnt) {
+					if (events.get(i).getdValue() < average) {
+						cur = i;
+						break;
+					}
+					i++;
+				}
+				if (!cnt)
+					return new DateTime(events.get(cur - (prec ? 1 : 0)).getDate());
+			}
+			cur++;
+		}
+		return null;
 	}
 
 	private List<List<Event>> getEventLists() {
@@ -70,6 +130,8 @@ public class EventTask {
 	}
 
 	public ArrayList<String> createCsvReport() {
+		if (eventLists == null)
+			return null;
 		logger.info("Creating" + eventLists.size() + "csv files for " + user.getName());
 		ArrayList<String> fileNames = new ArrayList<>();
 		for (List<Event> events : eventLists) {
@@ -154,7 +216,7 @@ public class EventTask {
 			email.send();
 			String log = "Email report on " + user.getName() + " sent at: ";
 			for (String recipient : recipients) {
-				log+=recipient + " ";
+				log += recipient + " ";
 			}
 			logger.info(log);
 			return recipients;

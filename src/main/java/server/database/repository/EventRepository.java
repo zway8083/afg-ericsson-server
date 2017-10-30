@@ -3,6 +3,7 @@ package server.database.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import server.database.model.Device;
@@ -23,4 +24,8 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
 
 	Long countByDeviceAndTypeAndBinValueAndDateBetween(Device device, SensorType type, Boolean binValue, Date d1,
 			Date d2);
+
+	@Query(value = "SELECT avg(event.d_value) FROM event WHERE event.device_id = ?1 AND event.type_id = ?2 AND "
+			+ "event.date BETWEEN ?3 AND ?4 ORDER BY event.date ASC", nativeQuery = true)
+	Double getAverageTypeBetween(Long device_id, Long type_id, Date d1, Date d2);
 }

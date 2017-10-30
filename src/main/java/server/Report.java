@@ -118,7 +118,7 @@ public class Report {
 
 		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, path);
 		ArrayList<String> files = eventTask.createCsvReport();
-		if (files.isEmpty())
+		if (files == null || files.isEmpty())
 			return;
 
 		if (actions.contains("Télécharger les relevés")) {
@@ -139,7 +139,7 @@ public class Report {
 
 		if (actions.contains("Envoyer les relevés par email")) {
 			List<String> recipients = eventTask.sendEmail(id, password, host, files);
-			if (recipients.isEmpty()) {
+			if (recipients == null || recipients.isEmpty()) {
 				response.getWriter().write("Error, nothing sent");
 				return;
 			}
