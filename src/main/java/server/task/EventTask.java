@@ -72,15 +72,15 @@ public class EventTask {
 		logger.info("Finding " + date.toString("dd/MM/yyyy") + " night limits for user id=" + user.getId()
 				+ " with lux avg=" + average + ", count=" + events.size());
 
-		startNight = findStart(events, average, false);
+		startNight = findNightLimit(events, average, false);
 		Collections.reverse(events);
-		endNight = findStart(events, average, true);
+		endNight = findNightLimit(events, average, true);
 
 		logger.info("Found limits (id=" + user.getId() + "): " + "start=" + startNight.toString("dd/MM/yyyy HH:mm")
 				+ ", end=" + endNight.toString("dd/MM/yyyy HH:mm"));
 	}
 
-	private DateTime findStart(List<Event> events, Double average, boolean prec) {
+	private DateTime findNightLimit(List<Event> events, Double average, boolean endNight) {
 		int size = events.size();
 		int cur = 0;
 		while (cur < size) {
@@ -107,7 +107,7 @@ public class EventTask {
 					i++;
 				}
 				if (!cnt)
-					return new DateTime(events.get(cur - (prec ? 1 : 0)).getDate());
+					return new DateTime(events.get(cur - (endNight && cur > 0 ? 1 : 0)).getDate());
 			}
 			cur++;
 		}
@@ -215,9 +215,8 @@ public class EventTask {
 
 			email.send();
 			String log = "Email report on " + user.getName() + " sent at: ";
-			for (String recipient : recipients) {
+			for (String recipient : recipients)
 				log += recipient + " ";
-			}
 			logger.info(log);
 			return recipients;
 		} catch (MessagingException e) {

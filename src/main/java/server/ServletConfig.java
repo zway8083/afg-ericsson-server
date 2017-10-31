@@ -12,7 +12,7 @@ public class ServletConfig {
 		return (new EmbeddedServletContainerCustomizer() {
 			@Override
 			public void customize(ConfigurableEmbeddedServletContainer container) {
-				container.setPort(8080);
+				container.setPort(80);
 			}
 		});
 	}
