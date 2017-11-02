@@ -16,6 +16,8 @@
         	<input type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
         	<label th:text="${role.name}"></label>
         </div>
+        <p>Heure de couché habituelle : <input type="time" th:field="*{sleepStart}"/></p>
+        <p>Heure de levé habituelle : <input type="time" th:field="*{sleepEnd}"/></p>
         <p>Lier avec : <var>(selection multiple)</var></p>
         <select name="users" th:field="*{relatedIds}" multiple="multiple">
        		<option th:each="usr : ${users}" 

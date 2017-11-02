@@ -1,5 +1,6 @@
 package server.database.model;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +35,8 @@ public class User {
 	private Date birth;
 	@ManyToMany(fetch=FetchType.EAGER)
 	private Set<User> related;
+	private Time sleepStart;
+	private Time sleepEnd;
 
 	@Transient
 	private String roleIdStr;
@@ -175,6 +178,26 @@ public class User {
 
 	public String getName() {
 		return firstName + " " + lastName;
+	}
+
+	public Time getSleepStart() {
+		return sleepStart;
+	}
+
+	public void setSleepStart(String timeStr) {
+		String[] times = timeStr.split(":");
+		long millis = (Integer.parseInt(times[0]) * 60 + Integer.parseInt(times[1])) * 60 * 1000;
+		this.sleepStart = new Time(millis);
+	}
+
+	public Time getSleepEnd() {
+		return sleepEnd;
+	}
+
+	public void setSleepEnd(String timeStr) {
+		String[] times = timeStr.split(":");
+		long millis = (Integer.parseInt(times[0]) * 60 + Integer.parseInt(times[1])) * 60 * 1000;
+		this.sleepEnd = new Time(millis);
 	}
 
 	@Override

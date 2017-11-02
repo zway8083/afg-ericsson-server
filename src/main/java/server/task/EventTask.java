@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -58,13 +59,41 @@ public class EventTask {
 	}
 
 	private void setNightLimits() {
-		DateTime startLimit = date.minusDays(1).withHourOfDay(18);
-		DateTime endLimit = date.withHourOfDay(11);
+		// Time
+		DateTime timeSleepStart = null;
+		DateTime timeSleepEnd = null;
+
+		if (user.getSleepStart() != null && user.getSleepEnd() != null) {
+			timeSleepStart = new DateTime(user.getSleepStart().getTime());
+			timeSleepEnd = new DateTime(user.getSleepEnd().getTime());
+		} else {
+			logger.warn("User id=" + user.getId() + ": missing start/end sleep times from database");
+			return;
+		}
+		
+		// Theoretical start/end of night
+		DateTime startTheo = date.minusDays(1).withHourOfDay(timeSleepStart.getHourOfDay())
+				.withMinuteOfHour(timeSleepStart.getMinuteOfHour()).withSecondOfMinute(0);
+		DateTime endTheo = date.withHourOfDay(timeSleepEnd.getHourOfDay())
+				.withMinuteOfHour(timeSleepEnd.getMinuteOfHour()).withSecondOfMinute(0);
+		
+		// Margin of error on the start/end theoretical values (hour)
+		int margin = 1;
+		DateTime startLimit = startTheo.minusHours(margin);
+		DateTime endLimit = endTheo.plusHours(margin);
+
+		Date d = startLimit.toDate();
+		System.out.println(d + " = " + d.getTime());
+		System.out.println();
+		
+		// Events from startLimit to endLimit
 		List<Event> events = eventRepository.findByDeviceAndTypeAndDateBetween(device,
 				sensorTypeRepository.findByName("luminescence"), startLimit.toDate(), endLimit.toDate());
-
-		if (events.size() == 0)
+		
+		if (events.size() == 0) {
+			logger.info("No event found");
 			return;
+		}
 
 		Double average = eventRepository.getAverageTypeBetween(device.getId(),
 				sensorTypeRepository.findByName("luminescence").getId(), startLimit.toDate(), endLimit.toDate());
@@ -72,14 +101,78 @@ public class EventTask {
 		logger.info("Finding " + date.toString("dd/MM/yyyy") + " night limits for user id=" + user.getId()
 				+ " with lux avg=" + average + ", count=" + events.size());
 
-		startNight = findNightLimit(events, average, false);
+		startNight = findStartNightLimit(events, startTheo, margin, average);
 		Collections.reverse(events);
-		endNight = findNightLimit(events, average, true);
+		endNight = findEndNightLimit(events, endTheo, margin, average);
+
+		// startNight = findNightLimit(events, average, false);
+		// Collections.reverse(events);
+		// endNight = findNightLimit(events, average, true);
 
 		logger.info("Found limits (id=" + user.getId() + "): " + "start=" + startNight.toString("dd/MM/yyyy HH:mm")
 				+ ", end=" + endNight.toString("dd/MM/yyyy HH:mm"));
 	}
 
+	@SuppressWarnings("unused")
+	private List<Event> eventSplit(List<Event> events, Date from, Date to) {
+		int max = events.size();
+		int i = 0;
+		while (i < max && events.get(i).getDate().getTime() < from.getTime())
+			i++;
+		int j = i;
+		while (j < max && events.get(j).getDate().getTime() <= to.getTime())
+			j++;
+
+		List<Event> list = new ArrayList<>();
+		while (i < j) {
+			list.add(events.get(i));
+			i++;
+		}
+		return list;
+	}
+
+	private DateTime findEndNightLimit(List<Event> events, DateTime dateTime, int margin, Double average) {
+		int i = 0;
+		int size = events.size();
+		int last = 0;
+		while (i < size) {
+			if (new DateTime(events.get(i).getDate()).isAfter(startNight.plusHours(10))) {
+				i++;
+				last = i;
+				continue;
+			}
+			if (events.get(i).getDate().getTime() <= dateTime.minusHours(margin).getMillis())
+				break;
+			int j = i;
+			while (j < size && events.get(j).getdValue() >= average)
+				j++;
+			if (j != i)
+				last = j;
+			i = ++j;
+		}
+		return new DateTime(events.get(last).getDate());
+	}
+
+	private DateTime findStartNightLimit(List<Event> events, DateTime dateTime, int margin, Double average) {
+		int i = 0;
+		int size = events.size();
+		int last = 0;
+		while (i < size) {
+			if (events.get(i).getDate().getTime() > dateTime.plusHours(margin).getMillis())
+				break;
+			int j = i;
+			while (j < size && events.get(j).getdValue() >= average)
+				j++;
+			if (j != i)
+				last = j;
+			i = ++j;
+		}
+		return new DateTime(events.get(last).getDate());
+	}
+
+	
+	@SuppressWarnings("unused")
+	@Deprecated
 	private DateTime findNightLimit(List<Event> events, Double average, boolean endNight) {
 		int size = events.size();
 		int cur = 0;
@@ -106,8 +199,9 @@ public class EventTask {
 					}
 					i++;
 				}
-				if (!cnt)
+				if (!cnt) {
 					return new DateTime(events.get(cur - (endNight && cur > 0 ? 1 : 0)).getDate());
+				}
 			}
 			cur++;
 		}
