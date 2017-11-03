@@ -36,6 +36,7 @@ import server.database.model.Device;
 import server.database.model.User;
 import server.database.repository.DeviceRepository;
 import server.database.repository.EventRepository;
+import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
 import server.database.repository.UserRepository;
 import server.model.ReportInfos;
@@ -52,6 +53,8 @@ public class Report {
 	private SensorTypeRepository sensorTypeRepository;
 	@Autowired
 	private EventRepository eventRepository;
+	@Autowired
+	private EventStatRepository EventStatRepository;
 
 	@Value("${report.path}")
 	private String path;
@@ -116,7 +119,8 @@ public class Report {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 		DateTime date = formatter.parseDateTime(report.getDate());
 
-		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, path);
+		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, EventStatRepository,
+				path);
 		ArrayList<String> files = eventTask.createCsvReport();
 		if (files == null || files.isEmpty())
 			return;

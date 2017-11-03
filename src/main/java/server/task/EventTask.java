@@ -9,19 +9,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.mail.MessagingException;
 
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
+import org.joda.time.Period;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import server.database.model.Device;
 import server.database.model.Event;
+import server.database.model.EventStat;
 import server.database.model.User;
 import server.database.repository.EventRepository;
+import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
 
 public class EventTask {
@@ -29,6 +34,7 @@ public class EventTask {
 
 	private SensorTypeRepository sensorTypeRepository;
 	private EventRepository eventRepository;
+	private EventStatRepository eventStatRepository;
 
 	private DateTime date;
 	private Device device;
@@ -42,20 +48,36 @@ public class EventTask {
 	private List<Event> eventLum;
 	private List<List<Event>> eventLists;
 	private String path;
+	private EventStat eventStat;
 
 	public EventTask(Device device, DateTime date, SensorTypeRepository sensorTypeRepository,
-			EventRepository eventRepository, String path) {
+			EventRepository eventRepository, EventStatRepository eventStatRepository, String path) {
 		this.device = device;
-		this.date = date;
+		this.date = date.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
 		this.sensorTypeRepository = sensorTypeRepository;
 		this.eventRepository = eventRepository;
+		this.eventStatRepository = eventStatRepository;
 		this.path = path;
 		user = device.getUser();
 		setNightLimits();
 		if (startNight == null || endNight == null)
 			eventLists = null;
-		else
+		else {
 			eventLists = getEventLists();
+			eventStat = eventStatRepository.findByDeviceAndDate(device, date.toDate());
+			if (eventStat == null)
+				createEventStat();
+		}
+
+	}
+
+	public void createEventStat() {
+		eventStat = new EventStat();
+		eventStat.setDate(date.getMillis());
+		eventStat.setDevice(device);
+		eventStat.setMvts(eventMotion.size());
+		eventStat.setDuration(endNight.getMillis() - startNight.getMillis());
+		eventStatRepository.save(eventStat);
 	}
 
 	private void setNightLimits() {
@@ -70,26 +92,22 @@ public class EventTask {
 			logger.warn("User id=" + user.getId() + ": missing start/end sleep times from database");
 			return;
 		}
-		
+
 		// Theoretical start/end of night
 		DateTime startTheo = date.minusDays(1).withHourOfDay(timeSleepStart.getHourOfDay())
 				.withMinuteOfHour(timeSleepStart.getMinuteOfHour()).withSecondOfMinute(0);
 		DateTime endTheo = date.withHourOfDay(timeSleepEnd.getHourOfDay())
 				.withMinuteOfHour(timeSleepEnd.getMinuteOfHour()).withSecondOfMinute(0);
-		
+
 		// Margin of error on the start/end theoretical values (hour)
 		int margin = 1;
 		DateTime startLimit = startTheo.minusHours(margin);
 		DateTime endLimit = endTheo.plusHours(margin);
 
-		Date d = startLimit.toDate();
-		System.out.println(d + " = " + d.getTime());
-		System.out.println();
-		
 		// Events from startLimit to endLimit
 		List<Event> events = eventRepository.findByDeviceAndTypeAndDateBetween(device,
 				sensorTypeRepository.findByName("luminescence"), startLimit.toDate(), endLimit.toDate());
-		
+
 		if (events.size() == 0) {
 			logger.info("No event found");
 			return;
@@ -104,10 +122,6 @@ public class EventTask {
 		startNight = findStartNightLimit(events, startTheo, margin, average);
 		Collections.reverse(events);
 		endNight = findEndNightLimit(events, endTheo, margin, average);
-
-		// startNight = findNightLimit(events, average, false);
-		// Collections.reverse(events);
-		// endNight = findNightLimit(events, average, true);
 
 		logger.info("Found limits (id=" + user.getId() + "): " + "start=" + startNight.toString("dd/MM/yyyy HH:mm")
 				+ ", end=" + endNight.toString("dd/MM/yyyy HH:mm"));
@@ -170,7 +184,6 @@ public class EventTask {
 		return new DateTime(events.get(last).getDate());
 	}
 
-	
 	@SuppressWarnings("unused")
 	@Deprecated
 	private DateTime findNightLimit(List<Event> events, Double average, boolean endNight) {
@@ -286,7 +299,7 @@ public class EventTask {
 			String stats = "";
 			stats += "Période : " + startNight.toString("dd/MM/yyyy HH:mm") + " - "
 					+ endNight.toString("dd/MM/yyyy HH:mm");
-			org.joda.time.Period period = new Interval(startNight, endNight).toPeriod();
+			Period period = new Period(eventStat.getDuration().getTime());
 			stats += "\r\nDurée : " + period.getHours() + "h et " + period.getMinutes() + "m";
 			stats += "\r\nNombre de mouvement : " + eventMotion.size();
 			stats += "\r\nMouvements par tranche horaire :";
@@ -304,7 +317,23 @@ public class EventTask {
 
 			Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
 					sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
-			stats += "\nNombre de secousses : " + count;
+			stats += "\r\nNombre de secousses : " + count;
+
+			stats += "\r\nRelevé sur une semaine :"
+					+ String.format("\r\n   %-10s%-10s%-10s", "Jour", "Duré", "Mouvements");
+			for (int i = 7; i >= 0; i--) {
+				EventStat stat = eventStatRepository.findByDeviceAndDate(device,
+						new java.sql.Date(date.minusDays(i).getMillis()));
+				if (stat == null)
+					continue;
+				DateTime curDate = new DateTime(stat.getDate().getTime());
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
+				stats += "\r\n" + (i == 0 ? "-> " : "   ");
+				Period period2 = new Period(stat.getDuration().getTime());
+				stats += String.format("%-10s%-10s%-10s", fmt.withLocale(Locale.FRENCH).print(curDate),
+						period2.getHours() + "h" + period2.getMinutes() + "m", stat.getMvts());
+			}
+
 			email.concatBody(stats);
 
 			email.send();

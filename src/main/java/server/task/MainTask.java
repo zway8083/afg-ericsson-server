@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import server.database.model.Device;
 import server.database.repository.DeviceRepository;
 import server.database.repository.EventRepository;
+import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
 
 @Component
@@ -35,6 +36,8 @@ public class MainTask {
 	private SensorTypeRepository sensorTypeRepository;
 	@Autowired
 	private EventRepository eventRepository;
+	@Autowired
+	private EventStatRepository eventStatRepository;
 
 	@Scheduled(cron = "0 0 9 * * *" /* fixedDelay = 1000000, initialDelay = 500 */)
 	public void run() {
@@ -46,7 +49,7 @@ public class MainTask {
 			if (device.getId() == 3)
 				continue;
 			ReportRunnable runnable = new ReportRunnable(path, device, new DateTime(), sensorTypeRepository,
-					eventRepository, id, password, host);
+					eventRepository, eventStatRepository, id, password, host);
 			executorService.execute(runnable);
 			logger.info("Started report for device id= " + device.getId());
 		}

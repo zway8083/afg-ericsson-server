@@ -95,7 +95,6 @@ public class Email {
 		transport.connect(host, id, password);
 		transport.sendMessage(message, message.getAllRecipients());
 		transport.close();
-		System.out.println("Sent message successfully....");
 	}
 
 }

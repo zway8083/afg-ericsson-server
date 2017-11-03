@@ -60,7 +60,6 @@ public class Add {
 
 	@PostMapping(path = "/user")
 	public @ResponseBody String AddUserResult(@ModelAttribute User user) {
-		System.out.println(user.getSleepStart().getTime() + " " + user.getSleepEnd().getTime());
 		List<String> checkedRoles = user.getCheckedRoles();
 		Set<Role> roles = new HashSet<>();
 		for (String roleStr : checkedRoles) {
