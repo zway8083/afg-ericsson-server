@@ -158,7 +158,7 @@ public class EventTask {
 			if (events.get(i).getDate().getTime() <= dateTime.minusHours(margin).getMillis())
 				break;
 			int j = i;
-			while (j < size && events.get(j).getdValue() >= average)
+			while (j < size && events.get(j).getdValue() > average)
 				j++;
 			if (j != i)
 				last = j;
@@ -175,12 +175,14 @@ public class EventTask {
 			if (events.get(i).getDate().getTime() > dateTime.plusHours(margin).getMillis())
 				break;
 			int j = i;
-			while (j < size && events.get(j).getdValue() >= average)
+			while (j < size && events.get(j).getdValue() > average)
 				j++;
 			if (j != i)
 				last = j;
 			i = ++j;
 		}
+		if (last >= size)
+			return null;
 		return new DateTime(events.get(last).getDate());
 	}
 
