@@ -100,7 +100,7 @@ public class EventTask {
 				.withMinuteOfHour(timeSleepEnd.getMinuteOfHour()).withSecondOfMinute(0);
 
 		// Margin of error on the start/end theoretical values (hour)
-		int margin = 1;
+		int margin = 0;
 		DateTime startLimit = startTheo.minusHours(margin);
 		DateTime endLimit = endTheo.plusHours(margin);
 
@@ -322,7 +322,7 @@ public class EventTask {
 			stats += "\r\nNombre de secousses : " + count;
 
 			stats += "\r\nRelevé sur une semaine :"
-					+ String.format("\r\n   %-10s%-10s%-10s", "Jour", "Duré", "Mouvements");
+					+ String.format("\r\n   %-12s%-12s%-12s", "Jour", "Duré", "Mouvements");
 			for (int i = 7; i >= 0; i--) {
 				EventStat stat = eventStatRepository.findByDeviceAndDate(device,
 						new java.sql.Date(date.minusDays(i).getMillis()));
@@ -332,10 +332,10 @@ public class EventTask {
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
 				stats += "\r\n" + (i == 0 ? "-> " : "   ");
 				Period period2 = new Period(stat.getDuration().getTime());
-				stats += String.format("%-10s%-10s%-10s", fmt.withLocale(Locale.FRENCH).print(curDate),
+				stats += String.format("%-12s%-12s%-12s", fmt.withLocale(Locale.FRENCH).print(curDate),
 						period2.getHours() + "h" + period2.getMinutes() + "m", stat.getMvts());
 			}
-
+			//System.out.println(stats);
 			email.concatBody(stats);
 
 			email.send();
