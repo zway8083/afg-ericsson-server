@@ -123,8 +123,12 @@ public class User {
 	}
 
 	public void setSleepStart(String timeStr) {
-		sleepStart = new Time(0);
-		setSleepHour(timeStr, sleepStart);
+		if (timeStr == null || timeStr.isEmpty())
+			sleepStart = null;
+		else {
+			sleepStart = new Time(0);
+			setSleepHour(timeStr, sleepStart);
+		}
 	}
 
 	public Time getSleepEnd() {
@@ -132,14 +136,16 @@ public class User {
 	}
 
 	public void setSleepEnd(String timeStr) {
-		sleepEnd = new Time(0);
-		setSleepHour(timeStr, sleepEnd);
+		if (timeStr == null || timeStr.isEmpty())
+			sleepEnd = null;
+		else {
+			sleepEnd = new Time(0);
+			setSleepHour(timeStr, sleepEnd);
+		}
 	}
-	
-	public void setSleepHour(String timeStr, Time sleep) {
-		if (timeStr == null || timeStr == "") {
-			sleep = null;
-		} else {
+
+	private void setSleepHour(String timeStr, Time sleep) {
+		if (timeStr != null && !timeStr.isEmpty()) {
 			String[] times = timeStr.split(":");
 			// GMT conversion
 			DateTime time = new DateTime(0).withHourOfDay(Integer.parseInt(times[0]))

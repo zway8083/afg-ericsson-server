@@ -55,6 +55,7 @@ public class Add {
 	@PostMapping(path = "/user")
 	public @ResponseBody String AddUserResult(@ModelAttribute User user) {	 
 		user.setBirth(user.getBirthStr());
+		System.out.println(user.isSubject());
 		if (user.isSubject()) {
 			if (user.getSleepStart() == null)
 				user.setSleepStart("21:00");
