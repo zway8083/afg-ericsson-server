@@ -3,28 +3,34 @@
 <head>
     <title>Ajout d'utilisateur</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+    	p.hidden { display: none; }
+    </style>
+    <script type="text/javascript">
+		function night() {
+			var form = document.getElementById('form');
+			var p1 = document.getElementById("p1");
+			var p2 = document.getElementById("p2");
+    		if (document.getElementById('check').checked) {
+    			p1.style.display = "block";
+        		p2.style.display = "block";
+    		} else {
+    			p1.style.display = "none";
+            	p2.style.display = "none";
+			}
+		}
+    </script>
 </head>
 <body>
 	<h1>Utilisateur</h1>
-    <form action="#" th:action="@{/add/user}" th:object="${user}" method="post">
+    <form action="#" id="form" th:action="@{/add/user}" th:object="${user}" method="post">
     	<p>Nom : <input type="text" th:field="*{lastName}" /></p>
         <p>Prénom : <input type="text" th:field="*{firstName}" /></p>
         <p>Date de naissance : <input type="date" th:field="*{birthStr}" /></p>
         <p>Email : <input type="email" th:field="*{email}" /></p>
-        <p>Rôles :</p>
-        <div th:each="role : ${allRoles}">
-        	<input type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
-        	<label th:text="${role.name}"></label>
-        </div>
-        <p>Heure de couché habituelle : <input type="time" th:field="*{sleepStart}"/></p>
-        <p>Heure de levé habituelle : <input type="time" th:field="*{sleepEnd}"/></p>
-        <p>Lier avec : <var>(selection multiple)</var></p>
-        <select name="users" th:field="*{relatedIds}" multiple="multiple">
-       		<option th:each="usr : ${users}" 
-       			th:text="${usr.firstName + ' ' + usr.lastName}"
-       			th:value="${usr.id}">
-       		</option>
-        </select>
+        <p>Sujet : <input type="checkbox" id="check" th:field="*{subject}" value="true" onclick="night();"/></p>
+        <p id = "p1" class="hidden">Heure de couché habituelle : <input type="time" th:field="*{sleepStart}"/></p>
+        <p id = "p2" class="hidden">Heure de levé habituelle : <input type="time" th:field="*{sleepEnd}"/></p>
         <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
     </form>
 </body>

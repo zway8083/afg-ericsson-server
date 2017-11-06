@@ -7,10 +7,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -25,9 +23,11 @@ import server.database.model.Device;
 import server.database.model.Event;
 import server.database.model.EventStat;
 import server.database.model.User;
+import server.database.model.UserLink;
 import server.database.repository.EventRepository;
 import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
+import server.database.repository.UserLinkRepository;
 
 public class EventTask {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -35,6 +35,7 @@ public class EventTask {
 	private SensorTypeRepository sensorTypeRepository;
 	private EventRepository eventRepository;
 	private EventStatRepository eventStatRepository;
+	private UserLinkRepository userLinkRepository;
 
 	private DateTime date;
 	private Device device;
@@ -51,12 +52,14 @@ public class EventTask {
 	private EventStat eventStat;
 
 	public EventTask(Device device, DateTime date, SensorTypeRepository sensorTypeRepository,
-			EventRepository eventRepository, EventStatRepository eventStatRepository, String path) {
+			EventRepository eventRepository, EventStatRepository eventStatRepository,
+			UserLinkRepository userLinkRepository, String path) {
 		this.device = device;
 		this.date = date.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
 		this.sensorTypeRepository = sensorTypeRepository;
 		this.eventRepository = eventRepository;
 		this.eventStatRepository = eventStatRepository;
+		this.userLinkRepository = userLinkRepository;
 		this.path = path;
 		user = device.getUser();
 		setNightLimits();
@@ -127,24 +130,6 @@ public class EventTask {
 				+ ", end=" + endNight.toString("dd/MM/yyyy HH:mm"));
 	}
 
-	@SuppressWarnings("unused")
-	private List<Event> eventSplit(List<Event> events, Date from, Date to) {
-		int max = events.size();
-		int i = 0;
-		while (i < max && events.get(i).getDate().getTime() < from.getTime())
-			i++;
-		int j = i;
-		while (j < max && events.get(j).getDate().getTime() <= to.getTime())
-			j++;
-
-		List<Event> list = new ArrayList<>();
-		while (i < j) {
-			list.add(events.get(i));
-			i++;
-		}
-		return list;
-	}
-
 	private DateTime findEndNightLimit(List<Event> events, DateTime dateTime, int margin, Double average) {
 		int i = 0;
 		int size = events.size();
@@ -184,43 +169,6 @@ public class EventTask {
 		if (last >= size)
 			return null;
 		return new DateTime(events.get(last).getDate());
-	}
-
-	@SuppressWarnings("unused")
-	@Deprecated
-	private DateTime findNightLimit(List<Event> events, Double average, boolean endNight) {
-		int size = events.size();
-		int cur = 0;
-		while (cur < size) {
-			Event lum = events.get(cur);
-			Double value = lum.getdValue();
-			if (value < average) {
-				boolean cnt = false;
-				int i = cur;
-				// 'limit' times low lux value in a row = startNight found
-				int limit = 5;
-				while (i < size && i < cur + limit) {
-					if (events.get(i).getdValue() >= average) {
-						cnt = true;
-						i++;
-						break;
-					}
-					i++;
-				}
-				while (cnt) {
-					if (events.get(i).getdValue() < average) {
-						cur = i;
-						break;
-					}
-					i++;
-				}
-				if (!cnt) {
-					return new DateTime(events.get(cur - (endNight && cur > 0 ? 1 : 0)).getDate());
-				}
-			}
-			cur++;
-		}
-		return null;
 	}
 
 	private List<List<Event>> getEventLists() {
@@ -284,11 +232,14 @@ public class EventTask {
 			if (user.getEmail() != null)
 				recipients.add(user.getEmail());
 
-			Set<User> related = device.getUser().getRelated();
-			if (related != null && related.isEmpty() == false)
-				for (User usr : related)
-					if (usr.getEmail() != null)
-						recipients.add(usr.getEmail());
+			List<UserLink> links = userLinkRepository.findBySubject(user);
+			for (UserLink userLink : links) {
+				String address = userLink.getUser().getEmail();
+				if (address != null && !recipients.contains(address)) {
+					recipients.add(address);
+					System.out.println(address);
+				}
+			}
 
 			if (recipients.isEmpty())
 				return null;
@@ -335,7 +286,7 @@ public class EventTask {
 				stats += String.format("%-12s%-12s%-12s", fmt.withLocale(Locale.FRENCH).print(curDate),
 						period2.getHours() + "h" + period2.getMinutes() + "m", stat.getMvts());
 			}
-			//System.out.println(stats);
+
 			email.concatBody(stats);
 
 			email.send();

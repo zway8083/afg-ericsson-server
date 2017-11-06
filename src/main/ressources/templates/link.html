@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Association d'utilisateurs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Association</h1>
+    <form action="#" th:action="@{/add/link}" th:object="${userLink}" method="post">
+    	<p>L'utilisateur 
+        	<select id="user" th:field="*{userId}">
+        		<option th:each="user : ${users}" 
+        			th:text="${user.lastName + ' ' + user.firstName}"
+        			th:value="${user.id}">
+        		</option>
+        	</select>
+        </p>
+        <p>est </p>
+        <div th:each="role : ${allRoles}">
+        	<input type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
+        	<label th:text="${role.name}"></label>
+        </div>
+  		<p>du sujet
+        	<select id="subject" th:field="*{subjectId}">
+        		<option th:each="subject : ${subjects}" 
+        			th:text="${subject.lastName + ' ' + subject.firstName}"
+        			th:value="${subject.id}">
+        		</option>
+        	</select>
+        </p>
+        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
+    </form>
+</body>
+</html>

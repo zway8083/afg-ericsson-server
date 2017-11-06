@@ -4,19 +4,16 @@ import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.Email;
+import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -28,24 +25,16 @@ public class User {
 	private Long id;
 	private String firstName;
 	private String lastName;
-	@ManyToMany
-	private Set<Role> roles;
+	private Date birth;
 	@Email
 	private String email;
-	private Date birth;
-	@ManyToMany(fetch=FetchType.EAGER)
-	private Set<User> related;
+	@Column(nullable = false)
+	private boolean subject = false;
 	private Time sleepStart;
 	private Time sleepEnd;
 
 	@Transient
-	private String roleIdStr;
-	@Transient
 	private String birthStr;
-	@Transient
-	private List<String> checkedRoles;
-	@Transient
-	private List<Long> relatedIds;
 
 	public User() {
 	}
@@ -54,13 +43,6 @@ public class User {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.birth = birth;
-	}
-
-	public void addRole(Role role) {
-		if (roles == null) {
-			roles = new HashSet<>();
-		}
-		roles.add(role);
 	}
 
 	public Long getId() {
@@ -87,12 +69,12 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public Set<Role> getRoles() {
-		return roles;
+	public boolean isSubject() {
+		return subject;
 	}
 
-	public void setRoles(Set<Role> roles) {
-		this.roles = roles;
+	public void setSubject(boolean subject) {
+		this.subject = subject;
 	}
 
 	public String getEmail() {
@@ -103,28 +85,12 @@ public class User {
 		this.email = email;
 	}
 
-	public String getRoleIdStr() {
-		return roleIdStr;
-	}
-
-	public void setRoleIdStr(String roleIdStr) {
-		this.roleIdStr = roleIdStr;
-	}
-
 	public Date getBirth() {
 		return birth;
 	}
 
 	public void setBirth(Date birth) {
 		this.birth = birth;
-	}
-
-	public Set<User> getRelated() {
-		return related;
-	}
-
-	public void setRelated(Set<User> related) {
-		this.related = related;
 	}
 
 	public void setBirth(String birthStr) {
@@ -148,34 +114,6 @@ public class User {
 		this.birthStr = birthStr;
 	}
 
-	public List<String> getCheckedRoles() {
-		return checkedRoles;
-	}
-
-	public void setCheckedRoles(List<String> checkedRoles) {
-		this.checkedRoles = checkedRoles;
-	}
-
-	private String rolesToString() {
-		Role[] rolesTab = roles.toArray(new Role[0]);
-		String rolesStr = "[";
-		for (int i = 0; i < rolesTab.length; i++) {
-			if (i > 0)
-				rolesStr += ", ";
-			rolesStr += rolesTab[i].getName();
-		}
-		rolesStr += "]";
-		return rolesStr;
-	}
-
-	public List<Long> getRelatedIds() {
-		return relatedIds;
-	}
-
-	public void setRelatedIds(List<Long> relatedIds) {
-		this.relatedIds = relatedIds;
-	}
-
 	public String getName() {
 		return firstName + " " + lastName;
 	}
@@ -185,9 +123,7 @@ public class User {
 	}
 
 	public void setSleepStart(String timeStr) {
-		String[] times = timeStr.split(":");
-		long millis = (Integer.parseInt(times[0]) * 60 + Integer.parseInt(times[1])) * 60 * 1000;
-		this.sleepStart = new Time(millis);
+		setSleepHour(timeStr, sleepStart);
 	}
 
 	public Time getSleepEnd() {
@@ -195,14 +131,23 @@ public class User {
 	}
 
 	public void setSleepEnd(String timeStr) {
-		String[] times = timeStr.split(":");
-		long millis = (Integer.parseInt(times[0]) * 60 + Integer.parseInt(times[1])) * 60 * 1000;
-		this.sleepEnd = new Time(millis);
+		setSleepHour(timeStr, sleepEnd);
+	}
+	
+	public void setSleepHour(String timeStr, Time sleep) {
+		if (timeStr == null || timeStr == "") {
+			sleep = null;
+		} else {
+			String[] times = timeStr.split(":");
+			// GMT conversion
+			DateTime time = new DateTime(0).withHourOfDay(Integer.parseInt(times[0]))
+					.withMinuteOfHour(Integer.parseInt(times[1]));
+			sleep = new Time(time.getMillis());
+		}
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", roles=" + rolesToString()
-				+ ", birth=" + birth + "]";
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", birth=" + birth + "]";
 	}
 }

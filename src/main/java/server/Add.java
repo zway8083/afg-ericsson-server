@@ -1,13 +1,12 @@
 package server;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +19,11 @@ import server.database.model.AppiotRef;
 import server.database.model.Device;
 import server.database.model.Role;
 import server.database.model.User;
+import server.database.model.UserLink;
 import server.database.repository.AppiotRefRepository;
 import server.database.repository.DeviceRepository;
 import server.database.repository.RoleRepository;
+import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
 
 @Controller
@@ -33,6 +34,8 @@ public class Add {
 	private RoleRepository roleRepository;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private UserLinkRepository userLinkRepository;
 	@Autowired
 	private DeviceRepository deviceRepository;
 	@Autowired
@@ -45,41 +48,76 @@ public class Add {
 
 	@GetMapping(path = "/user")
 	public String addUserForm(Model model) {
-		User user = new User();
-		List<String> checkedRoles = new ArrayList<>();
-		user.setCheckedRoles(checkedRoles);
-		model.addAttribute("user", user);
-
-		List<Role> allRoles = roleRepository.findAll();
-		model.addAttribute("allRoles", allRoles);
-
-		List<User> users = userRepository.findAll();
-		model.addAttribute("users", users);
+		model.addAttribute("user", new User());
 		return "user";
 	}
 
 	@PostMapping(path = "/user")
-	public @ResponseBody String AddUserResult(@ModelAttribute User user) {
-		List<String> checkedRoles = user.getCheckedRoles();
-		Set<Role> roles = new HashSet<>();
-		for (String roleStr : checkedRoles) {
-			Role role = roleRepository.findByName(roleStr);
-			roles.add(role);
-		}
-		user.setRoles(roles);
-
-		List<Long> ids = user.getRelatedIds();
-		Set<User> related = new HashSet<>();
-		for (Long id : ids) {
-			User rel = userRepository.findOne(id);
-			related.add(rel);
-		}
-		user.setRelated(related);
-
+	public @ResponseBody String AddUserResult(@ModelAttribute User user) {	 
 		user.setBirth(user.getBirthStr());
+		if (user.isSubject()) {
+			if (user.getSleepStart() == null)
+				user.setSleepStart("21:00");
+			if (user.getSleepEnd() == null)
+				user.setSleepEnd("7:00");
+		} else {
+			user.setSleepStart(null);
+			user.setSleepEnd(null);
+		}
 		userRepository.save(user);
 		logger.info("User added: " + user.getFirstName() + " " + user.getLastName());
 		return "User added: " + user.getFirstName() + " " + user.getLastName();
+	}
+
+	@GetMapping(path = "/link")
+	public String addUserLink(Model model) {
+		List<User> users = userRepository.findBySubject(false);
+		List<User> subjects = userRepository.findBySubject(true);
+		List<Role> allRoles = roleRepository.findAll();
+
+		UserLink userLink = new UserLink();
+		List<String> checkedRoles = new ArrayList<>();
+		userLink.setCheckedRoles(checkedRoles);
+
+		model.addAttribute("users", users);
+		model.addAttribute("subjects", subjects);
+		model.addAttribute("userLink", userLink);
+		model.addAttribute("allRoles", allRoles);
+		return "link";
+	}
+
+	@PostMapping(path = "/link")
+	public @ResponseBody String AddUserLinkeResult(@ModelAttribute(name = "userLink") UserLink userLink) {
+		User user = userRepository.findOne(userLink.getUserId());
+		User subject = userRepository.findOne(userLink.getSubjectId());
+		userLink.setSubject(subject);
+		userLink.setUser(user);
+
+		String ret = "Lien ajouté : " + user.getName();
+
+		List<String> checkedRoles = userLink.getCheckedRoles();
+		for (int i = 0; i < checkedRoles.size(); i++) {
+			String roleStr = checkedRoles.get(i);
+			Role role = roleRepository.findByName(roleStr);
+			UserLink newLink = null;
+			if (i > 0) {
+				newLink = new UserLink();
+				newLink.setUser(user);
+				newLink.setSubject(subject);
+				newLink.setRole(role);
+			} else
+				newLink = userLink;
+				newLink.setRole(role);
+			try {
+				userLinkRepository.save(newLink);
+			} catch (DataIntegrityViolationException e) {
+				return "Ce lien existe déjà.";
+			}
+			ret += " -> " + roleStr;
+		}
+		ret += " -> " + subject.getName();
+		logger.info(ret);
+		return ret;
 	}
 
 	@GetMapping(path = "/device")

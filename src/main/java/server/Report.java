@@ -38,6 +38,7 @@ import server.database.repository.DeviceRepository;
 import server.database.repository.EventRepository;
 import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
+import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
 import server.model.ReportInfos;
 import server.task.EventTask;
@@ -54,7 +55,9 @@ public class Report {
 	@Autowired
 	private EventRepository eventRepository;
 	@Autowired
-	private EventStatRepository EventStatRepository;
+	private EventStatRepository eventStatRepository;
+	@Autowired
+	private UserLinkRepository userLinkRepository;
 
 	@Value("${report.path}")
 	private String path;
@@ -67,7 +70,7 @@ public class Report {
 
 	@GetMapping(path = "/report")
 	public String reportForm(Model model) {
-		List<User> users = userRepository.findByRoles_Name("Sujet");
+		List<User> users = userRepository.findBySubject(true);
 		model.addAttribute("users", users);
 
 		List<String> actions = Arrays.asList("Télécharger les relevés", "Envoyer les relevés par email");
@@ -119,8 +122,8 @@ public class Report {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 		DateTime date = formatter.parseDateTime(report.getDate());
 
-		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, EventStatRepository,
-				path);
+		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
+				userLinkRepository, path);
 		ArrayList<String> files = eventTask.createCsvReport();
 		if (files == null || files.isEmpty())
 			return;

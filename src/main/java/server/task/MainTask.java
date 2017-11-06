@@ -17,6 +17,7 @@ import server.database.repository.DeviceRepository;
 import server.database.repository.EventRepository;
 import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
+import server.database.repository.UserLinkRepository;
 
 @Component
 public class MainTask {
@@ -38,6 +39,8 @@ public class MainTask {
 	private EventRepository eventRepository;
 	@Autowired
 	private EventStatRepository eventStatRepository;
+	@Autowired
+	private UserLinkRepository userLinkRepository;
 
 	@Scheduled(cron = "0 0 9 * * *" /* fixedDelay = 1000000, initialDelay = 500 */)
 	public void run() {
@@ -49,7 +52,7 @@ public class MainTask {
 			if (device.getId() == 3)
 				continue;
 			ReportRunnable runnable = new ReportRunnable(path, device, new DateTime(), sensorTypeRepository,
-					eventRepository, eventStatRepository, id, password, host);
+					eventRepository, eventStatRepository, userLinkRepository, id, password, host);
 			executorService.execute(runnable);
 			logger.info("Started report for device id= " + device.getId());
 		}
