@@ -123,6 +123,7 @@ public class User {
 	}
 
 	public void setSleepStart(String timeStr) {
+		sleepStart = new Time(0);
 		setSleepHour(timeStr, sleepStart);
 	}
 
@@ -131,6 +132,7 @@ public class User {
 	}
 
 	public void setSleepEnd(String timeStr) {
+		sleepEnd = new Time(0);
 		setSleepHour(timeStr, sleepEnd);
 	}
 	
@@ -142,7 +144,7 @@ public class User {
 			// GMT conversion
 			DateTime time = new DateTime(0).withHourOfDay(Integer.parseInt(times[0]))
 					.withMinuteOfHour(Integer.parseInt(times[1]));
-			sleep = new Time(time.getMillis());
+			sleep.setTime(time.getMillis());
 		}
 	}
 
