@@ -58,7 +58,7 @@ public class RaspberryController {
 			@RequestBody(required = false) String output) {
 		Raspberry raspberry = raspberryRepository.findOne(id);
 		InputHistory history = inputHistoryRepository.findOneByToken(token);
-		if (raspberry == null || history == null)
+		if (raspberry == null || history == null || history.getOutputReceived() != null)
 			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
 		logger.info("Received output from Raspberry id=" + raspberry.getId() + ", history id=" + history.getId());
 		history.setOutput(output);

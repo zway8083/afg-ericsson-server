@@ -24,7 +24,7 @@ hs_err_pid*
 *.properties
 target/
 *.sh
-ServletConfig.java
 .classpath
 .project
 .settings/
+/bin/
