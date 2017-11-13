@@ -40,13 +40,9 @@ public class RaspberryIOController {
 		HttpHeaders headers = new HttpHeaders();
 		boolean connected = raspberry.isConnected();
 		headers.set("Connected", connected ? "True" : "False");
-		if (!connected) {
-			return new ResponseEntity<String>("", headers, HttpStatus.OK);
-		}
-		
 		String input = raspberry.getInput();
-		if (input == null || input.isEmpty()) {
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		if (connected && (input == null || input.isEmpty()) || !connected) {
+			return new ResponseEntity<String>("", headers, HttpStatus.OK);
 		}
 		
 		InputHistory history = new InputHistory(raspberry, input, new Date(), randomToken());
