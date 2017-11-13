@@ -55,7 +55,6 @@ public class Add {
 	@PostMapping(path = "/user")
 	public @ResponseBody String AddUserResult(@ModelAttribute User user) {	 
 		user.setBirth(user.getBirthStr());
-		System.out.println(user.isSubject());
 		if (user.isSubject()) {
 			if (user.getSleepStart() == null)
 				user.setSleepStart("21:00");
@@ -66,8 +65,8 @@ public class Add {
 			user.setSleepEnd(null);
 		}
 		userRepository.save(user);
-		logger.info("User added: " + user.getFirstName() + " " + user.getLastName());
-		return "User added: " + user.getFirstName() + " " + user.getLastName();
+		logger.info("User added: " + user.getName());
+		return "User added: " + user.getName();
 	}
 
 	@GetMapping(path = "/link")

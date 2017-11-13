@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import server.database.model.Raspberry;
 import server.database.model.SystemInfos;
@@ -23,14 +23,15 @@ public class Monitor {
 	@Autowired
 	private SystemInfosRepository systemInfosRepository;
 
-	@PostMapping(value = "/monitor/{id}")
-	public ResponseEntity<String> save(@PathVariable("id") String id,
+	@PostMapping(value = "/monitor")
+	public ResponseEntity<String> save(@RequestHeader(required = true, value = "Id") String id,
 			@RequestBody(required = true) SystemInfos systemInfos) {
 		try {
-			System.out.println(systemInfos.toString());
 			Raspberry raspberry = raspberryRepository.findOne(id);
-			if (raspberry == null)
+			if (raspberry == null) {
+				logger.info("Raspberry id=" + id + " not found");
 				return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+			}
 			systemInfos.setRaspberry(raspberry);
 			systemInfosRepository.save(systemInfos);
 			logger.info("Saved SystemInfos=" + systemInfos.getId() + "from raspberry=" + id);

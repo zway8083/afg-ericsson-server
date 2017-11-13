@@ -172,8 +172,7 @@ public class EventTask {
 	}
 
 	private List<List<Event>> getEventLists() {
-		logger.info("Requesting events for: " + endNight.toString("dd/MM/yyy") + " - " + user.getFirstName() + " "
-				+ user.getLastName());
+		logger.info("Requesting events for: " + endNight.toString("dd/MM/yyy") + " - " + user.getName());
 		eventMotion = eventRepository.findByDeviceAndTypeAndBinValueAndDateBetween(device,
 				sensorTypeRepository.findByName("motion"), true, startNight.toDate(), endNight.toDate());
 		eventTemp = eventRepository.findByDeviceAndTypeAndDateBetween(device,
@@ -235,10 +234,8 @@ public class EventTask {
 			List<UserLink> links = userLinkRepository.findBySubject(user);
 			for (UserLink userLink : links) {
 				String address = userLink.getUser().getEmail();
-				if (address != null && !recipients.contains(address)) {
+				if (address != null && !recipients.contains(address))
 					recipients.add(address);
-					System.out.println(address);
-				}
 			}
 
 			if (recipients.isEmpty())

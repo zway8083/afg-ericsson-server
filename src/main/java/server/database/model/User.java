@@ -14,11 +14,16 @@ import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.Email;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class User {
+	@Transient
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@JsonIgnore
@@ -100,7 +105,7 @@ public class User {
 			try {
 				this.birth = new SimpleDateFormat("yyyy/MM/dd").parse(birthStr.replace('-', '/'));
 			} catch (ParseException e) {
-				System.err.println(e.getMessage());
+				logger.error("Cannot parse '" + birthStr + "' to birth date, format must be: yyyy/MM/dd");
 				this.birth = null;
 			}
 		}

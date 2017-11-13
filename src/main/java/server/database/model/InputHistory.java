@@ -28,7 +28,7 @@ public class InputHistory {
 
 	public InputHistory() {
 	}
-	
+
 	public InputHistory(Raspberry raspberry, String input, Date inputSent, String token) {
 		this.raspberry = raspberry;
 		this.input = input;
