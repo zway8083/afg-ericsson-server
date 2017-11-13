@@ -23,6 +23,8 @@ public class Raspberry {
 	private List<User> users;
 
 	private String input;
+	@Column(nullable=false)
+	private boolean connected;
 
 	public Raspberry() {
 	}
@@ -49,6 +51,14 @@ public class Raspberry {
 
 	public void setInput(String input) {
 		this.input = input;
+	}
+
+	public boolean isConnected() {
+		return connected;
+	}
+
+	public void setConnected(boolean connected) {
+		this.connected = connected;
 	}
 
 	public static String randomId(RaspberryRepository repository) {

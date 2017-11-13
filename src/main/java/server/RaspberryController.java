@@ -38,9 +38,16 @@ public class RaspberryController {
 	@MessageMapping("/input")
 	@SendTo("/topic/output")
 	public Message output(Message message) throws Exception {
-
 		User user = userRepository.findOne(message.getId());
 		Raspberry raspberry = raspberryRepository.findOneByUsers_id(user.getId());
+		if (!message.isConnected())
+			raspberry.setConnected(false);
+		else
+			raspberry.setConnected(true);
+		if (message.getMessage() == null) {
+			raspberryRepository.save(raspberry);
+			return null;
+		}
 		String input = message.getMessage();
 		raspberry.setInput(input);
 		Date now = new Date();

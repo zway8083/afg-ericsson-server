@@ -35,10 +35,18 @@ public class RaspberryIOController {
 	public ResponseEntity<String> rasp(@RequestHeader(required = true, value = "Id") String id) {
 		Raspberry raspberry = raspberryRepository.findOne(id);
 		if (raspberry == null)
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		
+		HttpHeaders headers = new HttpHeaders();
+		boolean connected = raspberry.isConnected();
+		headers.set("Connected", connected ? "True" : "False");
+		if (!connected) {
+			return new ResponseEntity<String>("", headers, HttpStatus.OK);
+		}
+		
 		String input = raspberry.getInput();
 		if (input == null || input.isEmpty()) {
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		
 		InputHistory history = new InputHistory(raspberry, input, new Date(), randomToken());
@@ -48,7 +56,6 @@ public class RaspberryIOController {
 		raspberryRepository.save(raspberry);
 
 		logger.info("Sending input to Raspberry id=" + raspberry.getId() + ", history id=" + history.getId());
-		HttpHeaders headers = new HttpHeaders();
 		headers.set("Token", history.getToken());
 		return new ResponseEntity<String>(input, headers, HttpStatus.OK);
 	}
@@ -60,7 +67,7 @@ public class RaspberryIOController {
 		Raspberry raspberry = raspberryRepository.findOne(id);
 		InputHistory history = inputHistoryRepository.findOneByToken(token);
 		if (raspberry == null || history == null || history.getOutputReceived() != null)
-			return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		logger.info("Received output from Raspberry id=" + raspberry.getId() + ", history id=" + history.getId());
 		history.setOutput(output);
 		history.setOutputReceived(new Date());

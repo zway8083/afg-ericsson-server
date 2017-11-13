@@ -34,7 +34,7 @@ public class Monitor {
 			}
 			systemInfos.setRaspberry(raspberry);
 			systemInfosRepository.save(systemInfos);
-			logger.info("Saved SystemInfos=" + systemInfos.getId() + "from raspberry=" + id);
+			logger.info("Saved SystemInfos=" + systemInfos.getId() + " from raspberry='" + id + "'");
 			return new ResponseEntity<>(HttpStatus.CREATED);
 		} catch (Exception e) {
 			logger.error("Error saving " + systemInfos.toString() + " from raspberry=" + id + ": " + e.getMessage());

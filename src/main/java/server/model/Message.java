@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class Message {
 	private String message;
 	private Long id;
+	private boolean connected;
 
 	public Message() {
 	}
@@ -29,6 +30,14 @@ public class Message {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public boolean isConnected() {
+		return connected;
+	}
+
+	public void setConnected(boolean connected) {
+		this.connected = connected;
 	}
 
 }
