@@ -65,7 +65,7 @@ public class RaspberryIOController {
 		if (raspberry == null || history == null || history.getOutputReceived() != null)
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		logger.info("Received output from Raspberry id=" + raspberry.getId() + ", history id=" + history.getId());
-		history.setOutput(output);
+		history.setOutput(output == null ? "" : output);
 		history.setOutputReceived(new Date());
 		inputHistoryRepository.save(history);
 		raspberryRepository.save(raspberry);
