@@ -85,8 +85,8 @@ public class SystemInfos {
 		return lastBoot;
 	}
 
-	public void setLastBoot(Date lastBoot) {
-		this.lastBoot = lastBoot;
+	public void setLastBoot(Long lastBoot) {
+		this.lastBoot = new Date(lastBoot * 1000);
 	}
 
 	public String getUptime() {

@@ -26,6 +26,7 @@ public class Monitor {
 	@PostMapping(value = "/monitor")
 	public ResponseEntity<String> save(@RequestHeader(required = true, value = "Id") String id,
 			@RequestBody(required = true) SystemInfos systemInfos) {
+		System.out.println(systemInfos.getDate().getTime());
 		try {
 			Raspberry raspberry = raspberryRepository.findOne(id);
 			if (raspberry == null) {
