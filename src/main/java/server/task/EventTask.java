@@ -28,6 +28,7 @@ import server.database.repository.EventRepository;
 import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
 import server.database.repository.UserLinkRepository;
+import server.utils.HTMLGenerator;
 
 public class EventTask {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -221,10 +222,10 @@ public class EventTask {
 
 	public List<String> sendEmail(String id, String password, String host, ArrayList<String> files) {
 		try {
-			Email email = new Email(id, password, host);
+			Email email = new Email(id, password, host, true);
 			email.setSubject("Relevés de la nuit du " + startNight.toString("dd/MM/yyyy") + " au "
 					+ endNight.toString("dd/MM/yyyy"));
-			email.concatBody("Sujet: " + user.getName());
+			// email.concatBody("Sujet: " + user.getName());
 
 			List<String> recipients = new ArrayList<>();
 
@@ -246,13 +247,15 @@ public class EventTask {
 			if (files != null)
 				email.addAttachments(files);
 
-			String stats = "";
-			stats += "Période : " + startNight.toString("dd/MM/yyyy HH:mm") + " - "
-					+ endNight.toString("dd/MM/yyyy HH:mm");
 			Period period = new Period(eventStat.getDuration().getTime());
-			stats += "\r\nDurée : " + period.getHours() + "h et " + period.getMinutes() + "m";
-			stats += "\r\nNombre de mouvement : " + eventMotion.size();
-			stats += "\r\nMouvements par tranche horaire :";
+
+			String bodyHTML = HTMLGenerator.strongAttributeValue("Sujet", user.getName(), 0)
+					+ HTMLGenerator.strongAttributeValue("Période",
+							startNight.toString("dd/MM/yyyy HH:mm") + " - " + endNight.toString("dd/MM/yyyy HH:mm"), 0)
+					+ HTMLGenerator.strongAttributeValue("Durée",
+							period.getHours() + "h et " + period.getMinutes() + "m", 0)
+					+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventMotion.size()), 0)
+					+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
 
 			DateTime time = startNight;
 			while (time.isEqual(endNight) == false) {
@@ -261,16 +264,19 @@ public class EventTask {
 					endTime = endNight;
 				Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
 						sensorTypeRepository.findByName("motion"), true, time.toDate(), endTime.toDate());
-				stats += "\r\n\t" + time.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count;
+				bodyHTML += HTMLGenerator.value(time.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count,
+						1);
 				time = endTime;
 			}
 
 			Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
 					sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
-			stats += "\r\nNombre de secousses : " + count;
+			bodyHTML += HTMLGenerator.strongAttributeValue("Nombre de secousses", String.valueOf(count), 0);
 
-			stats += "\r\nRelevé sur une semaine :"
-					+ String.format("\r\n   %-12s%-12s%-12s", "Jour", "Duré", "Mouvements");
+			bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
+			ArrayList<ArrayList<String>> arrayList = new ArrayList<>();
+			ArrayList<String> list = new ArrayList<>(Arrays.asList("Jour", "Duré", "Mouvements"));
+			arrayList.add(list);
 			for (int i = 7; i >= 0; i--) {
 				EventStat stat = eventStatRepository.findByDeviceAndDate(device,
 						new java.sql.Date(date.minusDays(i).getMillis()));
@@ -278,20 +284,85 @@ public class EventTask {
 					continue;
 				DateTime curDate = new DateTime(stat.getDate().getTime());
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
-				stats += "\r\n" + (i == 0 ? "-> " : "   ");
 				Period period2 = new Period(stat.getDuration().getTime());
-				stats += String.format("%-12s%-12s%-12s", fmt.withLocale(Locale.FRENCH).print(curDate),
-						period2.getHours() + "h" + period2.getMinutes() + "m", stat.getMvts());
+				String day = (i == 0 ? "*" : " ") + fmt.withLocale(Locale.FRENCH).print(curDate);
+				String daytime = period2.getHours() + "h" + period2.getMinutes() + "m";
+				String mvts = String.valueOf(stat.getMvts());
+				list = new ArrayList<>(Arrays.asList(day, daytime, mvts));
+				arrayList.add(list);
 			}
 
-			email.concatBody(stats);
+			String[][] values = new String[arrayList.size()][3];
+			for (int i = 0; i < arrayList.size(); i++) {
+				ArrayList<String> strings = arrayList.get(i);
+				for (int j = 0; j < strings.size(); j++) {
+					values[i][j] = strings.get(j);
+				}
+			}
 
+			bodyHTML += HTMLGenerator.table(values, 1);
+
+			email.concatBody(bodyHTML);
 			email.send();
 			String log = "Email report on " + user.getName() + " sent at: ";
 			for (String recipient : recipients)
 				log += recipient + " ";
 			logger.info(log);
 			return recipients;
+
+			// String stats = "";
+			// stats += "Période : " + startNight.toString("dd/MM/yyyy HH:mm") + " - "
+			// + endNight.toString("dd/MM/yyyy HH:mm");
+			// stats += "\r\nDurée : " + period.getHours() + "h et " + period.getMinutes() +
+			// "m";
+			// stats += "\r\nNombre de mouvement : " + eventMotion.size();
+			// stats += "\r\nMouvements par tranche horaire :";
+			//
+			// DateTime time = startNight;
+			// while (time.isEqual(endNight) == false) {
+			// DateTime endTime =
+			// time.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
+			// if (endTime.isAfter(endNight))
+			// endTime = endNight;
+			// Long count =
+			// eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
+			// sensorTypeRepository.findByName("motion"), true, time.toDate(),
+			// endTime.toDate());
+			// stats += "\r\n\t" + time.toString("HH:mm") + " - " + endTime.toString("HH:mm
+			// : ") + count;
+			// time = endTime;
+			// }
+			//
+			// Long count =
+			// eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
+			// sensorTypeRepository.findByName("tamper"), true, startNight.toDate(),
+			// endNight.toDate());
+			// stats += "\r\nNombre de secousses : " + count;
+			//
+			// stats += "\r\nRelevé sur une semaine :"
+			// + String.format("\r\n %-12s%-12s%-12s", "Jour", "Duré", "Mouvements");
+			// for (int i = 7; i >= 0; i--) {
+			// EventStat stat = eventStatRepository.findByDeviceAndDate(device,
+			// new java.sql.Date(date.minusDays(i).getMillis()));
+			// if (stat == null)
+			// continue;
+			// DateTime curDate = new DateTime(stat.getDate().getTime());
+			// DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
+			// stats += "\r\n" + (i == 0 ? "-> " : " ");
+			// Period period2 = new Period(stat.getDuration().getTime());
+			// stats += String.format("%-12s%-12s%-12s",
+			// fmt.withLocale(Locale.FRENCH).print(curDate),
+			// period2.getHours() + "h" + period2.getMinutes() + "m", stat.getMvts());
+			// }
+			//
+			// email.concatBody(stats);
+			//
+			// email.send();
+			// String log = "Email report on " + user.getName() + " sent at: ";
+			// for (String recipient : recipients)
+			// log += recipient + " ";
+			// logger.info(log);
+			// return recipients;
 		} catch (MessagingException e) {
 			logger.error("Failed to send email for user " + user.getName() + ": " + e.getMessage());
 			return null;

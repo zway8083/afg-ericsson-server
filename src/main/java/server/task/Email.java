@@ -27,18 +27,25 @@ public class Email {
 	private String password;
 	private String host;
 	private String subject;
+	private boolean bodyHTML;
 	private String body;
 	private Multipart multipart;
 	private List<String> recipients;
 
 	public Email(String id, String password, String host) {
+		this(id, password, host, false);
+	}
+
+	public Email(String id, String password, String host, boolean bodyHTML) {
 		this.id = id;
 		this.password = password;
 		this.host = host;
 		this.multipart = new MimeMultipart();
 		this.subject = null;
+		this.bodyHTML = false;
 		this.body = "";
 		this.recipients = new ArrayList<>();
+		this.bodyHTML = bodyHTML;
 	}
 
 	public void addAttachments(ArrayList<String> files) throws MessagingException {
@@ -57,7 +64,7 @@ public class Email {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-	
+
 	public void concatBody(String body) {
 		this.body += body + "\n";
 	}
@@ -84,9 +91,12 @@ public class Email {
 		else
 			message.setSubject(subject);
 
-
 		BodyPart bodyPart = new MimeBodyPart();
-		bodyPart.setText(body);
+		if (bodyHTML) {
+			bodyPart.setContent(body, "text/html");
+		} else {
+			bodyPart.setText(body);
+		}
 		multipart.addBodyPart(bodyPart);
 
 		message.setContent(multipart);
@@ -96,5 +106,4 @@ public class Email {
 		transport.sendMessage(message, message.getAllRecipients());
 		transport.close();
 	}
-
 }
