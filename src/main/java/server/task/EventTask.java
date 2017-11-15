@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,24 +73,24 @@ public class EventTask {
 			if (eventStat == null)
 				createEventStat();
 			else if (eventStat.getGrade() == null) {
-				updateEventStat();
+				updateEventStat(eventStat);
 			}
 		}
 
 	}
 	
-	public void updateEventStat() {
-		EventStat eventMaxMvts = eventStatRepository.findFirstByOrderByMvtsDesc();
-		EventStat eventMinMvts = eventStatRepository.findFirstByMvtsGreaterThanEqualOrderByMvtsAsc(5);
-		if (eventMaxMvts == null || eventMinMvts == null) {
+	private void updateEventStat(EventStat eventStat) {
+		Date date = new Date(eventStat.getDate().getTime() + 1);
+		EventStat eventMaxMvts = eventStatRepository.findFirstByDateBeforeOrderByMvtsDesc(date);
+		EventStat eventMinMvts = eventStatRepository.findFirstByDateBeforeAndMvtsGreaterThanEqualOrderByMvtsAsc(date, 5);
+		if (eventMaxMvts == null || eventMinMvts == null || eventMaxMvts == eventMinMvts) {
 			eventStatRepository.save(eventStat);
 			return;
 		}
 		Integer maxMvts = eventMaxMvts.getMvts();
 		Integer minMvts = eventMinMvts.getMvts();
-		System.out.println("Min=" + minMvts + ", Max=" + maxMvts);
 		eventStat.setGrade(100 - (eventStat.getMvts() - minMvts) * 100 / (maxMvts - minMvts));
-		System.out.println("Grade=" + eventStat.getGrade());
+		eventStatRepository.save(eventStat);
 	}
 	
 	public void createEventStat() {
@@ -98,8 +99,7 @@ public class EventTask {
 		eventStat.setDevice(device);
 		eventStat.setMvts(eventMotion.size());
 		eventStat.setDuration(endNight.getMillis() - startNight.getMillis());
-		updateEventStat();
-		eventStatRepository.save(eventStat);
+		updateEventStat(eventStat);
 	}
 
 	private void setNightLimits() {
@@ -293,7 +293,7 @@ public class EventTask {
 
 			bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
 			ArrayList<ArrayList<String>> table = new ArrayList<>();
-			ArrayList<String> list = new ArrayList<>(Arrays.asList("Jour", "Duré", "Mouvements"));
+			ArrayList<String> list = new ArrayList<>(Arrays.asList("Jour", "Duré", "Mouvements", "Score"));
 			table.add(list);
 			for (int i = 7; i >= 0; i--) {
 				EventStat stat = eventStatRepository.findByDeviceAndDate(device,
@@ -301,18 +301,20 @@ public class EventTask {
 				if (stat == null)
 					continue;
 				DateTime curDate = new DateTime(stat.getDate().getTime());
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
-				Period period2 = new Period(stat.getDuration().getTime());
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE dd/MM");
+				Period period2	 = new Period(stat.getDuration().getTime());
 				String day = (i == 0 ? "&bull; " : "") + fmt.withLocale(Locale.FRENCH).print(curDate);
 				String daytime = period2.getHours() + "h" + period2.getMinutes() + "m";
 				String mvts = String.valueOf(stat.getMvts());
-				list = new ArrayList<>(Arrays.asList(day, daytime, mvts));
+				if (stat.getGrade() == null)
+					updateEventStat(stat);
+				String grade = stat.getGrade() != null ? String.valueOf(stat.getGrade()) + "%" : "";
+				list = new ArrayList<>(Arrays.asList(day, daytime, mvts, grade));
 				table.add(list);
 			}
 
 			bodyHTML += HTMLGenerator.table(table, 1);
-
-			System.out.println(bodyHTML);
+System.out.println(bodyHTML);
 			email.concatBody(bodyHTML);
 			email.send();
 
