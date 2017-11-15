@@ -314,7 +314,7 @@ public class EventTask {
 			}
 
 			bodyHTML += HTMLGenerator.table(table, 1);
-System.out.println(bodyHTML);
+			
 			email.concatBody(bodyHTML);
 			email.send();
 
