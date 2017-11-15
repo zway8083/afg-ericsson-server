@@ -93,7 +93,7 @@ public class Email {
 
 		BodyPart bodyPart = new MimeBodyPart();
 		if (bodyHTML) {
-			bodyPart.setContent(body, "text/html");
+			bodyPart.setContent(body, "text/html; charset=utf-8");
 		} else {
 			bodyPart.setText(body);
 		}

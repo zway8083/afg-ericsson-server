@@ -21,6 +21,7 @@ public class EventStat {
 	private Device device;
 	private Integer mvts;
 	private Time duration;
+	private Integer grade;
 
 	public EventStat() {
 	}
@@ -32,7 +33,7 @@ public class EventStat {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
+
 	public void setDate(long millis) {
 		this.date = new Date(millis);
 	}
@@ -64,8 +65,22 @@ public class EventStat {
 	public void setDuration(Time duration) {
 		this.duration = duration;
 	}
+
 	public void setDuration(long millis) {
 		this.duration = new Time(millis);
+	}
+
+	public Integer getGrade() {
+		return grade;
+	}
+
+	public void setGrade(Integer grade) {
+		if (grade < 0)
+			this.grade = 0;
+		else if (grade > 100)
+			this.grade = 100;
+		else
+			this.grade = grade;
 	}
 
 }

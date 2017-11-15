@@ -71,16 +71,34 @@ public class EventTask {
 			eventStat = eventStatRepository.findByDeviceAndDate(device, date.toDate());
 			if (eventStat == null)
 				createEventStat();
+			else if (eventStat.getGrade() == null) {
+				updateEventStat();
+			}
 		}
 
 	}
-
+	
+	public void updateEventStat() {
+		EventStat eventMaxMvts = eventStatRepository.findFirstByOrderByMvtsDesc();
+		EventStat eventMinMvts = eventStatRepository.findFirstByMvtsGreaterThanEqualOrderByMvtsAsc(5);
+		if (eventMaxMvts == null || eventMinMvts == null) {
+			eventStatRepository.save(eventStat);
+			return;
+		}
+		Integer maxMvts = eventMaxMvts.getMvts();
+		Integer minMvts = eventMinMvts.getMvts();
+		System.out.println("Min=" + minMvts + ", Max=" + maxMvts);
+		eventStat.setGrade(100 - (eventStat.getMvts() - minMvts) * 100 / (maxMvts - minMvts));
+		System.out.println("Grade=" + eventStat.getGrade());
+	}
+	
 	public void createEventStat() {
 		eventStat = new EventStat();
 		eventStat.setDate(date.getMillis());
 		eventStat.setDevice(device);
 		eventStat.setMvts(eventMotion.size());
 		eventStat.setDuration(endNight.getMillis() - startNight.getMillis());
+		updateEventStat();
 		eventStatRepository.save(eventStat);
 	}
 
@@ -225,7 +243,6 @@ public class EventTask {
 			Email email = new Email(id, password, host, true);
 			email.setSubject("Relevés de la nuit du " + startNight.toString("dd/MM/yyyy") + " au "
 					+ endNight.toString("dd/MM/yyyy"));
-			// email.concatBody("Sujet: " + user.getName());
 
 			List<String> recipients = new ArrayList<>();
 
@@ -254,6 +271,7 @@ public class EventTask {
 							startNight.toString("dd/MM/yyyy HH:mm") + " - " + endNight.toString("dd/MM/yyyy HH:mm"), 0)
 					+ HTMLGenerator.strongAttributeValue("Durée",
 							period.getHours() + "h et " + period.getMinutes() + "m", 0)
+					+ HTMLGenerator.strongAttributeValue("Score", String.valueOf(eventStat.getGrade()) + "%", 0)
 					+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventMotion.size()), 0)
 					+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
 
@@ -271,12 +289,12 @@ public class EventTask {
 
 			Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
 					sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
-			bodyHTML += HTMLGenerator.strongAttributeValue("Nombre de secousses", String.valueOf(count), 0);
+			bodyHTML += HTMLGenerator.strongAttributeValue("Nombre de secousse", String.valueOf(count), 0);
 
 			bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
-			ArrayList<ArrayList<String>> arrayList = new ArrayList<>();
+			ArrayList<ArrayList<String>> table = new ArrayList<>();
 			ArrayList<String> list = new ArrayList<>(Arrays.asList("Jour", "Duré", "Mouvements"));
-			arrayList.add(list);
+			table.add(list);
 			for (int i = 7; i >= 0; i--) {
 				EventStat stat = eventStatRepository.findByDeviceAndDate(device,
 						new java.sql.Date(date.minusDays(i).getMillis()));
@@ -285,84 +303,24 @@ public class EventTask {
 				DateTime curDate = new DateTime(stat.getDate().getTime());
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
 				Period period2 = new Period(stat.getDuration().getTime());
-				String day = (i == 0 ? "*" : " ") + fmt.withLocale(Locale.FRENCH).print(curDate);
+				String day = (i == 0 ? "&#26;&nbsp;" : "&#26;&#26;") + fmt.withLocale(Locale.FRENCH).print(curDate);
 				String daytime = period2.getHours() + "h" + period2.getMinutes() + "m";
 				String mvts = String.valueOf(stat.getMvts());
 				list = new ArrayList<>(Arrays.asList(day, daytime, mvts));
-				arrayList.add(list);
+				table.add(list);
 			}
 
-			String[][] values = new String[arrayList.size()][3];
-			for (int i = 0; i < arrayList.size(); i++) {
-				ArrayList<String> strings = arrayList.get(i);
-				for (int j = 0; j < strings.size(); j++) {
-					values[i][j] = strings.get(j);
-				}
-			}
+			bodyHTML += HTMLGenerator.table(table, 1);
 
-			bodyHTML += HTMLGenerator.table(values, 1);
-
+			System.out.println(bodyHTML);
 			email.concatBody(bodyHTML);
 			email.send();
+
 			String log = "Email report on " + user.getName() + " sent at: ";
 			for (String recipient : recipients)
 				log += recipient + " ";
 			logger.info(log);
 			return recipients;
-
-			// String stats = "";
-			// stats += "Période : " + startNight.toString("dd/MM/yyyy HH:mm") + " - "
-			// + endNight.toString("dd/MM/yyyy HH:mm");
-			// stats += "\r\nDurée : " + period.getHours() + "h et " + period.getMinutes() +
-			// "m";
-			// stats += "\r\nNombre de mouvement : " + eventMotion.size();
-			// stats += "\r\nMouvements par tranche horaire :";
-			//
-			// DateTime time = startNight;
-			// while (time.isEqual(endNight) == false) {
-			// DateTime endTime =
-			// time.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
-			// if (endTime.isAfter(endNight))
-			// endTime = endNight;
-			// Long count =
-			// eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
-			// sensorTypeRepository.findByName("motion"), true, time.toDate(),
-			// endTime.toDate());
-			// stats += "\r\n\t" + time.toString("HH:mm") + " - " + endTime.toString("HH:mm
-			// : ") + count;
-			// time = endTime;
-			// }
-			//
-			// Long count =
-			// eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
-			// sensorTypeRepository.findByName("tamper"), true, startNight.toDate(),
-			// endNight.toDate());
-			// stats += "\r\nNombre de secousses : " + count;
-			//
-			// stats += "\r\nRelevé sur une semaine :"
-			// + String.format("\r\n %-12s%-12s%-12s", "Jour", "Duré", "Mouvements");
-			// for (int i = 7; i >= 0; i--) {
-			// EventStat stat = eventStatRepository.findByDeviceAndDate(device,
-			// new java.sql.Date(date.minusDays(i).getMillis()));
-			// if (stat == null)
-			// continue;
-			// DateTime curDate = new DateTime(stat.getDate().getTime());
-			// DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
-			// stats += "\r\n" + (i == 0 ? "-> " : " ");
-			// Period period2 = new Period(stat.getDuration().getTime());
-			// stats += String.format("%-12s%-12s%-12s",
-			// fmt.withLocale(Locale.FRENCH).print(curDate),
-			// period2.getHours() + "h" + period2.getMinutes() + "m", stat.getMvts());
-			// }
-			//
-			// email.concatBody(stats);
-			//
-			// email.send();
-			// String log = "Email report on " + user.getName() + " sent at: ";
-			// for (String recipient : recipients)
-			// log += recipient + " ";
-			// logger.info(log);
-			// return recipients;
 		} catch (MessagingException e) {
 			logger.error("Failed to send email for user " + user.getName() + ": " + e.getMessage());
 			return null;
