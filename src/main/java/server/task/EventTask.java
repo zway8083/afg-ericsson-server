@@ -303,7 +303,7 @@ public class EventTask {
 				DateTime curDate = new DateTime(stat.getDate().getTime());
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE");
 				Period period2 = new Period(stat.getDuration().getTime());
-				String day = (i == 0 ? "&#26;&nbsp;" : "&#26;&#26;") + fmt.withLocale(Locale.FRENCH).print(curDate);
+				String day = (i == 0 ? "&bull; " : "") + fmt.withLocale(Locale.FRENCH).print(curDate);
 				String daytime = period2.getHours() + "h" + period2.getMinutes() + "m";
 				String mvts = String.valueOf(stat.getMvts());
 				list = new ArrayList<>(Arrays.asList(day, daytime, mvts));
