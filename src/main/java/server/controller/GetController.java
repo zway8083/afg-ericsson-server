@@ -1,4 +1,4 @@
-package server;
+package server.controller;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ import server.database.repository.UserRepository;
 
 @Controller
 @RequestMapping(path = "/get")
-public class Get {
+public class GetController {
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired

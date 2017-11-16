@@ -1,4 +1,4 @@
-package server;
+package server.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ import server.database.repository.SensorTypeRepository;
 import server.model.EventRequest;
 
 @Controller
-@RequestMapping(path = "/event")
+@RequestMapping(path = "/api/event")
 public class SensorEventController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired

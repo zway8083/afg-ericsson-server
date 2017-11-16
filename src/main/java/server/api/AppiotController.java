@@ -1,4 +1,4 @@
-package server;
+package server.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ import server.model.SensorCollection;
 import server.model.Serial;
 
 @Controller
-@RequestMapping(path = "/appiot")
+@RequestMapping(path = "/api/appiot")
 public class AppiotController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Value("${appiot.headers.authorization}")

@@ -1,4 +1,4 @@
-package server;
+package server.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import server.database.model.Raspberry;
 import server.database.model.SystemInfos;
@@ -16,7 +17,8 @@ import server.database.repository.RaspberryRepository;
 import server.database.repository.SystemInfosRepository;
 
 @Controller
-public class Monitor {
+@RequestMapping(path="/api")
+public class MonitorController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private RaspberryRepository raspberryRepository;
@@ -26,7 +28,6 @@ public class Monitor {
 	@PostMapping(value = "/monitor")
 	public ResponseEntity<String> save(@RequestHeader(required = true, value = "Id") String id,
 			@RequestBody(required = true) SystemInfos systemInfos) {
-		System.out.println(systemInfos.getDate().getTime());
 		try {
 			Raspberry raspberry = raspberryRepository.findOne(id);
 			if (raspberry == null) {

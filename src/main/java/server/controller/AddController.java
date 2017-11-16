@@ -1,4 +1,4 @@
-package server;
+package server.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ import server.database.repository.UserRepository;
 
 @Controller
 @RequestMapping(path = "/add")
-public class Add {
+public class AddController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private RoleRepository roleRepository;

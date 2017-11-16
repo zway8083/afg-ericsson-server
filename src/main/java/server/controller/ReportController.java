@@ -1,4 +1,4 @@
-package server;
+package server.controller;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -44,7 +44,7 @@ import server.model.ReportInfos;
 import server.task.EventTask;
 
 @Controller
-public class Report {
+public class ReportController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private UserRepository userRepository;

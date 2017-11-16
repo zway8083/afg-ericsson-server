@@ -1,4 +1,4 @@
-package server;
+package server.controller;
 
 import java.util.Date;
 import java.util.List;

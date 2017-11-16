@@ -1,4 +1,4 @@
-package server;
+package server.api;
 
 import java.util.Date;
 
@@ -22,7 +22,7 @@ import server.database.repository.RaspberryRepository;
 import server.utils.RandomStringGenerator;
 
 @Controller
-@RequestMapping(path="/raspberry")
+@RequestMapping(path="/api/raspberry")
 public class RaspberryIOController {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
