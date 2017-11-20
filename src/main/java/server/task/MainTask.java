@@ -42,7 +42,7 @@ public class MainTask {
 	@Autowired
 	private UserLinkRepository userLinkRepository;
 
-	@Scheduled(cron = "0 0 9 * * *" /* fixedDelay = 1000000, initialDelay = 500 */)
+	@Scheduled(cron = "0 0 8 * * *" /* fixedDelay = 1000000, initialDelay = 500 */)
 	public void run() {
 		logger.info("Report task begin");
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
