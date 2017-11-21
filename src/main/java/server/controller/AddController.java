@@ -17,14 +17,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import server.database.model.AppiotRef;
 import server.database.model.Device;
+import server.database.model.Raspberry;
 import server.database.model.Role;
 import server.database.model.User;
 import server.database.model.UserLink;
 import server.database.repository.AppiotRefRepository;
 import server.database.repository.DeviceRepository;
+import server.database.repository.RaspberryRepository;
 import server.database.repository.RoleRepository;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
+import server.model.RaspberryLink;
 
 @Controller
 @RequestMapping(path = "/add")
@@ -40,6 +43,8 @@ public class AddController {
 	private DeviceRepository deviceRepository;
 	@Autowired
 	private AppiotRefRepository appiotRefRepository;
+	@Autowired
+	private RaspberryRepository raspberryRepository;
 
 	@GetMapping
 	public String addIndex() {
@@ -53,7 +58,7 @@ public class AddController {
 	}
 
 	@PostMapping(path = "/user")
-	public @ResponseBody String AddUserResult(@ModelAttribute User user) {	 
+	public @ResponseBody String AddUser(@ModelAttribute User user) {	 
 		user.setBirth(user.getBirthStr());
 		if (user.isSubject()) {
 			if (user.getSleepStart() == null)
@@ -70,7 +75,7 @@ public class AddController {
 	}
 
 	@GetMapping(path = "/link")
-	public String addUserLink(Model model) {
+	public String addUserLinkForm(Model model) {
 		List<User> users = userRepository.findBySubject(false);
 		List<User> subjects = userRepository.findBySubject(true);
 		List<Role> allRoles = roleRepository.findAll();
@@ -87,7 +92,7 @@ public class AddController {
 	}
 
 	@PostMapping(path = "/link")
-	public @ResponseBody String AddUserLinkeResult(@ModelAttribute(name = "userLink") UserLink userLink) {
+	public @ResponseBody String AddUserLink(@ModelAttribute(name = "userLink") UserLink userLink) {
 		User user = userRepository.findOne(userLink.getUserId());
 		User subject = userRepository.findOne(userLink.getSubjectId());
 		userLink.setSubject(subject);
@@ -129,7 +134,7 @@ public class AddController {
 	}
 
 	@PostMapping(path = "/device")
-	public @ResponseBody String AddDeviceResult(@ModelAttribute(name = "device") Device device) {
+	public @ResponseBody String AddDevice(@ModelAttribute(name = "device") Device device) {
 		User user = userRepository.findOne(device.getUserId());
 		device.setUser(user);
 		device.setSerial(device.getSerialStr());
@@ -147,7 +152,7 @@ public class AddController {
 	}
 
 	@PostMapping(path = "/role")
-	public @ResponseBody String addRoleResult(@ModelAttribute(name = "role") Role role) {
+	public @ResponseBody String addRole(@ModelAttribute(name = "role") Role role) {
 		logger.debug("Received Role: name=" + role.getName());
 		try {
 			roleRepository.save(role);
@@ -163,5 +168,40 @@ public class AddController {
 			return message;
 		}
 		return "Rôle ajouté";
+	}
+	
+	@GetMapping(path="/raspberry")
+	public String addRaspberryForm(Model model) {
+		List<User> subjects = userRepository.findBySubject(true);
+		List<Raspberry> raspberries = raspberryRepository.findAll();
+		RaspberryLink raspberryLink = new RaspberryLink();
+		model.addAttribute("subjects", subjects);
+		model.addAttribute("raspberries", raspberries);
+		model.addAttribute("raspberryLink", raspberryLink);
+		return "raspberry";
+	}
+	
+	@PostMapping(path="/raspberry")
+	public @ResponseBody String addRaspberry(@ModelAttribute(name="link") RaspberryLink link) {
+		System.out.println(link.getCreate());
+		Raspberry raspberry = null;
+		if (link.getCreate()) {
+			raspberry = new Raspberry();
+			raspberry.setId(Raspberry.randomId(raspberryRepository));
+		} else {
+			raspberry = raspberryRepository.findOne(link.getRaspberryId());
+		}
+		User user = userRepository.findOne(link.getUserId());
+		boolean created = raspberry.addUser(user);
+		if (!created) {
+			return "Ce lien existe déjà";
+		}
+		try {
+			raspberryRepository.save(raspberry);
+		} catch (DataIntegrityViolationException e) {
+			return "Ce lien ne peut pas être ajouté : " + user.getName() + " est déjà associé à un Raspberry.";
+		}
+		System.out.println(raspberry.getId() + " " + raspberry.getUsers().size());
+		return raspberry.getId() + " -> " + user.getName();
 	}
 }

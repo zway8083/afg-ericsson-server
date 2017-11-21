@@ -1,41 +1,47 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:include="header :: head">
     <title>Ajout d'utilisateur</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <style>
-    	p.hidden { display: none; }
-    </style>
-    <script type="text/javascript">
-		function night() {
-			var form = document.getElementById('form');
-			var p1 = document.getElementById("p1");
-			var p2 = document.getElementById("p2");
-    		if (document.getElementById('check').checked) {
-    			p1.style.display = "block";
-        		p2.style.display = "block";
-    		} else {
-    			p1.style.display = "none";
-            	p2.style.display = "none";
-			}
-		}
-    </script>
+</head>
+<head>
+	<link href="/hidden.css" rel="stylesheet" />
+    <script src="/user.js"></script>
 </head>
 <body>
-	<h1>Utilisateur</h1>
-    <form action="#" id="form" th:action="@{/add/user}" th:object="${user}" method="post">
-    	<p>Nom : <input type="text" th:field="*{lastName}" /></p>
-        <p>Prénom : <input type="text" th:field="*{firstName}" /></p>
-        <p>Date de naissance : <input type="date" th:field="*{birthStr}" /></p>
-        <p>Email : <input type="email" th:field="*{email}" /></p>
-        <p>Sujet : <input type="checkbox" id="check" th:field="*{subject}" value="true" onclick="night();"/></p>
-        <p id = "p1" class="hidden">Heure de couché habituelle : <input type="time" th:field="*{sleepStart}"/></p>
-        <p id = "p2" class="hidden">Heure de levé habituelle : <input type="time" th:field="*{sleepEnd}"/></p>
-        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
-    </form>
-    <p><a href="/add/role">Rôle</a></p>
-    <p><a href="/add/user">Utilisateur</a></p>
-    <p><a href="/add/device">Capteur</a></p>
-    <p><a href="/add/link">Liens entre utilisateurs</a></p>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<h2>Utilisateur</h2>
+    	<form action="#" id="form" th:action="@{/add/user}" th:object="${user}" method="post">
+    		<div class="form-group">
+		    	<label for="lname">Nom : </label>
+		    	<input id="lname" type="text" th:field="*{lastName}" />
+    		</div>
+    		<div class="form-group">
+		    	<label for="fname" >Prénom : </label>
+		    	<input id="fname" type="text" th:field="*{firstName}" />
+    		</div>
+    		<div class="form-group">
+		    	<label for="birth">Date de naissance : </label>
+		    	<input id="birth" type="date" th:field="*{birthStr}" />
+    		</div>
+    		<div class="form-group">
+		    	<label for="email">Email : </label>
+		    	<input id="email" type="email" th:field="*{email}" />
+    		</div>
+    		<div class="form-group">
+		    	<label for="check">Sujet : </label>
+		    	<input type="checkbox" id="check" th:field="*{subject}" value="true" onclick="night();"/>
+    		</div>
+    		<div id = "sleepStart" class="form-group">
+		    	<label for="sleepStartInput">Heure de couché habituelle : </label>
+		    	<input id="sleepStartInput" type="time" th:field="*{sleepStart}"/>
+    		</div>
+    		<div id = "sleepEnd" class="form-group">
+		    	<label for="sleepEndInput">Heure de levé habituelle : </label>
+		    	<input id="sleepEndInput" type="time" th:field="*{sleepEnd}"/>
+    		</div>
+    		<div th:replace="form :: buttons"></div>
+    	</form>
+	</div>
 </body>
 </html>

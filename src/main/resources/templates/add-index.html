@@ -1,14 +1,10 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Ajout</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head th:include="header :: head">
+<title>Ajout</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<h1>Ajout:</h1>
-    <p><a href="/add/role">Rôle</a></p>
-    <p><a href="/add/user">Utilisateur</a></p>
-    <p><a href="/add/device">Capteur</a></p>
-    <p><a href="/add/link">Liens entre utilisateurs</a></p>
+	<div th:replace="header :: navbar"></div>
 </body>
 </html>

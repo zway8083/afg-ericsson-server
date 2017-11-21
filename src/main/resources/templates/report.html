@@ -1,27 +1,35 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Générer un rapport</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head th:include="header :: head">
+    <title id="pageTitle">Générer un rapport</title>
 </head>
 <body>
-	<h1>Rapport</h1>
-    <form action="#" th:action="@{/report}" th:object="${report}" method="post">
-  		<p>Sujet :	
-        	<select id="userId" th:field="*{id}">
-        		<option th:each="user : ${users}" 
-        			th:text="${user.firstName + ' ' + user.lastName}"
-        			th:value="${user.id}">
-        		</option>
-        	</select>
-        </p>
-        <p>Date : <input type="date" th:field="*{date}" /></p>
-        <p>Action :</p>
-        <div th:each="action : ${actions}">
-        	<input type="checkbox" th:field="*{actions}" th:value="${action}"/>
-        	<label th:text="${action}"></label>
-        </div>
-        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
-    </form>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<h2>Rapport</h2>
+    	<form action="#" th:action="@{/report}" th:object="${report}" method="post">
+			<div class="form-group">
+				<label for="userId">Sujet :</label>
+	        	<select id="userId" th:field="*{id}">
+	        		<option th:each="user : ${users}" 
+	        			th:text="${user.firstName + ' ' + user.lastName}"
+	        			th:value="${user.id}">
+	        		</option>
+	        	</select>
+			</div>
+			<div class="form-group">
+				<label for="date">Date :</label>
+				<input id="date" type="date" th:field="*{date}"/>
+			</div>
+			<div class="form-group">
+				<label for="name">Action :</label>
+		        <div th:each="action, iter : ${actions}">
+		        	<input th:id="${iter.index}" type="checkbox" th:field="*{actions}" th:value="${action}"/>
+		        	<label class="small" th:for="${iter.index}" th:text="${action}"></label>
+		        </div>
+			</div>
+    		<div th:replace="form :: buttons"></div>
+    	</form>
+    </div>
 </body>
 </html>

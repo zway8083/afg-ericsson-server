@@ -1,31 +1,33 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:include="header :: head">
     <title>Ajout de capteur</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<h1>Capteur</h1>
-    <form action="#" th:action="@{/add/device}" th:object="${device}" method="post">
-        <p>Numéro de série : <input type="text" pattern="^((([0-9]{1,5}-){7})|(([0-9]{1,5},){7}))([0-9]{1,5}){1}$"  th:field="*{serialStr}" /></p>
-        <p><var>Format : <code>^((([0-9]{1,5}-){7})|(([0-9]{1,5},){7}))([0-9]{1,5}){1}$</code></var></p>
-        <p><var>Exemple : <code>0-0-0-0-21-654-343-9 ou 3,0,56,0,33,654,343,9"</code></var></p>
-        <!-- title="Format: ^((([0-9]{1,5}-){7})|(([0-9]{1,5},){7}))([0-9]{1,5}){1}$
-        Exemple: 0-0-0-0-21-654-343-9 ou 3,0,56,0,33,654,343,9" -->
-        <p>Gateway appiot : <input type="text" th:field="*{gateway}" /></p>
-  		<p>Utilisateur associé: 
-        	<select id="users" th:field="*{userId}">
-        		<option th:each="user : ${users}" 
-        			th:text="${user.lastName + ' ' + user.firstName}"
-        			th:value="${user.id}">
-        		</option>
-        	</select>
-        </p>
-        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
-    </form>
-    <p><a href="/add/role">Rôle</a></p>
-    <p><a href="/add/user">Utilisateur</a></p>
-    <p><a href="/add/device">Capteur</a></p>
-    <p><a href="/add/link">Liens entre utilisateurs</a></p>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<h2>Capteur</h2>
+    	<form action="#" th:action="@{/add/device}" th:object="${device}" method="post">
+    		<div class="form-group">
+				<label for="serial">Numéro de série : </label>
+				<input id="serial" type="text" pattern="^((([0-9]{1,5}-){7})|(([0-9]{1,5},){7}))([0-9]{1,5}){1}$"  th:field="*{serialStr}" />
+				<var>Exemple : <code>0-0-0-0-21-654-343-9 ou 3,0,56,0,33,654,343,9"</code></var>
+			</div>
+    		<div class="form-group">
+				<label for="appiot">Gateway appiot : </label>
+				<input id="appiot" type="text" th:field="*{gateway}" />
+			</div>
+    		<div class="form-group">
+				<label for="users">Utilisateur associé: </label>
+				<select id="users" th:field="*{userId}">
+	        		<option th:each="user : ${users}" 
+	        			th:text="${user.lastName + ' ' + user.firstName}"
+	        			th:value="${user.id}">
+	        		</option>
+        		</select>
+			</div>
+			<div th:replace="form :: buttons"></div>
+    	</form>
+	</div>
 </body>
 </html>

@@ -1,38 +1,40 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:include="header :: head">
     <title>Association d'utilisateurs</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<h1>Association</h1>
-    <form action="#" th:action="@{/add/link}" th:object="${userLink}" method="post">
-    	<p>L'utilisateur 
-        	<select id="user" th:field="*{userId}">
-        		<option th:each="user : ${users}" 
-        			th:text="${user.lastName + ' ' + user.firstName}"
-        			th:value="${user.id}">
-        		</option>
-        	</select>
-        </p>
-        <p>est </p>
-        <div th:each="role : ${allRoles}">
-        	<input type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
-        	<label th:text="${role.name}"></label>
-        </div>
-  		<p>du sujet
-        	<select id="subject" th:field="*{subjectId}">
-        		<option th:each="subject : ${subjects}" 
-        			th:text="${subject.lastName + ' ' + subject.firstName}"
-        			th:value="${subject.id}">
-        		</option>
-        	</select>
-        </p>
-        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<h2>Association</h2>
+    	<form action="#" th:action="@{/add/link}" th:object="${userLink}" method="post">
+			<div class="form-group">
+				<label for="user">L'utilisateur </label>
+        		<select id="user" th:field="*{userId}">
+	        		<option th:each="user : ${users}" 
+	        			th:text="${user.lastName + ' ' + user.firstName}"
+	        			th:value="${user.id}">
+	        		</option>
+        		</select>
+			</div>
+			<div class="form-group">
+				<label>est : </label>
+		        <div th:each="role, iter : ${allRoles}">
+		        	<input th:id="${iter.index}" type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
+		        	<label class="small" th:for="${iter.index}" th:text="${role.name}"></label>
+		        </div>
+			</div>
+			<div class="form-group">
+				<label for="subject">du sujet</label>
+	        	<select id="subject" th:field="*{subjectId}">
+	        		<option th:each="subject : ${subjects}" 
+	        			th:text="${subject.lastName + ' ' + subject.firstName}"
+	        			th:value="${subject.id}">
+	        		</option>
+	        	</select>
+			</div>
+    		<div th:replace="form :: buttons"></div>
     </form>
-    <p><a href="/add/role">Rôle</a></p>
-    <p><a href="/add/user">Utilisateur</a></p>
-    <p><a href="/add/device">Capteur</a></p>
-    <p><a href="/add/link">Liens entre utilisateurs</a></p>
+	</div>
 </body>
 </html>

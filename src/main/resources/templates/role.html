@@ -1,18 +1,20 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Ajout d'un rôle</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<head th:include="header :: head">
+	<title>Ajout d'un rôle</title>
 </head>
 <body>
-	<h1>Rôle</h1>
-    <form action="#" th:action="@{/add/role}" th:object="${role}" method="post">
-        <p>Nom: <input type="text" th:field="*{name}"/></p>
-        <p><input type="submit" value="Valider" /> <input type="reset" value="Reset" /></p>
-    </form>
-    <p><a href="/add/role">Rôle</a></p>
-    <p><a href="/add/user">Utilisateur</a></p>
-    <p><a href="/add/device">Capteur</a></p>
-    <p><a href="/add/link">Liens entre utilisateurs</a></p>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<h2>Rôle</h2>
+		<form action="#" th:action="@{/add/role}" th:object="${role}"
+			method="post">
+			<div class="form-group">
+				<label for="name">Nom : </label>
+				<input id="name" type="text" th:field="*{name}" />
+			</div>
+    		<div th:replace="form :: buttons"></div>
+		</form>
+	</div>
 </body>
 </html>

@@ -1,6 +1,7 @@
 package server.database.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,10 +21,10 @@ public class Raspberry {
 
 	@OneToMany
 	@Column(nullable = false)
-	private List<User> users;
+	private Set<User> users;
 
 	private String input;
-	@Column(nullable=false)
+	@Column(nullable = false)
 	private boolean connected;
 
 	public Raspberry() {
@@ -37,11 +38,11 @@ public class Raspberry {
 		this.id = id;
 	}
 
-	public List<User> getUsers() {
+	public Set<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<User> users) {
+	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
 
@@ -59,6 +60,13 @@ public class Raspberry {
 
 	public void setConnected(boolean connected) {
 		this.connected = connected;
+	}
+
+	public boolean addUser(User user) {
+		if (users == null) {
+			users = new HashSet<>();
+		}
+		return users.add(user);
 	}
 
 	public static String randomId(RaspberryRepository repository) {
