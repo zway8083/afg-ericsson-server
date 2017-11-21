@@ -9,11 +9,11 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
-	<div th:fragment="navbar">
-		<nav class="navbar navbar-inverse bg-inverse" th:with="isAuth=${#authorization.expression('isAuthenticated()')}">
+	<div th:fragment="navbar" th:with="isAuth=${#authorization.expression('isAuthenticated()')}">
+		<nav class="navbar navbar-inverse bg-inverse">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="#">AFG Autisme</a>
+					<a class="navbar-brand" href="/">AFG Autisme</a>
 				</div>
 				<ul th:if="${isAuth}" class="nav navbar-nav">
 					<li class="dropdown"><a class="dropdown-toggle"
