@@ -1,12 +1,18 @@
-h2>img {
-	max-width: 4%;
-	max-height: 4%;
-	border: 2px solid #000;
-	border-radius: 20px;
-	padding: 2px;
+.flexContainer {
+    display: flex;
 }
 
-h2>img:hover {
-	-webkit-box-shadow: 0px 0px 2px 4px rgba(0, 0, 0, 0.3);
-	box-shadow: 0px 0px 2px 4px rgba(0, 0, 0, 0.3);
+.inputField {
+    flex: 1;
+}
+
+.button-mic {
+    border: 0;
+    background: none
+}
+
+button.img {
+	width: 25px;
+	height: 25px;
+	margin:0
 }

@@ -1,4 +1,4 @@
-function startDictation() {
+function startDictation(id) {
 
 	if (window.hasOwnProperty('webkitSpeechRecognition')) {
 
@@ -11,9 +11,8 @@ function startDictation() {
 		recognition.start();
 
 		recognition.onresult = function(e) {
-			document.getElementById('transcript').value = e.results[0][0].transcript;
+			document.getElementById(id).value = e.results[0][0].transcript;
 			recognition.stop();
-			//document.getElementById('labnol').submit();
 		};
 
 		recognition.onerror = function(e) {

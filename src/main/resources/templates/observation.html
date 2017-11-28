@@ -4,9 +4,7 @@
     <title id="pageTitle">Observation</title>
 </head>
 <head>
-	<link href="/css/microphone.css" rel="stylesheet" />
-	<link href="/css/border-right.css" rel="stylesheet" />
-	<link href="/css/table.css" rel="stylesheet" />
+	<link href="/css/microphone.css" rel="stylesheet" />	
     <script src="/scripts/dictation.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
 	<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
@@ -23,7 +21,7 @@
 	        	<form class="form-horizontal" action="/observation" th:action="@{/observation}" th:object="${form}" method="post">
 		            <div class="form-group form-inline">
 		                <label class="control-label col-sm-2" for="datetimepicker">Jour : </label>
-		                <div class='input-group date col-sm-10' id='datetimepicker'>
+		                <div style="width: 220px" class='input-group date col-sm-10' id='datetimepicker'>
 		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
 		                    <span class="input-group-addon">
 		                        <span class="glyphicon glyphicon-calendar"></span>
@@ -85,8 +83,19 @@
 					        		</option>
 				        		</select>
 		    				</td>
-		    				<td><input type="text" th:field="*{activity}" class="form-control" required="required"/></td>
-		    				<td><textarea class="form-control" th:field="*{behaviour}" rows="1" required="required"></textarea></td>
+		    				<td>
+		    					<div class="flexContainer">
+		    						<input id="activity" class="form-control inputField" style="width: 100%;" type="text" th:field="*{activity}" required="required"/>
+		    						<button class="button-mic" type="button" onclick="startDictation('activity')"><img src="/img/mic.png" alt="Microphone"/></button>
+		    					</div>
+		    				</td>
+		    				<td>
+		    					<div class="flexContainer">
+		    						<textarea id="behaviour" class="form-control inputfield" th:field="*{behaviour}" rows="2" required="required"></textarea>
+		    						<button class="button-mic" type="button"><img src="/img/mic.png" alt="Microphone" onclick="startDictation('behaviour')"/></button>
+		    					</div>
+		    				</td>
+		    				
 		    			</tr>
 		    		</tbody>
 		    	</table>
@@ -100,4 +109,5 @@
 	    </div>
     </div>
 </body>
+<script src="/scripts/speech-input.js"></script>
 </html>
