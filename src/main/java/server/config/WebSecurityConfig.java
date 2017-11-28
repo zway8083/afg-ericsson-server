@@ -36,6 +36,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/main.css");
+		web.ignoring().antMatchers("/css/main.css", "css/microphone.css", "img/microphone.img", "scripts/dictation.js");
 	}
 }

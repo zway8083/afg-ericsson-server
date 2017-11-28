@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title th:include=":: #pageTitle">Generic Title</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-	<link href="/main.css" rel="stylesheet" />
+	<link href="/css/main.css" rel="stylesheet" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
@@ -26,8 +26,11 @@
 							<li><a href="/add/link">Liens utilisateurs</a></li>
 							<li><a href="/add/raspberry">Liens Raspberry-utilisateur</a></li>
 						</ul></li>
+					<li><a href="/get/users">Utilisateurs</a></li>
 					<li><a href="/raspberry">Raspberry I/O</a></li>
 					<li><a href="/report">Rapport</a></li>
+					<li><a href="/observation">Observation</a></li>
+					<li><a href="/speech">Speech test</a></li>
 				</ul>
 			    <ul  class="nav navbar-nav navbar-right">
 				    <li th:if="${!isAuth}">

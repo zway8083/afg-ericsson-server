@@ -7,7 +7,7 @@
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
-	<div th:style="${#authorization.expression('isAuthenticated()')} ? 'visibility: hidden;' : ''" id="main-content" class="container">
+	<div th:if="${!#authorization.expression('isAuthenticated()')}" id="main-content" class="container">
 		<form th:action="@{/login}" method="post">
 			<div th:if="${param.error}">Utilisateur ou mot de passe invalide.</div>
 			<div th:if="${param.logout}">Vous avez été déconnecté.</div>

@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="header :: head">
+    <title>Speech</title>
+</head>
+<head>
+	<link href="/css/microphone.css" rel="stylesheet" />
+    <script src="/scripts/dictation.js"></script>
+</head>
+<body>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<h2>Speech test <img id="mic" src="/img/microphone.png" onclick="startDictation()"/></h2>
+		<form>
+			<div class="form-group">
+			  <textarea class="form-control" rows="5" id="transcript" placeholder="Click on the mic"></textarea>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

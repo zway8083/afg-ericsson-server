@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path="/api")
 public class AliveController {
 	@GetMapping(path = "/alive")
-	public ResponseEntity<String> alive() {
-		return new ResponseEntity<String>(HttpStatus.OK);
+	public ResponseEntity<?> alive() {
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

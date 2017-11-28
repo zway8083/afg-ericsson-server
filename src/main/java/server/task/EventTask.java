@@ -293,7 +293,7 @@ public class EventTask {
 
 			bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
 			ArrayList<ArrayList<String>> table = new ArrayList<>();
-			ArrayList<String> list = new ArrayList<>(Arrays.asList("Jour", "Duré", "Mouvements", "Score"));
+			ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Durée", "Mouvements", "Score"));
 			table.add(list);
 			for (int i = 7; i >= 0; i--) {
 				EventStat stat = eventStatRepository.findByDeviceAndDate(device,

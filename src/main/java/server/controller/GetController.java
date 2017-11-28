@@ -1,16 +1,19 @@
 package server.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import server.database.model.Device;
+import server.database.model.Raspberry;
 import server.database.model.User;
 import server.database.repository.DeviceRepository;
+import server.database.repository.RaspberryRepository;
 import server.database.repository.UserRepository;
 
 @Controller
@@ -20,19 +23,25 @@ public class GetController {
 	private UserRepository userRepository;
 	@Autowired
 	private DeviceRepository deviceRepository;
+	@Autowired
+	private RaspberryRepository raspberryRepository;
 
 	@GetMapping(path = "/users")
-	public @ResponseBody String all() {
+	public String all(Model model) {
 		List<User> users = userRepository.findAll();
-		String response = "";
+		HashMap<Long, User> userMap = new HashMap<>();
+		HashMap<Long, List<Device>> devicesMap = new HashMap<>();
+		HashMap<Long, Raspberry> raspberryMap = new HashMap<>();
 		for (User user : users) {
-			response += "<p>" + user.toString() + "</p>\n";
+			userMap.put(user.getId(), user);
 			List<Device> devices = deviceRepository.findByUser(user);
-			for (Device device : devices) {
-				response += "<p>-" + device.toString() + "</p>\n";
-			}
-			response += "\n";
+			devicesMap.put(user.getId(), devices);
+			Raspberry raspberry = raspberryRepository.findOneByUsers_id(user.getId());
+			raspberryMap.put(user.getId(), raspberry);
 		}
-		return response;
+		model.addAttribute("users", userMap);
+		model.addAttribute("devices", devicesMap);
+		model.addAttribute("raspberries", raspberryMap);
+		return "get-users";
 	}
 }
