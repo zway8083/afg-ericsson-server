@@ -20,7 +20,7 @@ import server.database.repository.SensorTypeRepository;
 import server.database.repository.UserLinkRepository;
 
 @Component
-public class MainTask {
+public class ReportScheduled {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Value("${report.path}")
 	private String path;
@@ -42,7 +42,7 @@ public class MainTask {
 	@Autowired
 	private UserLinkRepository userLinkRepository;
 
-	@Scheduled(cron = "0 0 8 * * *" /* fixedDelay = 1000000, initialDelay = 500 */)
+	@Scheduled(cron = "0 0 8 * * *")
 	public void run() {
 		logger.info("Report task begin");
 		ExecutorService executorService = Executors.newFixedThreadPool(4);

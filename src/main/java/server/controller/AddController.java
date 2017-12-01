@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,7 @@ import server.database.repository.RoleRepository;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
 import server.model.RaspberryLink;
+import server.model.UserForm;
 
 @Controller
 @RequestMapping(path = "/add")
@@ -53,21 +55,33 @@ public class AddController {
 
 	@GetMapping(path = "/user")
 	public String addUserForm(Model model) {
-		model.addAttribute("user", new User());
+		List<Role> roles = roleRepository.findAll();
+		model.addAttribute("roles", roles);
+		model.addAttribute("userForm", new UserForm());
 		return "user";
 	}
 
 	@PostMapping(path = "/user")
-	public @ResponseBody String AddUser(@ModelAttribute User user) {	 
-		user.setBirth(user.getBirthStr());
-		if (user.isSubject()) {
-			if (user.getSleepStart() == null)
-				user.setSleepStart("21:00");
-			if (user.getSleepEnd() == null)
-				user.setSleepEnd("7:00");
+	public @ResponseBody String AddUser(@ModelAttribute UserForm userForm) {
+		User user = new User();
+		System.out.println(userForm.getRoleStr());
+		if (userForm.getRoleStr() == "ROLE_SUJECT") {
+			user.setSubject(true);
+			user.setSleepStart(userForm.getSleepStart() != null ? userForm.getSleepStart() : "21:00");
+			user.setSleepEnd(userForm.getSleepEnd() != null ? userForm.getSleepEnd() : "7:00");
 		} else {
+			user.setSubject(false);
 			user.setSleepStart(null);
 			user.setSleepEnd(null);
+		}
+		user.setFirstName(userForm.getFirstName());
+		user.setLastName(userForm.getLastName());
+		if (userForm.getEmail() != null)
+			user.setEmail(userForm.getEmail());
+		user.setEnabled(true);
+		if (userForm.getPassword() != null && !userForm.getPassword().isEmpty()) {
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11);
+			user.setPassword(encoder.encode(userForm.getPassword()));
 		}
 		userRepository.save(user);
 		logger.info("User added: " + user.getName());
@@ -112,7 +126,7 @@ public class AddController {
 				newLink.setRole(role);
 			} else
 				newLink = userLink;
-				newLink.setRole(role);
+			newLink.setRole(role);
 			try {
 				userLinkRepository.save(newLink);
 			} catch (DataIntegrityViolationException e) {
@@ -169,8 +183,8 @@ public class AddController {
 		}
 		return "Rôle ajouté";
 	}
-	
-	@GetMapping(path="/raspberry")
+
+	@GetMapping(path = "/raspberry")
 	public String addRaspberryForm(Model model) {
 		List<User> subjects = userRepository.findBySubject(true);
 		List<Raspberry> raspberries = raspberryRepository.findAll();
@@ -180,9 +194,9 @@ public class AddController {
 		model.addAttribute("raspberryLink", raspberryLink);
 		return "raspberry";
 	}
-	
-	@PostMapping(path="/raspberry")
-	public @ResponseBody String addRaspberry(@ModelAttribute(name="link") RaspberryLink link) {
+
+	@PostMapping(path = "/raspberry")
+	public @ResponseBody String addRaspberry(@ModelAttribute(name = "link") RaspberryLink link) {
 		System.out.println(link.getCreate());
 		Raspberry raspberry = null;
 		if (link.getCreate()) {

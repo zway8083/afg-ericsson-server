@@ -2,26 +2,29 @@ package server.controller;
 
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import server.database.model.Description;
 import server.database.model.Observation;
 import server.database.model.ObservationPK;
 import server.database.model.Time;
 import server.database.model.User;
+import server.database.model.UserLink;
 import server.database.repository.DescriptionRepository;
 import server.database.repository.ObservationRepository;
 import server.database.repository.TimeRepository;
+import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
 import server.model.InitObservationForm;
 import server.model.ObservationForm;
@@ -37,65 +40,25 @@ public class ObservationController {
 	private ObservationRepository observationRepository;
 	@Autowired
 	private DescriptionRepository descriptionRepository;
-
-	@GetMapping(path = "/gendata")
-	public @ResponseBody String data() {
-		List<String> timeStrs = Arrays.asList("Réveil", "Petit déjeuner", "Matinée", "Repas du midi", "Après midi",
-				"Goûter", "Soirée", "Repas du soir", "Sommeil / nuit");
-		ArrayList<Time> times = new ArrayList<>();
-		int i = -10;
-		for (String timeStr : timeStrs) {
-			times.add(new Time(i += 10, timeStr));
-		}
-		try {
-			timeRepository.save(times);
-		} catch (Exception e) {
-			System.err.println("Time data already exist");
-		}
-
-		ArrayList<Description> descriptions = new ArrayList<Description>();
-		ArrayList<Description> descriptions2 = new ArrayList<Description>();
-
-		User observator = userRepository.findOne(18l);
-
-		Description description = new Description(observator, "Activité test", "Comportement test, testtest test.");
-		descriptions.add(description);
-		descriptionRepository.save(description);
-
-		Description description2 = new Description(observator, "Activité test 2222",
-				"Comportement test 2, testtest test. 222");
-		descriptions.add(description2);
-		descriptionRepository.save(description2);
-
-		Description description3 = new Description(userRepository.findOne(14l), "Activité 3", "Comportement 3");
-		descriptions.add(description3);
-		descriptionRepository.save(description3);
-
-		Description description4 = new Description(observator, "Activité test", "Comportement test, testtest test.");
-		descriptions2.add(description4);
-		descriptionRepository.save(description4);
-
-		Observation observation = new Observation();
-		observation.setDate(DateConverter.toSQLDate("24/11/2017"));
-		observation.setSubject(userRepository.findOne(4l));
-		observation.setTime(timeRepository.findOne(0));
-		observation.setDescriptions(descriptions);
-
-		Observation observation2 = new Observation();
-		observation2.setDate(DateConverter.toSQLDate("24/11/2017"));
-		observation2.setSubject(userRepository.findOne(4l));
-		observation2.setTime(timeRepository.findOne(10));
-		observation2.setDescriptions(descriptions2);
-
-		observationRepository.save(observation);
-		observationRepository.save(observation2);
-
-		return "";
-	}
+	@Autowired
+	private UserLinkRepository userLinkRepository;
 
 	@GetMapping(path = "/observation")
-	public String initObservation(Model model) {
-		List<User> subjects = userRepository.findBySubject(true);
+	public String initObservation(Authentication authentication, Model model) {
+		@SuppressWarnings("unchecked")
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
+				.getAuthorities();
+		List<User> subjects = null;
+		if (authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+			subjects = userRepository.findBySubject(true);
+		} else {
+			subjects = new ArrayList<>();
+			User curUser = userRepository.findByEmail(authentication.getName());
+			List<UserLink> links = userLinkRepository.findByUser(curUser);
+			for (UserLink userLink : links)
+				subjects.add(userLink.getSubject());
+		}
+
 		model.addAttribute("initForm", true);
 		model.addAttribute("subjects", subjects);
 		model.addAttribute("form", new InitObservationForm());

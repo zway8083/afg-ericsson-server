@@ -10,6 +10,7 @@ function setConnected(connected) {
 		$("#conversation").hide();
 	}
 	$("#outputs").html("");
+	$("#spinner").hide();
 }
 
 function connect() {

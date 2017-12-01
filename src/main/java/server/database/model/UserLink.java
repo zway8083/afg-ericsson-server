@@ -35,6 +35,12 @@ public class UserLink {
 
 	public UserLink() {
 	}
+	
+	public UserLink(User user, User subject, Role role) {
+		this.user = user;
+		this.subject = subject;
+		this.role = role;
+	}
 
 	public Long getId() {
 		return id;

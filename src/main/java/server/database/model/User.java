@@ -1,23 +1,23 @@
 package server.database.model;
 
 import java.sql.Time;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.Email;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class User {
@@ -26,28 +26,26 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@JsonIgnore
 	private Long id;
 	private String firstName;
 	private String lastName;
-	private Date birth;
 	@Email
+	@Column(unique = true)
 	private String email;
+	private String password;
 	@Column(nullable = false)
 	private boolean subject = false;
 	private Time sleepStart;
 	private Time sleepEnd;
 
-	@Transient
-	private String birthStr;
+	@Column(nullable = false)
+	private boolean enabled;
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	private Collection<Role> roles;
 
 	public User() {
-	}
-
-	public User(String firstName, String lastName, Date birth) {
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.birth = birth;
 	}
 
 	public Long getId() {
@@ -90,33 +88,12 @@ public class User {
 		this.email = email;
 	}
 
-	public Date getBirth() {
-		return birth;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setBirth(Date birth) {
-		this.birth = birth;
-	}
-
-	public void setBirth(String birthStr) {
-		if (birthStr == null || birthStr.isEmpty())
-			this.birth = null;
-		else {
-			try {
-				this.birth = new SimpleDateFormat("yyyy/MM/dd").parse(birthStr.replace('-', '/'));
-			} catch (ParseException e) {
-				logger.error("Cannot parse '" + birthStr + "' to birth date, format must be: yyyy/MM/dd");
-				this.birth = null;
-			}
-		}
-	}
-
-	public String getBirthStr() {
-		return birthStr;
-	}
-
-	public void setBirthStr(String birthStr) {
-		this.birthStr = birthStr;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getName() {
@@ -159,6 +136,22 @@ public class User {
 		}
 	}
 
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Collection<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Collection<Role> roles) {
+		this.roles = roles;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -186,6 +179,6 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", birth=" + birth + "]";
+		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + "]";
 	}
 }

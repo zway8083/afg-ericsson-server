@@ -11,26 +11,30 @@
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
 		<h2>Utilisateur</h2>
-    	<form action="#" id="form" th:action="@{/add/user}" th:object="${user}" method="post">
+    	<form action="#" id="form" th:action="@{/add/user}" th:object="${userForm}" method="post">
+    		<div class="form-group">
+		    	<label for="role">Role : </label>
+		    	<select id="role" required="required">
+					<option th:each="role : ${roles}" th:field="*{roleStr}"
+						th:text="${#strings.substringAfter(role.name,'ROLE_')}"
+						th:value="${role.name}"></option>
+				</select>
+    		</div>
     		<div class="form-group">
 		    	<label for="lname">Nom : </label>
-		    	<input id="lname" type="text" th:field="*{lastName}" />
+		    	<input id="lname" type="text" th:field="*{lastName}" placeholder="obligatoire" required="required"/>
     		</div>
     		<div class="form-group">
 		    	<label for="fname" >Prénom : </label>
-		    	<input id="fname" type="text" th:field="*{firstName}" />
+		    	<input id="fname" type="text" th:field="*{firstName}" placeholder="obligatoire" required="required"/>
     		</div>
-    		<div class="form-group">
-		    	<label for="birth">Date de naissance : </label>
-		    	<input id="birth" type="date" th:field="*{birthStr}" />
-    		</div>
-    		<div class="form-group">
+    		<div id="emailForm" class="form-group">
 		    	<label for="email">Email : </label>
-		    	<input id="email" type="email" th:field="*{email}" />
+		    	<input id="email" type="email" th:field="*{email}" placeholder="obligatoire"/>
     		</div>
-    		<div class="form-group">
-		    	<label for="check">Sujet : </label>
-		    	<input type="checkbox" id="check" th:field="*{subject}" value="true" onclick="night();"/>
+    		<div id="passwordForm" class="form-group">
+		    	<label for="password">Mot de passe : </label>
+		    	<input id="password" type="password" th:field="*{password}" placeholder="obligatoire" autocomplete="new-password"/>
     		</div>
     		<div id = "sleepStart" class="form-group">
 		    	<label for="sleepStartInput">Heure de couché habituelle : </label>

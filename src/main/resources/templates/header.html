@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:fragment="head">
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 	<title th:include=":: #pageTitle">Generic Title</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-	<link href="/css/main.css" rel="stylesheet" />
+	<link href="/css/main.css" rel="stylesheet"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
@@ -15,35 +15,42 @@
 				<div class="navbar-header">
 					<a class="navbar-brand" href="/">AFG Autisme</a>
 				</div>
-				<ul th:if="${isAuth}" class="nav navbar-nav">
-					<li class="dropdown"><a class="dropdown-toggle"
-						data-toggle="dropdown" href="#">Ajouts
-						<span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="/add/role">Rôle</a></li>
-							<li><a href="/add/user">Utilisateur</a></li>
-							<li><a href="/add/device">Capteur</a></li>
-							<li><a href="/add/link">Liens utilisateurs</a></li>
-							<li><a href="/add/raspberry">Liens Raspberry-utilisateur</a></li>
-						</ul></li>
-					<li><a href="/get/users">Utilisateurs</a></li>
-					<li><a href="/raspberry">Raspberry I/O</a></li>
-					<li><a href="/report">Rapport</a></li>
-					<li><a href="/observation">Observation</a></li>
-					<li><a href="/speech">Speech test</a></li>
-				</ul>
-			    <ul  class="nav navbar-nav navbar-right">
-				    <li th:if="${!isAuth}">
-				    	<a href="/login"><span class="glyphicon glyphicon-log-in"></span> Connexion</a>
-				    </li>
-					<li th:if="${isAuth}">
-						<form class="navbar-form" th:action="@{/logout}" method="post">
-							<button type="submit" class="btn-link">
-								<i class="glyphicon glyphicon-log-out"></i> Déconnexion
-							</button>
-	        			</form>
-	            	</li>
-            	</ul>
+				<th:block sec:authorize="isAuthenticated()">
+					<ul class="nav navbar-nav">
+						<th:block sec:authorize="hasAuthority('ADD_ANY')">
+							<li  class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#">Ajouts<span class="caret"></span></a>
+								<ul class="dropdown-menu">
+									<li><a href="/add/role">Rôle</a></li>
+									<li><a href="/add/user">Utilisateur</a></li>
+									<li><a href="/add/device">Capteur</a></li>
+									<li><a href="/add/link">Liens utilisateurs</a></li>
+									<li><a href="/add/raspberry">Liens Raspberry-utilisateur</a></li>
+								</ul></li>
+							<li><a href="/get/users">Utilisateurs</a></li>
+							<li><a href="/raspberry">Raspberry I/O</a></li>
+						</th:block>
+						<li sec:authorize="hasAuthority('GENERATE_NIGHT_REPORT')"><a href="/report">Rapport</a></li>
+						<li sec:authorize="hasAuthority('CREATE_ACCOMPANIST')"><a href="/accompanist">Accompagnateurs</a></li>
+						<li sec:authorize="hasAuthority('OBSERVATION')"><a href="/observation">Observation</a></li>
+					</ul>
+				    <ul class="nav navbar-nav navbar-right">
+						<li>
+							<form class="navbar-form" th:action="@{/logout}" method="post">
+								<button type="submit" class="btn-link">
+									<i class="glyphicon glyphicon-log-out"></i> Déconnexion
+								</button>
+		        			</form>
+		            	</li>
+	            	</ul>
+				</th:block>
+				<th:block sec:authorize="!isAuthenticated()">
+				    <ul  class="nav navbar-nav navbar-right">
+					    <li>
+					    	<a href="/login"><span class="glyphicon glyphicon-log-in"></span> Connexion</a>
+					    </li>
+	            	</ul>
+				</th:block>
 			</div>
 		</nav>
 	</div>

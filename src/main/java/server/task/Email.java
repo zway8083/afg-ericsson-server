@@ -23,9 +23,9 @@ import javax.mail.internet.MimeMultipart;
 import org.joda.time.DateTime;
 
 public class Email {
-	private String id;
-	private String password;
-	private String host;
+	private final String id;
+	private final String password;
+	private final String host;
 	private String subject;
 	private boolean bodyHTML;
 	private String body;
@@ -42,7 +42,6 @@ public class Email {
 		this.host = host;
 		this.multipart = new MimeMultipart();
 		this.subject = null;
-		this.bodyHTML = false;
 		this.body = "";
 		this.recipients = new ArrayList<>();
 		this.bodyHTML = bodyHTML;
@@ -66,7 +65,7 @@ public class Email {
 	}
 
 	public void concatBody(String body) {
-		this.body += body + "\n";
+		this.body += body + "\r\n";
 	}
 
 	public void addRecipient(String emailAdress) {

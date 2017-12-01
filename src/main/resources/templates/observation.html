@@ -4,12 +4,12 @@
     <title id="pageTitle">Observation</title>
 </head>
 <head>
-	<link href="/css/microphone.css" rel="stylesheet" />	
+	<link href="/css/microphone.css" rel="stylesheet"/>
     <script src="/scripts/dictation.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
 	<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
 	<script src="/scripts/fr.js"></script>
-    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css"/>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
@@ -38,7 +38,7 @@
 		            </div>
 		            <div class="form-group"> 
 						<div class="col-sm-10">
-							<button type="submit" class="btn btn-success">Valider</button>
+							<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Valider</button>
 						</div>
   					</div>
 	            </form>
@@ -47,6 +47,7 @@
 	            $(function () {
 	                $('#datetimepicker').datetimepicker({
 	                    locale: 'fr',
+	                    defaultDate: new Date(),
 	                    format: 'DD/MM/YYYY'
 	                });
 	            });
@@ -57,7 +58,7 @@
 		    <form th:action="@{/observation/submit}" th:object="${form}" method="post">
 		    	<h3 th:text="${form.subjectName}"></h3>
 		    	<table class="table table-bordered">
-		    		<thead><tr>
+		    		<thead><tr class="active">
 						<th>Moment de la journée</th>
 						<th>Activités</th>
 						<th>Comportement / état émotionnel / ressentis corporels</th>
@@ -73,8 +74,7 @@
 		    					</tr>
 		    				</th:block>
 		    			</th:block>
-		    			<tr id="" class="success">
-		    				<th:block ></th:block>
+		    			<tr class="success">
 		    				<td>
 			    				<select class="form-control" th:field="*{timeId}" required="required">
 					        		<option th:each="time : ${times}"
@@ -102,7 +102,7 @@
 		    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
 		    	<input type="hidden" th:value="*{date}" th:field="*{date}"/>
 		    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
-				<button type="submit" class="btn btn-success">
+				<button type="submit" class="btn btn-success pull-right">
 					<span class="glyphicon glyphicon-ok"></span> Valider
 				</button>
 		    </form>

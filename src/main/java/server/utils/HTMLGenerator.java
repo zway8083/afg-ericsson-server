@@ -31,7 +31,7 @@ public class HTMLGenerator {
 		return String.format("<p %s>%s</p>\r\n", padding(indentLevel), value);
 	}
 
-	public static String columnStyle(final int indentLevel) {
+	private static String columnStyle(final int indentLevel) {
 		if (indentLevel != 0)
 			return String.format("style=\"text-align: center; padding-left: %dpx;\"", indentLevel * indentBase);
 		return "style=\"text-align: center;\"";
