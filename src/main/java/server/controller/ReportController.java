@@ -19,8 +19,6 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +40,7 @@ import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
 import server.model.ReportInfos;
 import server.task.EventTask;
+import server.utils.DateConverter;
 
 @Controller
 public class ReportController {
@@ -119,8 +118,7 @@ public class ReportController {
 		User user = userRepository.findOne(report.getId());
 		Device device = deviceRepository.findOneByUser(user);
 
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-		DateTime date = formatter.parseDateTime(report.getDate());
+		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
 
 		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
 				userLinkRepository, path);

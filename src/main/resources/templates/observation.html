@@ -55,57 +55,13 @@
 	    </div>
 
 	    <div th:if="${obsForm}" class="table-responsive">
-		    <form th:action="@{/observation/submit}" th:object="${form}" method="post">
-		    	<h3 th:text="${form.subjectName}"></h3>
-		    	<table class="table table-bordered">
-		    		<thead><tr class="active">
-						<th>Moment de la journée</th>
-						<th>Activités</th>
-						<th>Comportement / état émotionnel / ressentis corporels</th>
-		    		</tr></thead>
-		    		<tbody>
-		    			<th:block th:each="time: ${times}"
-		    				th:with="descriptions=${hashtable.get(time.chrono)}">
-		    				<th:block th:each="description, iStat :${descriptions}">
-		    					<tr>
-		    						<td th:if="${iStat.first}" th:rowspan="${descriptions.size()}" th:text="${time.name}"></td>
-				    				<td th:text="${description.activity}"></td>
-				    				<td th:text="${description.behaviour}"></td>
-		    					</tr>
-		    				</th:block>
-		    			</th:block>
-		    			<tr class="success">
-		    				<td>
-			    				<select class="form-control" th:field="*{timeId}" required="required">
-					        		<option th:each="time : ${times}"
-				        			th:text="${time.name}"
-				        			th:value="${time.chrono}">
-					        		</option>
-				        		</select>
-		    				</td>
-		    				<td>
-		    					<div class="flexContainer">
-		    						<input id="activity" class="form-control inputField" style="width: 100%;" type="text" th:field="*{activity}" required="required"/>
-		    						<button class="button-mic" type="button" onclick="startDictation('activity')"><img src="/img/mic.png" alt="Microphone"/></button>
-		    					</div>
-		    				</td>
-		    				<td>
-		    					<div class="flexContainer">
-		    						<textarea id="behaviour" class="form-control inputfield" th:field="*{behaviour}" rows="2" required="required"></textarea>
-		    						<button class="button-mic" type="button"><img src="/img/mic.png" alt="Microphone" onclick="startDictation('behaviour')"/></button>
-		    					</div>
-		    				</td>
-		    				
-		    			</tr>
-		    		</tbody>
-		    	</table>
-		    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
-		    	<input type="hidden" th:value="*{date}" th:field="*{date}"/>
-		    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
-				<button type="submit" class="btn btn-success pull-right">
-					<span class="glyphicon glyphicon-ok"></span> Valider
-				</button>
-		    </form>
+    		<h3 th:text="${form.subjectName}"></h3>
+    		<th:block sec:authorize="hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')">
+		    	<div th:replace="observation-fragments:: main(canCreate=true,form=${form})"></div>
+    		</th:block>
+    		<th:block sec:authorize="!hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')">
+		    	<div th:replace="observation-fragments:: main(canCreate=false,form=${form})"></div>
+    		</th:block>
 	    </div>
     </div>
 </body>

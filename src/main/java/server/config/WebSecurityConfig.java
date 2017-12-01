@@ -1,7 +1,6 @@
 package server.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -18,10 +17,6 @@ import server.config.user.MyUserDetailsService;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	@Value("${user.admin.username}")
-	private String userName;
-	@Value("${user.admin.password}")
-	private String password;
 	@Autowired
 	private MyUserDetailsService userDetailsService;
 	
@@ -34,7 +29,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/add/**", "/get/**", "/raspberry", "/speech").hasAuthority("ADD_ANY")
 			.antMatchers("/report").hasAuthority("GENERATE_NIGHT_REPORT")
 			.antMatchers("/accompanist").hasAuthority("CREATE_ACCOMPANIST")
-			.antMatchers("/observation").hasAuthority("OBSERVATION")
+			.antMatchers("/observation").hasAnyAuthority("READ_BEHAVIOUR_OBSERVATION", "CREATE_BEHAVIOUR_OBSERVATION")
+			.antMatchers("/account").authenticated()
 			.and()
 			.formLogin().loginPage("/login").permitAll()
 			.and()

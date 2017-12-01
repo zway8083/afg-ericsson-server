@@ -32,17 +32,14 @@
 						</th:block>
 						<li sec:authorize="hasAuthority('GENERATE_NIGHT_REPORT')"><a href="/report">Rapport</a></li>
 						<li sec:authorize="hasAuthority('CREATE_ACCOMPANIST')"><a href="/accompanist">Accompagnateurs</a></li>
-						<li sec:authorize="hasAuthority('OBSERVATION')"><a href="/observation">Observation</a></li>
+						<li sec:authorize="hasAuthority('READ_BEHAVIOUR_OBSERVATION') or hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')"><a href="/observation">Observation</a></li>
 					</ul>
 				    <ul class="nav navbar-nav navbar-right">
-						<li>
-							<form class="navbar-form" th:action="@{/logout}" method="post">
-								<button type="submit" class="btn-link">
-									<i class="glyphicon glyphicon-log-out"></i> Déconnexion
-								</button>
-		        			</form>
-		            	</li>
+				    
+				    	<li><a href="/account"><span class="glyphicon glyphicon-user"></span> Mon compte</a></li>
+						<li><a href="#" onclick="document.getElementById('logout-form').submit();"><span class="glyphicon glyphicon-log-out"></span> Déconnexion</a></li>
 	            	</ul>
+	            	<form id="logout-form" class="navbar-form" th:action="@{/logout}" method="post"></form>
 				</th:block>
 				<th:block sec:authorize="!isAuthenticated()">
 				    <ul  class="nav navbar-nav navbar-right">

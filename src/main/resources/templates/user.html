@@ -4,7 +4,6 @@
     <title>Ajout d'utilisateur</title>
 </head>
 <head>
-	<link href="/css/hidden.css" rel="stylesheet" />
     <script src="/scripts/user.js"></script>
 </head>
 <body>
@@ -13,7 +12,7 @@
 		<h2>Utilisateur</h2>
     	<form action="#" id="form" th:action="@{/add/user}" th:object="${userForm}" method="post">
     		<div class="form-group">
-		    	<label for="role">Role : </label>
+		    	<label for="role">Rôle : </label>
 		    	<select id="role" required="required">
 					<option th:each="role : ${roles}" th:field="*{roleStr}"
 						th:text="${#strings.substringAfter(role.name,'ROLE_')}"
