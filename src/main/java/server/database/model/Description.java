@@ -2,6 +2,7 @@ package server.database.model;
 
 import java.sql.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,14 +19,16 @@ public class Description {
 	@ManyToOne
 	private User observator;
 	private Date save;
+	@Column(length = 50)
 	private String activity;
+	@Column(length = 250)
 	private String behaviour;
 
 	public Description() {
 	}
 
 	public Description(User observator, String activity, String behaviour) {
-		this.observator=observator;
+		this.observator = observator;
 		this.activity = activity;
 		this.behaviour = behaviour;
 		this.save = new Date(new DateTime().getMillis());

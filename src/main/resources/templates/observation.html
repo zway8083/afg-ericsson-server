@@ -17,29 +17,27 @@
 		<h2 style="padding-bottom: 15px;">Observation du comportement</h2>
 		
 	    <div th:if="${initForm}" class="row">
-	        <div class='col-sm-6'>
-	        	<form class="form-horizontal" action="/observation" th:action="@{/observation}" th:object="${form}" method="post">
-		            <div class="form-group form-inline">
-		                <label class="control-label col-sm-2" for="datetimepicker">Jour : </label>
-		                <div style="width: 220px" class='input-group date col-sm-10' id='datetimepicker'>
+	        <div class='col-md-6'>
+	        	<form action="/observation" th:action="@{/observation}" th:object="${form}" method="post">
+		            <div class="form-group">
+		                <label class="control-label" for="datetimepicker">Jour : </label>
+		                <div class='input-group date' id='datetimepicker'>
 		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
 		                    <span class="input-group-addon">
 		                        <span class="glyphicon glyphicon-calendar"></span>
 		                    </span>
 		                </div>
 		            </div>
-		            <div class="form-group form-inline">
-		            	<label class="control-label col-sm-2" for="subject">Sujet : </label>
-		            	<select id="subject" class="form-control col-sm-10" th:field="*{subjectId}" required="required">
+		            <div class="form-group">
+		            	<label class="control-label" for="subject">Sujet : </label>
+		            	<select id="subject" class="form-control" th:field="*{subjectId}" required="required">
 								<option th:each="subject : ${subjects}"
 									th:text="${subject.firstName + ' ' + subject.lastName}"
 									th:value="${subject.id}"></option>
 						</select>
 		            </div>
 		            <div class="form-group"> 
-						<div class="col-sm-10">
-							<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Valider</button>
-						</div>
+						<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Valider</button>
   					</div>
 	            </form>
 	        </div>

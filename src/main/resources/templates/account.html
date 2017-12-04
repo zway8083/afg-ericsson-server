@@ -25,7 +25,7 @@
 				<input id="email" class="form-control" th:placeholder="${email}" disabled="disabled"/>
 			</div>
 		</div>
-		<div class="well">
+		<div class="well clearfix">
 			<h3>Changer de mot de passe</h3>
 	   		<div id="error" class="alert alert-danger"></div>
 	    	<form action="#" id="form-password" th:action="@{/account}" th:object="${form}" method="post">
@@ -41,7 +41,9 @@
 			    	<label for="repeat">Répétez le mot de passe : </label>
 			    	<input class="form-control" id="repeat" type="password" placeholder="obligatoire" required="required"/>
 	    		</div>
-	    		<div th:replace="form :: buttons"></div>
+	    		<div class="form-group">
+					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+				</div>
 	    	</form>
 		</div>
 	</div>

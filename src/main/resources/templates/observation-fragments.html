@@ -13,6 +13,7 @@
     </th:block>
     
     <th:block th:fragment="table (canCreate, form)">
+    	<div class="table-responsive">
     	<table class="table table-bordered">
     		<thead><tr class="active">
 				<th>Moment de la journée</th>
@@ -25,14 +26,20 @@
     				<th:block th:each="description, iStat :${descriptions}">
     					<tr>
     						<td th:if="${iStat.first}" th:rowspan="${descriptions.size()}" th:text="${time.name}"></td>
-		    				<td th:text="${description.activity}"></td>
-		    				<td th:text="${description.behaviour}"></td>
+		    				<td th:with="length=${#strings.length(description.activity)}">
+		    					<textarea style="resize: none; border: none;" cols="50" th:rows="${length / 50 + 1}" th:text="${description.activity}" readonly="readonly">
+		    					</textarea>
+		    				</td>
+		    				<td th:with="length=${#strings.length(description.behaviour)}">
+		    					<textarea style="resize: none; border: none;" cols="60" th:rows="${length / 60 + 1}" th:text="${description.behaviour}" readonly="readonly">
+		    					</textarea>
+		    				</td>
     					</tr>
     				</th:block>
     			</th:block>
     			<tr th:if="${canCreate}" class="success">
     				<td>
-	    				<select class="form-control" th:field="${form.timeId}" required="required">
+	    				<select style="min-width: 140px" class="form-control" th:field="${form.timeId}" required="required">
 			        		<option th:each="time : ${times}"
 		        			th:text="${time.name}"
 		        			th:value="${time.chrono}">
@@ -41,19 +48,20 @@
     				</td>
     				<td>
     					<div class="flexContainer">
-    						<input id="activity" class="form-control inputField" style="width: 100%;" type="text" th:field="${form.activity}" required="required"/>
+    						<input id="activity" class="form-control inputField" style="width: 100%;" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
     						<button class="button-mic" type="button" onclick="startDictation('activity')"><img src="/img/mic.png" alt="Microphone"/></button>
     					</div>
     				</td>
     				<td>
     					<div class="flexContainer">
-    						<textarea id="behaviour" class="form-control inputfield" th:field="${form.behaviour}" rows="2" required="required"></textarea>
+    						<textarea id="behaviour" class="form-control inputfield" style="width: 100%;" th:field="${form.behaviour}" rows="2" maxlength="250" required="required"></textarea>
     						<button class="button-mic" type="button"><img src="/img/mic.png" alt="Microphone" onclick="startDictation('behaviour')"/></button>
     					</div>
     				</td>
     			</tr>
     		</tbody>
     	</table>
+    	</div>
      	<th:block th:if="${canCreate}">
 	    	<input type="hidden" th:value="${form.date}" th:field="${form.date}"/>
 	    	<input type="hidden" th:value="${form.subjectId}" th:field="${form.subjectId}"/>
