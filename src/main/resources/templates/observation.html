@@ -17,7 +17,7 @@
 		<h2 style="padding-bottom: 15px;">Observation du comportement</h2>
 		
 	    <div th:if="${initForm}" class="row">
-	        <div class='col-md-6'>
+	        <div class='col-md-4'>
 	        	<form action="/observation" th:action="@{/observation}" th:object="${form}" method="post">
 		            <div class="form-group">
 		                <label class="control-label" for="datetimepicker">Jour : </label>
@@ -63,5 +63,4 @@
 	    </div>
     </div>
 </body>
-<script src="/scripts/speech-input.js"></script>
 </html>

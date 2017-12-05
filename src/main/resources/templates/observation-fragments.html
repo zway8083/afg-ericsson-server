@@ -49,13 +49,13 @@
     				<td>
     					<div class="flexContainer">
     						<input id="activity" class="form-control inputField" style="width: 100%;" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
-    						<button class="button-mic" type="button" onclick="startDictation('activity')"><img src="/img/mic.png" alt="Microphone"/></button>
+    						<button class="button-mic" type="button" onclick="dictation('activity', this)"><img src="/img/mic.png" alt="Microphone"/></button>
     					</div>
     				</td>
     				<td>
     					<div class="flexContainer">
     						<textarea id="behaviour" class="form-control inputfield" style="width: 100%;" th:field="${form.behaviour}" rows="2" maxlength="250" required="required"></textarea>
-    						<button class="button-mic" type="button"><img src="/img/mic.png" alt="Microphone" onclick="startDictation('behaviour')"/></button>
+    						<button class="button-mic" type="button" onclick="dictation('behaviour', this)"><img src="/img/mic.png" alt="Microphone"/></button>
     					</div>
     				</td>
     			</tr>
