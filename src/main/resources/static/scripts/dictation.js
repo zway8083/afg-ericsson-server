@@ -14,7 +14,7 @@ if (window.hasOwnProperty('webkitSpeechRecognition')) {
 		}
 		
 		recognition.onresult = function(event) {
-			document.getElementById(id).value = event.results[0][0].transcript;
+			document.getElementById(inputId).value = event.results[0][0].transcript;
 			recognition.stop();
 		}
 		

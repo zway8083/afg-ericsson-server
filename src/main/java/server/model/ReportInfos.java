@@ -1,15 +1,10 @@
 package server.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ReportInfos {
 	private Long id;
 	private String date;
-	private List<String> actions;
 
 	public ReportInfos() {
-		actions = new ArrayList<>();
 	}
 
 	public ReportInfos(Long id, String date) {
@@ -31,13 +26,5 @@ public class ReportInfos {
 
 	public void setDate(String date) {
 		this.date = date;
-	}
-
-	public List<String> getActions() {
-		return actions;
-	}
-
-	public void setActions(List<String> actions) {
-		this.actions = actions;
 	}
 }

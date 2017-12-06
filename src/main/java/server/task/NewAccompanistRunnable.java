@@ -3,24 +3,24 @@ package server.task;
 import javax.mail.MessagingException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import server.utils.HTMLGenerator;
 
 public class NewAccompanistRunnable extends EmailRunnable {
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger;
 	private final String recipient;
 	private final String rawPassword;
 	private final String userName;
 	private final String subjectName;
 
 	public NewAccompanistRunnable(String emailId, String emailPassword, String emailHost, String recipient,
-			String rawPassword, String userName, String subjectName) {
+			String rawPassword, String userName, String subjectName, Logger logger) {
 		super(emailId, emailPassword, emailHost, true);
 		this.recipient = recipient;
 		this.rawPassword = rawPassword;
 		this.userName = userName;
 		this.subjectName = subjectName;
+		this.logger = logger;
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -29,6 +31,7 @@ import server.utils.RandomStringGenerator;
 
 @Controller
 public class AccompanistController {
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -124,7 +127,7 @@ public class AccompanistController {
 		}
 
 		NewAccompanistRunnable runnable = new NewAccompanistRunnable(emailId, emailPassword, emailHost, accmpEmail,
-				rawPassword, name, subject.getName());
+				rawPassword, name, subject.getName(), logger);
 		Thread thread = new Thread(runnable);
 		thread.start();
 

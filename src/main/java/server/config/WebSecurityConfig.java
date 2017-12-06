@@ -25,7 +25,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().ignoringAntMatchers("/api/**")
 			.and()
 			.authorizeRequests()
-			.antMatchers("/", "/api/**", "/css/main.css").permitAll()
+			.antMatchers("/", "/api/**", "/forgot", "/css/main.css").permitAll()
 			.antMatchers("/add/**", "/get/**", "/raspberry", "/speech").hasAuthority("ADD_ANY")
 			.antMatchers("/report").hasAuthority("GENERATE_NIGHT_REPORT")
 			.antMatchers("/accompanist").hasAuthority("CREATE_ACCOMPANIST")

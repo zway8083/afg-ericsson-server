@@ -30,11 +30,12 @@ public class HTTPSRedirection {
 				collection.addPattern("/get/*");
 				collection.addPattern("/raspberry");
 				collection.addPattern("/speech");
-				collection.addPattern("/report");
+				collection.addPattern("/report/*");
 				collection.addPattern("/accompanist");
-				collection.addPattern("/observation");
+				collection.addPattern("/observation/*");
 				collection.addPattern("/account");
 				collection.addPattern("/login");
+				collection.addPattern("/forgot");
 				securityConstraint.addCollection(collection);
 				context.addConstraint(securityConstraint);
 			}

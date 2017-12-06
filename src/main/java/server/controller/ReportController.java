@@ -10,8 +10,10 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -23,15 +25,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import server.database.model.Device;
 import server.database.model.User;
+import server.database.model.UserLink;
 import server.database.repository.DeviceRepository;
 import server.database.repository.EventRepository;
 import server.database.repository.EventStatRepository;
@@ -68,15 +74,25 @@ public class ReportController {
 	private String host;
 
 	@GetMapping(path = "/report")
-	public String reportForm(Model model) {
-		List<User> users = userRepository.findBySubject(true);
-		model.addAttribute("users", users);
+	public String reportForm(Authentication authentication, Model model, @RequestParam(required=false, name="email") String email) {
+		@SuppressWarnings("unchecked")
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
+				.getAuthorities();
+		
+		List<User> subjects = null;
+		if (authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+			subjects = userRepository.findBySubject(true);
+		} else {
+			subjects = new ArrayList<>();
+			User curUser = userRepository.findByEmail(authentication.getName());
+			List<UserLink> links = userLinkRepository.findByUser(curUser);
+			for (UserLink userLink : links)
+				subjects.add(userLink.getSubject());
+		}
 
-		List<String> actions = Arrays.asList("Télécharger les relevés", "Envoyer les relevés par email");
-		model.addAttribute("actions", actions);
-
-		ReportInfos report = new ReportInfos();
-		model.addAttribute("report", report);
+		model.addAttribute("initForm", true);
+		model.addAttribute("subjects", subjects);
+		model.addAttribute("report", new ReportInfos());
 
 		return "report";
 	}
@@ -106,52 +122,66 @@ public class ReportController {
 			return null;
 		}
 	}
-
-	@PostMapping(path = "/report")
-	public void reportDwnld(HttpServletResponse response, @ModelAttribute ReportInfos report) throws IOException {
-		logger.info("Repport requested for user id = " + report.getId() + ", date = " + report.getDate());
-
-		List<String> actions = report.getActions();
-		if (actions.isEmpty())
-			return;
-
-		User user = userRepository.findOne(report.getId());
-		Device device = deviceRepository.findOneByUser(user);
-
+	
+	@PostMapping(path="/report")
+	public String report(@ModelAttribute(name="report") ReportInfos report, Model model) {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
+		User subject = userRepository.findOne(report.getId());
+		Device device = deviceRepository.findOneByUser(subject);
+		
+		String reportHTML = null;
+		if (eventStatRepository.findByDeviceAndDate(device, date.toDate()) != null) {
+			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
+					userLinkRepository, path);
+			reportHTML = eventTask.createHTMLBody();
+			
+			model.addAttribute("showReport", true);
+			model.addAttribute("reportHTML", reportHTML);
+			model.addAttribute("report", report);
+			
+			return "report";
+		} else
+			return "redirect:/report?error";
+	}
 
+	@PostMapping(path="/report/mail")
+	public String reportMail(Principal principal, @ModelAttribute ReportInfos report, Model model) {
+		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
+		User subject = userRepository.findOne(report.getId());
+		Device device = deviceRepository.findOneByUser(subject);
+		
 		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
-				userLinkRepository, path);
+		userLinkRepository, path);
+		List<String> recipients = eventTask.sendEmail(Arrays.asList(principal.getName()), id, password, host, null);
+		
+		if (recipients == null)
+			return "redirect:/report?error&email=" + principal.getName();
+		return "redirect:/report?email=" + principal.getName();
+	}
+	
+	@PostMapping(path="/report/dwn")
+	public void reportDwn(HttpServletResponse response, Principal principal, @ModelAttribute ReportInfos report) throws IOException {
+		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
+		User user = userRepository.findByEmail(principal.getName());
+		User subject = userRepository.findOne(report.getId());
+		Device device = deviceRepository.findOneByUser(subject);
+		
+		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
+		userLinkRepository, path);
 		ArrayList<String> files = eventTask.createCsvReport();
-		if (files == null || files.isEmpty())
+		
+		String name = "reports_" + date.toString("dd-MM-yyyy") + "_" + user.getId() + ".zip";
+		String zipFilePath = zipFiles(name, files);
+		if (zipFilePath == null)
 			return;
+		File zipFile = new File(zipFilePath);
 
-		if (actions.contains("Télécharger les relevés")) {
-			String name = "reports_" + date.toString("dd-MM-yyyy") + "_" + user.getId() + ".zip";
-			String zipFilePath = zipFiles(name, files);
-			if (zipFilePath == null)
-				return;
-			File zipFile = new File(zipFilePath);
-
-			String mimeType = URLConnection.guessContentTypeFromName(zipFilePath);
-			if (mimeType == null)
-				mimeType = "application/octet-stream";
-			response.setContentType(mimeType);
-			response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", zipFile.getName()));
-			InputStream inputStream = new BufferedInputStream(new FileInputStream(zipFile));
-			FileCopyUtils.copy(inputStream, response.getOutputStream());
-		}
-
-		if (actions.contains("Envoyer les relevés par email")) {
-			List<String> recipients = eventTask.sendEmail(id, password, host, files);
-			if (recipients == null || recipients.isEmpty()) {
-				response.getWriter().write("Error, nothing sent");
-				return;
-			}
-
-			response.getWriter().write("Email sent to: ");
-			for (String recipient : recipients)
-				response.getWriter().write(recipient + " ");
-		}
+		String mimeType = URLConnection.guessContentTypeFromName(zipFilePath);
+		if (mimeType == null)
+			mimeType = "application/octet-stream";
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", zipFile.getName()));
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(zipFile));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
 	}
 }

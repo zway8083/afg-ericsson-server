@@ -78,11 +78,12 @@ public class EventTask {
 		}
 
 	}
-	
+
 	private void updateEventStat(EventStat eventStat) {
 		Date date = new Date(eventStat.getDate().getTime() + 1);
 		EventStat eventMaxMvts = eventStatRepository.findFirstByDateBeforeOrderByMvtsDesc(date);
-		EventStat eventMinMvts = eventStatRepository.findFirstByDateBeforeAndMvtsGreaterThanEqualOrderByMvtsAsc(date, 5);
+		EventStat eventMinMvts = eventStatRepository.findFirstByDateBeforeAndMvtsGreaterThanEqualOrderByMvtsAsc(date,
+				5);
 		if (eventMaxMvts == null || eventMinMvts == null || eventMaxMvts == eventMinMvts) {
 			eventStatRepository.save(eventStat);
 			return;
@@ -92,7 +93,7 @@ public class EventTask {
 		eventStat.setGrade(100 - (eventStat.getMvts() - minMvts) * 100 / (maxMvts - minMvts));
 		eventStatRepository.save(eventStat);
 	}
-	
+
 	public void createEventStat() {
 		eventStat = new EventStat();
 		eventStat.setDate(date.getMillis());
@@ -238,23 +239,66 @@ public class EventTask {
 		return fileNames;
 	}
 
-	public List<String> sendEmail(String id, String password, String host, ArrayList<String> files) {
+	public String createHTMLBody() {
+		Period period = new Period(eventStat.getDuration().getTime());
+
+		String bodyHTML = HTMLGenerator.strongAttributeValue("Sujet", user.getName(), 0)
+				+ HTMLGenerator.strongAttributeValue("Période",
+						startNight.toString("dd/MM/yyyy HH:mm") + " - " + endNight.toString("dd/MM/yyyy HH:mm"), 0)
+				+ HTMLGenerator.strongAttributeValue("Durée", period.getHours() + "h et " + period.getMinutes() + "m",
+						0)
+				+ HTMLGenerator.strongAttributeValue("Score", String.valueOf(eventStat.getGrade()) + "%", 0)
+				+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventMotion.size()), 0)
+				+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
+
+		DateTime time = startNight;
+		while (time.isEqual(endNight) == false) {
+			DateTime endTime = time.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
+			if (endTime.isAfter(endNight))
+				endTime = endNight;
+			Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
+					sensorTypeRepository.findByName("motion"), true, time.toDate(), endTime.toDate());
+			bodyHTML += HTMLGenerator.value(time.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count, 1);
+			time = endTime;
+		}
+
+		Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
+				sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
+		bodyHTML += HTMLGenerator.strongAttributeValue("Nombre de secousse", String.valueOf(count), 0);
+
+		bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
+		ArrayList<ArrayList<String>> table = new ArrayList<>();
+		ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Durée", "Mouvements", "Score"));
+		table.add(list);
+		for (int i = 7; i >= 0; i--) {
+			EventStat stat = eventStatRepository.findByDeviceAndDate(device,
+					new java.sql.Date(date.minusDays(i).getMillis()));
+			if (stat == null)
+				continue;
+			DateTime curDate = new DateTime(stat.getDate().getTime());
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE dd/MM");
+			Period period2 = new Period(stat.getDuration().getTime());
+			String day = (i == 0 ? "&bull; " : "") + fmt.withLocale(Locale.FRENCH).print(curDate);
+			String daytime = period2.getHours() + "h" + period2.getMinutes() + "m";
+			String mvts = String.valueOf(stat.getMvts());
+			if (stat.getGrade() == null)
+				updateEventStat(stat);
+			String grade = stat.getGrade() != null ? String.valueOf(stat.getGrade()) + "%" : "";
+			list = new ArrayList<>(Arrays.asList(day, daytime, mvts, grade));
+			table.add(list);
+		}
+
+		bodyHTML += HTMLGenerator.table(table, 1);
+
+		return bodyHTML;
+	}
+
+	public List<String> sendEmail(List<String> recipients, String id, String password, String host,
+			ArrayList<String> files) {
 		try {
 			Email email = new Email(id, password, host, true);
 			email.setSubject("Relevés de la nuit du " + startNight.toString("dd/MM/yyyy") + " au "
 					+ endNight.toString("dd/MM/yyyy"));
-
-			List<String> recipients = new ArrayList<>();
-
-			if (user.getEmail() != null)
-				recipients.add(user.getEmail());
-
-			List<UserLink> links = userLinkRepository.findBySubject(user);
-			for (UserLink userLink : links) {
-				String address = userLink.getUser().getEmail();
-				if (address != null && !recipients.contains(address))
-					recipients.add(address);
-			}
 
 			if (recipients.isEmpty())
 				return null;
@@ -264,58 +308,7 @@ public class EventTask {
 			if (files != null)
 				email.addAttachments(files);
 
-			Period period = new Period(eventStat.getDuration().getTime());
-
-			String bodyHTML = HTMLGenerator.strongAttributeValue("Sujet", user.getName(), 0)
-					+ HTMLGenerator.strongAttributeValue("Période",
-							startNight.toString("dd/MM/yyyy HH:mm") + " - " + endNight.toString("dd/MM/yyyy HH:mm"), 0)
-					+ HTMLGenerator.strongAttributeValue("Durée",
-							period.getHours() + "h et " + period.getMinutes() + "m", 0)
-					+ HTMLGenerator.strongAttributeValue("Score", String.valueOf(eventStat.getGrade()) + "%", 0)
-					+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventMotion.size()), 0)
-					+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
-
-			DateTime time = startNight;
-			while (time.isEqual(endNight) == false) {
-				DateTime endTime = time.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
-				if (endTime.isAfter(endNight))
-					endTime = endNight;
-				Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
-						sensorTypeRepository.findByName("motion"), true, time.toDate(), endTime.toDate());
-				bodyHTML += HTMLGenerator.value(time.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count,
-						1);
-				time = endTime;
-			}
-
-			Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
-					sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
-			bodyHTML += HTMLGenerator.strongAttributeValue("Nombre de secousse", String.valueOf(count), 0);
-
-			bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
-			ArrayList<ArrayList<String>> table = new ArrayList<>();
-			ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Durée", "Mouvements", "Score"));
-			table.add(list);
-			for (int i = 7; i >= 0; i--) {
-				EventStat stat = eventStatRepository.findByDeviceAndDate(device,
-						new java.sql.Date(date.minusDays(i).getMillis()));
-				if (stat == null)
-					continue;
-				DateTime curDate = new DateTime(stat.getDate().getTime());
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE dd/MM");
-				Period period2	 = new Period(stat.getDuration().getTime());
-				String day = (i == 0 ? "&bull; " : "") + fmt.withLocale(Locale.FRENCH).print(curDate);
-				String daytime = period2.getHours() + "h" + period2.getMinutes() + "m";
-				String mvts = String.valueOf(stat.getMvts());
-				if (stat.getGrade() == null)
-					updateEventStat(stat);
-				String grade = stat.getGrade() != null ? String.valueOf(stat.getGrade()) + "%" : "";
-				list = new ArrayList<>(Arrays.asList(day, daytime, mvts, grade));
-				table.add(list);
-			}
-
-			bodyHTML += HTMLGenerator.table(table, 1);
-			
-			email.concatBody(bodyHTML);
+			email.concatBody(createHTMLBody());
 			email.send();
 
 			String log = "Email report on " + user.getName() + " sent at: ";
@@ -329,4 +322,21 @@ public class EventTask {
 		}
 	}
 
+	public List<String> sendEmail(String id, String password, String host, ArrayList<String> files) {
+		List<String> recipients = new ArrayList<>();
+
+		if (user.getEmail() != null)
+			recipients.add(user.getEmail());
+
+		List<UserLink> links = userLinkRepository.findBySubject(user);
+		for (UserLink userLink : links) {
+			String address = userLink.getUser().getEmail();
+			if (address != null && !recipients.contains(address))
+				recipients.add(address);
+		}
+
+		if (recipients.isEmpty())
+			return null;
+		return sendEmail(recipients, id, password, host, files);
+	}
 }

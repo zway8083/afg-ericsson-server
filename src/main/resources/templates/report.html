@@ -13,43 +13,79 @@
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
 		<h2>Rapport</h2>
-    	<form action="#" th:action="@{/report}" th:object="${report}" method="post">
-			<div style="width: 200px" class="form-group">
-				<label for="userId">Sujet :</label>
-	        	<select id="userId" th:field="*{id}" class="form-control">
-	        		<option th:each="user : ${users}" 
-	        			th:text="${user.firstName + ' ' + user.lastName}"
-	        			th:value="${user.id}">
-	        		</option>
-	        	</select>
+		<th:block th:if="${initForm}">
+			<div th:if="${param.error} and !${param.email}" class="alert alert-warning">
+				Aucun rapport n'a été trouvé à cette date.
 			</div>
-			<div style="width: 200px" class="form-group">
-				<label for="datetimepicker" class="">Date :</label>
-				<div style="width: 220px" class='input-group date col-sm-10' id='datetimepicker'>
-                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
+			<div th:if="${param.error} and ${param.email}" class="alert alert-danger" th:text="${'Le rapport n''a pas pu être envoyé à l''adresse : ' + param.email[0]}"></div>
+			<div th:if="${param.email} and !${param.error}" class="alert alert-success" th:text="${'Le rapport a bien été envoyé à l''adresse : ' + param.email[0]}"></div>
+	    	<form action="#" th:action="@{/report}" th:object="${report}" method="post">
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="subjectId">Sujet :</label>
+			        	<select id="subjectId" th:field="*{id}" class="form-control">
+			        		<option th:each="subject : ${subjects}" 
+			        			th:text="${subject.firstName + ' ' + subject.lastName}"
+			        			th:value="${subject.id}">
+			        		</option>
+			        	</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="datetimepicker" class="">Date :</label>
+						<div class='input-group date' id='datetimepicker'>
+		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
+		                    <span class="input-group-addon">
+		                        <span class="glyphicon glyphicon-calendar"></span>
+		                    </span>
+		                </div>
+					</div>
+				</div>
+				<!-- <div class="form-group">
+					<label for="name">Action :</label>
+			        <div th:each="action, iter : ${actions}">
+			        	<input th:id="${iter.index}" type="checkbox" th:field="*{actions}" th:value="${action}"/>
+			        	<label class="small" th:for="${iter.index}" th:text="${action}"></label>
+			        </div>
+				</div> -->
+				<div class="row">
+					<div class="col-md-4">
+						<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+					</div>
+				</div>
+	    	</form>
+	        <script type="text/javascript">
+	            $(function () {
+	                $('#datetimepicker').datetimepicker({
+	                    locale: 'fr',
+	                    defaultDate: new Date(),
+	                    format: 'DD/MM/YYYY'
+	                });
+	            });
+	        </script>
+		</th:block>
+		
+		<th:block th:if="${showReport}">
+			<div style="padding-top: 10px; padding-bottom: 10px;" class="container">
+				<div class="col-md-4">
+					<form class="form-inline" action="#" th:action="@{/report/mail}" th:object="${report}" method="post">
+						<button class="btn btn-info" type="submit"><span class="glyphicon glyphicon-envelope"></span> M'envoyer une copie par mail</button>
+						<input type="hidden" th:field="*{date}" th:value="*{date}"/>
+						<input type="hidden" th:field="*{id}" th:value="*{id}"/>
+					</form>
+				</div>
+				<div class="col-md-4">
+					<form class="form-inline" action="#" th:action="@{/report/dwn}" th:object="${report}" method="post">
+						<button class="btn btn-info" type="submit"><span class="glyphicon glyphicon-download-alt"></span> Télécharger les relevés de données</button>
+						<input type="hidden" th:field="*{date}" th:value="*{date}"/>
+						<input type="hidden" th:field="*{id}" th:value="*{id}"/>
+					</form>
+				</div>
 			</div>
-			<div class="form-group">
-				<label for="name">Action :</label>
-		        <div th:each="action, iter : ${actions}">
-		        	<input th:id="${iter.index}" type="checkbox" th:field="*{actions}" th:value="${action}"/>
-		        	<label class="small" th:for="${iter.index}" th:text="${action}"></label>
-		        </div>
-			</div>
-    		<div th:replace="form :: buttons"></div>
-    	</form>
-        <script type="text/javascript">
-            $(function () {
-                $('#datetimepicker').datetimepicker({
-                    locale: 'fr',
-                    defaultDate: new Date(),
-                    format: 'DD/MM/YYYY'
-                });
-            });
-        </script>
+			<div class="well well-lg" th:utext="${reportHTML}"></div>
+		</th:block>
+		
     </div>
 </body>
 </html>
