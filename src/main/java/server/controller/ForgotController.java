@@ -46,10 +46,11 @@ public class ForgotController {
 		user.setPassword(password);
 		userRepository.save(user);
 		
-		ForgotPasswordRunnable runnable = new ForgotPasswordRunnable(emailId, emailPassword, emailHost, rawPassword, email, logger);
+		ForgotPasswordRunnable runnable = new ForgotPasswordRunnable(emailId, emailPassword, emailHost, rawPassword, email);
 		Thread thread = new Thread(runnable);
 		thread.start();
 		
+		logger.info("Sent new password to: " + email);
 		return "redirect:/login?forgot";
 	}
 }

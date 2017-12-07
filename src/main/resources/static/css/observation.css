@@ -29,3 +29,29 @@
 	height: 25px;
 	margin: 0;
 }
+
+.obs {
+	resize: none;
+	border: none;
+}
+
+.obs-grade {
+    /* -webkit-box-shadow: inset 2px 2px 2px #8000ff;
+    -moz-box-shadow: inset 2px 2px 2px #8000ff;
+    box-shadow: inset 0px 0px 10px 3px #8000ff ; */
+}
+
+.smile {
+	padding: 3px 5px;
+}
+
+@media screen and (max-width: 767px) {
+	.table-responsive {
+		border: none;
+	}
+
+	.inputField {
+		width: 240px;
+		max-width: 240px;
+	}
+}

@@ -43,7 +43,7 @@
 		    			</th:block>
 		    			<tr class="success">
 		    				<td>
-			    				<select class="form-control" th:field="*{subjectId}" required="required">
+			    				<select class="form-control" style="width: 100%;" th:field="*{subjectId}" required="required">
 					        		<option th:each="subject : ${subjects}"
 				        			th:text="${subject.firstName + ' ' + subject.lastName}"
 				        			th:value="${subject.id}">

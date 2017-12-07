@@ -23,15 +23,17 @@ public class Description {
 	private String activity;
 	@Column(length = 250)
 	private String behaviour;
+	private Integer grade;
 
 	public Description() {
 	}
 
-	public Description(User observator, String activity, String behaviour) {
+	public Description(User observator, String activity, String behaviour, Integer grade) {
 		this.observator = observator;
 		this.activity = activity;
 		this.behaviour = behaviour;
 		this.save = new Date(new DateTime().getMillis());
+		this.grade = grade;
 	}
 
 	public User getObservator() {
@@ -68,6 +70,14 @@ public class Description {
 
 	public void setSave(Date save) {
 		this.save = save;
+	}
+
+	public Integer getGrade() {
+		return grade;
+	}
+
+	public void setGrade(Integer grade) {
+		this.grade = grade;
 	}
 
 }

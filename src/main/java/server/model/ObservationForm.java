@@ -7,6 +7,7 @@ public class ObservationForm {
 	private Integer timeId;
 	private String activity;
 	private String behaviour;
+	private Integer grade;
 
 	public ObservationForm() {
 	}
@@ -63,6 +64,14 @@ public class ObservationForm {
 
 	public void setBehaviour(String behaviour) {
 		this.behaviour = behaviour;
+	}
+
+	public Integer getGrade() {
+		return grade;
+	}
+
+	public void setGrade(Integer grade) {
+		this.grade = grade;
 	}
 
 	@Override

@@ -11,7 +11,7 @@
 	    	<div th:replace="observation-fragments:: table (false, ${form})"></div>
     	</th:block>
     </th:block>
-    
+
     <th:block th:fragment="table (canCreate, form)">
     	<div class="table-responsive">
     	<table class="table table-bordered">
@@ -27,11 +27,11 @@
     					<tr>
     						<td th:if="${iStat.first}" th:rowspan="${descriptions.size()}" th:text="${time.name}"></td>
 		    				<td th:with="length=${#strings.length(description.activity)}">
-		    					<textarea style="resize: none; border: none;" cols="50" th:rows="${length / 50 + 1}" th:text="${description.activity}" readonly="readonly">
+		    					<textarea class="obs" cols="50" th:rows="${length / 50 + 1}" th:text="${description.activity}" readonly="readonly">
 		    					</textarea>
 		    				</td>
-		    				<td th:with="length=${#strings.length(description.behaviour)}">
-		    					<textarea style="resize: none; border: none;" cols="60" th:rows="${length / 60 + 1}" th:text="${description.behaviour}" readonly="readonly">
+		    				<td class="obs-grade" th:with="length=${#strings.length(description.behaviour)}" th:value="${description.grade}">
+		    					<textarea class="obs" cols="60" th:rows="${length / 60 + 1}" th:text="${description.behaviour}" readonly="readonly">
 		    					</textarea>
 		    				</td>
     					</tr>
@@ -41,20 +41,22 @@
     				<td>
 	    				<select style="min-width: 140px" class="form-control" th:field="${form.timeId}" required="required">
 			        		<option th:each="time : ${times}"
-		        			th:text="${time.name}"
+		        			th:text="${time.name}"	
 		        			th:value="${time.chrono}">
 			        		</option>
 		        		</select>
     				</td>
     				<td>
     					<div class="flexContainer">
-    						<input id="activity" class="form-control inputField" style="width: 100%;" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
+    						<input id="activity" class="form-control inputField" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
     						<button class="button-mic" type="button" onclick="dictation('activity', this)"><img src="/img/mic.png" alt="Microphone"/></button>
     					</div>
     				</td>
     				<td>
-    					<div class="flexContainer">
-    						<textarea id="behaviour" class="form-control inputfield" style="width: 100%;" th:field="${form.behaviour}" rows="2" maxlength="250" required="required"></textarea>
+    					<div class="flexContainer">	
+							<button type="button" id="grade-btn" class="btn btn-default smile"><i class="fa fa-smile-o fa-3x" style="color: LimeGreen"></i></button>
+							<input id="grade" type="hidden" value="0" th:field="${form.grade}"></input>
+    						<textarea id="behaviour" class="form-control inputField" th:field="${form.behaviour}" rows="2" maxlength="250" required="required"></textarea>
     						<button class="button-mic" type="button" onclick="dictation('behaviour', this)"><img src="/img/mic.png" alt="Microphone"/></button>
     					</div>
     				</td>
@@ -66,7 +68,7 @@
 	    	<input type="hidden" th:value="${form.date}" th:field="${form.date}"/>
 	    	<input type="hidden" th:value="${form.subjectId}" th:field="${form.subjectId}"/>
 			<button type="submit" class="btn btn-success pull-right">
-				<span class="glyphicon glyphicon-ok"></span> Valider
+				<span class="glyphicon glyphicon-plus"></span> Ajouter
 			</button>
     	</th:block>
    	</th:block>

@@ -1,6 +1,7 @@
 package server.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -64,7 +65,6 @@ public class AddController {
 	@PostMapping(path = "/user")
 	public @ResponseBody String AddUser(@ModelAttribute UserForm userForm) {
 		User user = new User();
-		System.out.println(userForm.getRoleStr());
 		if (userForm.getRoleStr() == "ROLE_SUJECT") {
 			user.setSubject(true);
 			user.setSleepStart(userForm.getSleepStart() != null ? userForm.getSleepStart() : "21:00");
@@ -83,7 +83,10 @@ public class AddController {
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11);
 			user.setPassword(encoder.encode(userForm.getPassword()));
 		}
+		Role role = roleRepository.findByName(userForm.getRoleStr());
+		user.setRoles(Arrays.asList(role));
 		userRepository.save(user);
+
 		logger.info("User added: " + user.getName());
 		return "User added: " + user.getName();
 	}
@@ -109,10 +112,10 @@ public class AddController {
 	public @ResponseBody String AddUserLink(@ModelAttribute(name = "userLink") UserLink userLink) {
 		User user = userRepository.findOne(userLink.getUserId());
 		User subject = userRepository.findOne(userLink.getSubjectId());
-		userLink.setSubject(subject);
 		userLink.setUser(user);
+		userLink.setSubject(subject);
 
-		String ret = "Lien ajouté : " + user.getName();
+		String log = "Lien ajouté : " + user.getName();
 
 		List<String> checkedRoles = userLink.getCheckedRoles();
 		for (int i = 0; i < checkedRoles.size(); i++) {
@@ -123,7 +126,6 @@ public class AddController {
 				newLink = new UserLink();
 				newLink.setUser(user);
 				newLink.setSubject(subject);
-				newLink.setRole(role);
 			} else
 				newLink = userLink;
 			newLink.setRole(role);
@@ -132,11 +134,11 @@ public class AddController {
 			} catch (DataIntegrityViolationException e) {
 				return "Ce lien existe déjà.";
 			}
-			ret += " -> " + roleStr;
+			log += " -> " + roleStr;
 		}
-		ret += " -> " + subject.getName();
-		logger.info(ret);
-		return ret;
+		log += " -> " + subject.getName();
+		logger.info(log);
+		return log;
 	}
 
 	@GetMapping(path = "/device")

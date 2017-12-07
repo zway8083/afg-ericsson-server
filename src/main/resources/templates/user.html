@@ -13,9 +13,8 @@
     	<form action="#" id="form" th:action="@{/add/user}" th:object="${userForm}" method="post">
     		<div class="form-group">
 		    	<label for="role">Rôle : </label>
-		    	<select id="role" required="required">
-					<option th:each="role : ${roles}" th:field="*{roleStr}"
-						th:text="${#strings.substringAfter(role.name,'ROLE_')}"
+		    	<select class="" id="role" th:field="*{roleStr}" required="required">
+					<option th:each="role : ${roles}" th:text="${#strings.substringAfter(role.name,'ROLE_')}"
 						th:value="${role.name}"></option>
 				</select>
     		</div>
@@ -43,7 +42,9 @@
 		    	<label for="sleepEndInput">Heure de levé habituelle : </label>
 		    	<input id="sleepEndInput" type="time" th:field="*{sleepEnd}"/>
     		</div>
-    		<div th:replace="form :: buttons"></div>
+			<button type="submit" class="btn btn-success">
+				<span class="glyphicon glyphicon-plus"></span> Ajouter
+			</button>
     	</form>
 	</div>
 </body>

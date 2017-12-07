@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -59,17 +60,22 @@ public class ObservationController {
 				subjects.add(userLink.getSubject());
 		}
 
-		model.addAttribute("initForm", true);
+		model.addAttribute("init", true);
 		model.addAttribute("subjects", subjects);
-		model.addAttribute("form", new InitObservationForm());
+		model.addAttribute("initForm", new InitObservationForm());
 		return "observation";
 	}
 
 	@PostMapping(path = "/observation")
-	public String observation(Model model, @ModelAttribute(name = "form") InitObservationForm initForm) {
+	public String observation(Model model, @ModelAttribute InitObservationForm initForm) {
 		User subject = userRepository.findOne(initForm.getSubjectId());
 		ObservationForm form = new ObservationForm(subject.getId(), subject.getName(), initForm.getDate());
 
+		DateTime curDate = DateConverter.toDateTime(initForm.getDate());
+		String prevDate = DateConverter.toFormatString(curDate.minusDays(1));
+		model.addAttribute("initForm", new InitObservationForm(subject.getId(), prevDate));
+		String nextDate = DateConverter.toFormatString(curDate.plusDays(1));
+		model.addAttribute("initForm2", new InitObservationForm(subject.getId(), nextDate));
 		Date date = DateConverter.toSQLDate(initForm.getDate());
 
 		Hashtable<Integer, List<Description>> hashtable = new Hashtable<>();
@@ -98,7 +104,8 @@ public class ObservationController {
 		Time time = timeRepository.findOne(form.getTimeId());
 		Date date = DateConverter.toSQLDate(form.getDate());
 
-		Description description = new Description(userRepository.findOne(4l), form.getActivity(), form.getBehaviour());
+		Description description = new Description(userRepository.findOne(4l), form.getActivity(), form.getBehaviour(),
+				form.getGrade());
 		descriptionRepository.save(description);
 		Observation observation = observationRepository.findOne(new ObservationPK(subject, date, time));
 		if (observation == null) {

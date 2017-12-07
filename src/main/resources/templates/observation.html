@@ -4,21 +4,23 @@
     <title id="pageTitle">Observation</title>
 </head>
 <head>
-	<link href="/css/microphone.css" rel="stylesheet"/>
+	<link href="/css/observation.css" rel="stylesheet"/>
     <script src="/scripts/dictation.js"></script>
+    <script src="/scripts/grade.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
 	<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
 	<script src="/scripts/fr.js"></script>
     <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
 		<h2 style="padding-bottom: 15px;">Observation du comportement</h2>
 		
-	    <div th:if="${initForm}" class="row">
+	    <div th:if="${init}" class="row">
 	        <div class='col-md-4'>
-	        	<form action="/observation" th:action="@{/observation}" th:object="${form}" method="post">
+	        	<form action="/observation" th:action="@{/observation}" th:object="${initForm}" method="post">
 		            <div class="form-group">
 		                <label class="control-label" for="datetimepicker">Jour : </label>
 		                <div class='input-group date' id='datetimepicker'>
@@ -52,14 +54,32 @@
 	        </script>
 	    </div>
 
-	    <div th:if="${obsForm}" class="table-responsive">
-    		<h3 th:text="${form.subjectName}"></h3>
-    		<th:block sec:authorize="hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')">
-		    	<div th:replace="observation-fragments:: main(canCreate=true,form=${form})"></div>
-    		</th:block>
-    		<th:block sec:authorize="!hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')">
-		    	<div th:replace="observation-fragments:: main(canCreate=false,form=${form})"></div>
-    		</th:block>
+	    <div th:if="${obsForm}">
+	    	<div class="container-fluid" style="padding-right: 0px; padding-left: 0px;">
+				<form th:action="@{/observation}" th:object="${initForm}" method="post">
+			    	<input type="hidden" th:value="*{date}" th:field="*{date}"/>
+			    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
+					<button type="submit" class="btn pull-left" th:inline="text">
+						<span class="glyphicon glyphicon-chevron-left"></span>[[*{date}]]
+					</button>
+				</form>
+				<form th:action="@{/observation}" th:object="${initForm2}" method="post">
+			    	<input type="hidden" th:value="*{date}" th:field="*{date}"/>
+			    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
+					<button type="submit" class="btn pull-right" th:inline="text">
+						[[*{date}]]<span class="glyphicon glyphicon-chevron-right"></span>
+					</button>
+				</form>
+	    	</div>
+    		<h3 th:text="${form.subjectName + ' - ' + form.date}"></h3>
+	    	<div class="table-responsive">
+	    		<th:block sec:authorize="hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')">
+			    	<div th:replace="observation-fragments:: main(canCreate=true,form=${form})"></div>
+	    		</th:block>
+	    		<th:block sec:authorize="!hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')">
+			    	<div th:replace="observation-fragments:: main(canCreate=false,form=${form})"></div>
+	    		</th:block>
+	    	</div>
 	    </div>
     </div>
 </body>
