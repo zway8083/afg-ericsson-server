@@ -79,19 +79,22 @@ public class ObservationController {
 		Date date = DateConverter.toSQLDate(initForm.getDate());
 
 		Hashtable<Integer, List<Description>> hashtable = new Hashtable<>();
-		List<Time> times = timeRepository.findAllByOrderByChronoAsc();
-
-		for (Time time : times) {
+		List<Time> allTimes = timeRepository.findAllByOrderByChronoAsc();
+		List<Time> times = new ArrayList<>();
+		for (Time time : allTimes) {
 			Observation observation = observationRepository.findOne(new ObservationPK(subject, date, time));
-			if (observation == null)
+			if (observation == null) {
 				continue;
+			}
 			List<Description> descriptions = observation.getDescriptions();
 			if (descriptions == null || descriptions.size() == 0)
 				continue;
 			hashtable.put(time.getChrono(), descriptions);
+			times.add(time);
 		}
 
 		model.addAttribute("times", times);
+		model.addAttribute("allTimes", allTimes);
 		model.addAttribute("hashtable", hashtable);
 		model.addAttribute("obsForm", true);
 		model.addAttribute("form", form);

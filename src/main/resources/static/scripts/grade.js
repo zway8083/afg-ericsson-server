@@ -37,6 +37,19 @@ $(function() {
 			default:
 				color = "Grey";
 		}
-		$(this).css("box-shadow", "5px 0px 5px 0px " + color + " inset");
+		$(this).css("box-shadow", "5px 0px 0px 0px " + color + " inset");
 	});
+	
+//	$(".row-obs").each(function() {
+//		var children = $(this).children();
+//		var maxHeight = 0;
+//		$(children).each(function() {
+//			if ($(this).height() > maxHeight) {
+//				maxHeight = $(this).height();
+//			}
+//		});
+//		$(children).each(function() {
+//			$(this).css("height", maxHeight + "px");
+//		});
+//	});
 });

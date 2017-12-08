@@ -13,64 +13,67 @@
     </th:block>
 
     <th:block th:fragment="table (canCreate, form)">
-    	<div class="table-responsive">
-    	<table class="table table-bordered">
-    		<thead><tr class="active">
-				<th>Moment de la journée</th>
-				<th>Activités</th>
-				<th>Comportement / état émotionnel / ressentis corporels</th>
-    		</tr></thead>
-    		<tbody>
-    			<th:block th:each="time: ${times}"
-    				th:with="descriptions=${hashtable.get(time.chrono)}">
+	    <div class="container-fluid obs-table">
+   			<th:block th:each="time, iTimeStat: ${times}" th:with="descriptions=${hashtable.get(time.chrono)}">
     				<th:block th:each="description, iStat :${descriptions}">
-    					<tr>
-    						<td th:if="${iStat.first}" th:rowspan="${descriptions.size()}" th:text="${time.name}"></td>
-		    				<td th:with="length=${#strings.length(description.activity)}">
-		    					<textarea class="obs" cols="50" th:rows="${length / 50 + 1}" th:text="${description.activity}" readonly="readonly">
-		    					</textarea>
-		    				</td>
-		    				<td class="obs-grade" th:with="length=${#strings.length(description.behaviour)}" th:value="${description.grade}">
-		    					<textarea class="obs" cols="60" th:rows="${length / 60 + 1}" th:text="${description.behaviour}" readonly="readonly">
-		    					</textarea>
-		    				</td>
-    					</tr>
+		    			<div class="row row-eq-height">
+		    				<div th:if="${iStat.first}" class="col-xs-12 col-sm-2 cell cell-top cell-left head-time" th:text="${time.name}"></div>
+		    				<div th:if="${!iStat.first}" class="col-xs-12 col-sm-2 cell cell-left head-merge" th:classappend="${iStat.last}? 'head-last'">&nbsp;</div>
+		    				<div class="col-xs-12 col-sm-4 cell" th:text="${description.activity}"
+		    					th:classappend="${(iStat.first ? 'cell-top' : '') + (iStat.last ? ' head-last' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
+		    				</div>
+		    				<div class="col-xs-12 col-sm-6 cell cell-right obs-grade" th:text="${description.behaviour}" th:value="${description.grade}"
+		    					th:classappend="${(iStat.first ? 'cell-top' : '') + (iStat.last ? ' head-last' :'') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
+		    				</div>
+		    			</div>
     				</th:block>
-    			</th:block>
-    			<tr th:if="${canCreate}" class="success">
-    				<td>
-	    				<select style="min-width: 140px" class="form-control" th:field="${form.timeId}" required="required">
-			        		<option th:each="time : ${times}"
-		        			th:text="${time.name}"	
-		        			th:value="${time.chrono}">
-			        		</option>
-		        		</select>
-    				</td>
-    				<td>
-    					<div class="flexContainer">
-    						<input id="activity" class="form-control inputField" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
-    						<button class="button-mic" type="button" onclick="dictation('activity', this)"><img src="/img/mic.png" alt="Microphone"/></button>
-    					</div>
-    				</td>
-    				<td>
-    					<div class="flexContainer">	
+   			</th:block>
+	    </div>
+	    <th:block th:if="${canCreate}">
+	   	    <h3>Ajouter une observation :</h3>
+		    <div class="container-fluid">
+		    	<div class="row">
+		    		<div class="col-md-6">
+		    			<label for="time">Moment de la journée :</label>
+						<select class="form-control" th:field="${form.timeId}" required="required">
+					   		<option th:each="time : ${allTimes}"
+					  			th:text="${time.name}"	
+					  			th:value="${time.chrono}">
+					   		</option>
+				  		</select>
+		    		</div>
+		    	</div>
+		    	<div class="row">
+		    		<div class="col-md-6">
+		    			<label for="activity"> Activité :</label>
+		    			<div class="flexContainer">
+							<input id="activity" class="form-control inputField" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
+							<button class="button-mic" type="button" onclick="dictation('activity', this)"><img src="/img/mic.png" alt="Microphone"/></button>
+						</div>
+		    		</div>
+		    	</div>
+		    	<div class="row">
+		    		<div class="col-md-6">
+		    			<label for="activity"> Observations :</label>
+						<div class="flexContainer">	
 							<button type="button" id="grade-btn" class="btn btn-default smile"><i class="fa fa-smile-o fa-3x" style="color: LimeGreen"></i></button>
 							<input id="grade" type="hidden" value="0" th:field="${form.grade}"></input>
-    						<textarea id="behaviour" class="form-control inputField" th:field="${form.behaviour}" rows="2" maxlength="250" required="required"></textarea>
-    						<button class="button-mic" type="button" onclick="dictation('behaviour', this)"><img src="/img/mic.png" alt="Microphone"/></button>
-    					</div>
-    				</td>
-    			</tr>
-    		</tbody>
-    	</table>
-    	</div>
-     	<th:block th:if="${canCreate}">
-	    	<input type="hidden" th:value="${form.date}" th:field="${form.date}"/>
-	    	<input type="hidden" th:value="${form.subjectId}" th:field="${form.subjectId}"/>
-			<button type="submit" class="btn btn-success pull-right">
-				<span class="glyphicon glyphicon-plus"></span> Ajouter
-			</button>
-    	</th:block>
+							<textarea id="behaviour" class="form-control inputField" th:field="${form.behaviour}" rows="3" maxlength="250" required="required"></textarea>
+							<button class="button-mic" type="button" onclick="dictation('behaviour', this)"><img src="/img/mic.png" alt="Microphone"/></button>
+						</div>
+		    		</div>
+		    	</div>
+		    	<div class="row" th:if="${canCreate}">
+		    		<div class="col-md-6">
+				    	<input type="hidden" th:value="${form.date}" th:field="${form.date}"/>
+				    	<input type="hidden" th:value="${form.subjectId}" th:field="${form.subjectId}"/>
+						<button type="submit" class="btn btn-success pull-right">
+							<span class="glyphicon glyphicon-plus"></span> Ajouter
+						</button>
+		    		</div>
+		    	</div>
+		    </div>
+	    </th:block>
    	</th:block>
 </body>
 <script src="/scripts/speech-input.js"></script>
