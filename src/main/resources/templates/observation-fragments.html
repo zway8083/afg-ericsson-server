@@ -13,21 +13,28 @@
     </th:block>
 
     <th:block th:fragment="table (canCreate, form)">
-	    <div class="container-fluid obs-table">
+	    <div th:if="${times.size() > 0}" class="container-fluid obs-table">
    			<th:block th:each="time, iTimeStat: ${times}" th:with="descriptions=${hashtable.get(time.chrono)}">
     				<th:block th:each="description, iStat :${descriptions}">
 		    			<div class="row row-eq-height">
-		    				<div th:if="${iStat.first}" class="col-xs-12 col-sm-2 cell cell-top cell-left head-time" th:text="${time.name}"></div>
-		    				<div th:if="${!iStat.first}" class="col-xs-12 col-sm-2 cell cell-left head-merge" th:classappend="${iStat.last}? 'head-last'">&nbsp;</div>
+		    				<div th:if="${iStat.first}" class="col-xs-12 col-sm-2 cell cell-left cell-head" th:text="${time.name}"
+		    					th:classappend="${(iTimeStat.first ? 'cell-top':'') + (!iStat.last or (iTimeStat.last and iStat.last) ? ' cell-bottom':'')}"></div>
+		    				<div th:if="${!iStat.first}" class="col-xs-12 col-sm-2 cell cell-left cell-head cell-empty"
+		    					th:classappend="${iTimeStat.last and iStat.last}? 'cell-bottom'">&nbsp;</div>
 		    				<div class="col-xs-12 col-sm-4 cell" th:text="${description.activity}"
-		    					th:classappend="${(iStat.first ? 'cell-top' : '') + (iStat.last ? ' head-last' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
+		    					th:classappend="${(iTimeStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
 		    				</div>
 		    				<div class="col-xs-12 col-sm-6 cell cell-right obs-grade" th:text="${description.behaviour}" th:value="${description.grade}"
-		    					th:classappend="${(iStat.first ? 'cell-top' : '') + (iStat.last ? ' head-last' :'') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
+		    					th:classappend="${(iTimeStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '') + (iStat.last ? ' cell-last' : '')}">
 		    				</div>
 		    			</div>
     				</th:block>
    			</th:block>
+	    </div>
+	    <div th:if="${times.size() == 0}">
+	    	<div class="container-fluid"><div class ="row"><div class="col-md-4">
+	    		<em>Aucune observation</em>
+	    	</div></div></div>
 	    </div>
 	    <th:block th:if="${canCreate}">
 	   	    <h3>Ajouter une observation :</h3>

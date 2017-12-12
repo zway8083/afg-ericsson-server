@@ -22,7 +22,6 @@ $(function() {
 	});
 	
 	$(".obs-grade").each(function() {
-		//box-shadow: inset 0px 0px 10px 3px #8000ff ;
 		var color = "";
 		switch($(this).attr("value")) {
 			case "0":
@@ -39,17 +38,4 @@ $(function() {
 		}
 		$(this).css("box-shadow", "5px 0px 0px 0px " + color + " inset");
 	});
-	
-//	$(".row-obs").each(function() {
-//		var children = $(this).children();
-//		var maxHeight = 0;
-//		$(children).each(function() {
-//			if ($(this).height() > maxHeight) {
-//				maxHeight = $(this).height();
-//			}
-//		});
-//		$(children).each(function() {
-//			$(this).css("height", maxHeight + "px");
-//		});
-//	});
 });
