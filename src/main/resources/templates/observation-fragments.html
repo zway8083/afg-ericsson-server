@@ -19,8 +19,8 @@
 		    			<div class="row row-eq-height">
 		    				<div th:if="${iStat.first}" class="col-xs-12 col-sm-2 cell cell-left cell-head" th:text="${time.name}"
 		    					th:classappend="${(iTimeStat.first ? 'cell-top':'') + (!iStat.last or (iTimeStat.last and iStat.last) ? ' cell-bottom':'')}"></div>
-		    				<div th:if="${!iStat.first}" class="col-xs-12 col-sm-2 cell cell-left cell-head cell-empty"
-		    					th:classappend="${iTimeStat.last and iStat.last}? 'cell-bottom'">&nbsp;</div>
+		    				<div th:if="${!iStat.first}" class="col-xs-12 col-sm-2 cell cell-left cell-head"
+		    					th:classappend="${(iStat.last? 'cell-top':'cell-empty') + (iTimeStat.last and iStat.last ? ' cell-bottom':'')}">&nbsp;</div>
 		    				<div class="col-xs-12 col-sm-4 cell" th:text="${description.activity}"
 		    					th:classappend="${(iTimeStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
 		    				</div>
