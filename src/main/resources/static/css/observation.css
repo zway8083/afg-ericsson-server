@@ -74,6 +74,10 @@
 	border-bottom: 1px solid WhiteSmoke;
 }
 
+.cell-last {
+	border-bottom: 1px solid #ddd;
+}
+
 .row [class^=col-] {
 	font-size: 15px;
 	padding: 6px 8px 8px 8px;
