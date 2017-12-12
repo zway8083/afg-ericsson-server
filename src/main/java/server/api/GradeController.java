@@ -34,7 +34,7 @@ public class GradeController {
 			String grades = "";
 			for (int i = 0; i < gaps.length; i++) {
 				Long count = eventStatRepository.countByDateAndGradeBetween(day.toDate(), gaps[i][0], gaps[i][1]);
-				Integer grade = (int) (count / nEventStat * 100);
+				Integer grade = (int) (count * 100 / nEventStat);
 				grades += grade.toString() + ", ";
 			}
 			grades += nEventStat.toString();
