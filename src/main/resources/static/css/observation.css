@@ -6,6 +6,23 @@
     flex: 1;
 }
 
+.form-pad {
+	padding-bottom: 10px;
+}
+
+.button-delete {
+	position: absolute;
+	top: 3px;
+	right: 3px;
+    background: none;
+	border-radius: 6px;
+	border: 2px solid #ff4141;
+}
+
+.button-delete span {
+	color: #ff4141;
+}
+
 .button-mic {
     border: 0;
     background: none;
@@ -35,18 +52,14 @@
 	border-radius: 5px;
 }
 
-.obs {
-	resize: none;
-	border: none;
-	outline: none;
-}
-
 .cell {
 	background: WhiteSmoke;
 	border-top: 1px solid #ddd;
 	border-right: 1px solid #ddd;
 	border-bottom: 1px solid #ddd;
 	border-left: 1px solid #ddd;
+	font-size: 15px;
+	padding: 6px 8px 8px 8px;
 }
 
 .cell-top {
@@ -78,9 +91,8 @@
 	border-bottom: 1px solid #ddd;
 }
 
-.row [class^=col-] {
-	font-size: 15px;
-	padding: 6px 8px 8px 8px;
+.obs-grade {
+	padding-right: 3px;
 }
 
 .smile {

@@ -38,4 +38,9 @@ $(function() {
 		}
 		$(this).css("box-shadow", "5px 0px 0px 0px " + color + " inset");
 	});
+	
+	$(".button-delete").click(function() {
+		$("#descriptionId").val($(this).attr("value"));
+		$("#delete-form").submit();
+	});
 });

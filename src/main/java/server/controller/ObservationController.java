@@ -1,5 +1,6 @@
 package server.controller;
 
+import java.security.Principal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import server.database.repository.ObservationRepository;
 import server.database.repository.TimeRepository;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
+import server.model.DeleteObservationForm;
 import server.model.InitObservationForm;
 import server.model.ObservationForm;
 import server.utils.DateConverter;
@@ -67,7 +69,9 @@ public class ObservationController {
 	}
 
 	@PostMapping(path = "/observation")
-	public String observation(Model model, @ModelAttribute InitObservationForm initForm) {
+	public String observation(Principal principal, Model model, @ModelAttribute InitObservationForm initForm) {
+		User user = userRepository.findByEmail(principal.getName());
+
 		User subject = userRepository.findOne(initForm.getSubjectId());
 		ObservationForm form = new ObservationForm(subject.getId(), subject.getName(), initForm.getDate());
 
@@ -92,23 +96,26 @@ public class ObservationController {
 			hashtable.put(time.getChrono(), descriptions);
 			times.add(time);
 		}
-
+		
 		model.addAttribute("times", times);
 		model.addAttribute("allTimes", allTimes);
 		model.addAttribute("hashtable", hashtable);
 		model.addAttribute("obsForm", true);
 		model.addAttribute("form", form);
+		model.addAttribute("userId", user.getId());
+		model.addAttribute("delForm", new DeleteObservationForm(subject.getId(), initForm.getDate()));
 		return "observation";
 	}
 
 	@PostMapping(path = "/observation/submit")
-	public String submitObservation(Model model, @ModelAttribute(name = "form") ObservationForm form) {
+	public String submitObservation(Principal principal, Model model,
+			@ModelAttribute(name = "form") ObservationForm form) {
+		User observator = userRepository.findByEmail(principal.getName());
 		User subject = userRepository.findOne(form.getSubjectId());
 		Time time = timeRepository.findOne(form.getTimeId());
 		Date date = DateConverter.toSQLDate(form.getDate());
 
-		Description description = new Description(userRepository.findOne(4l), form.getActivity(), form.getBehaviour(),
-				form.getGrade());
+		Description description = new Description(observator, form.getActivity(), form.getBehaviour(), form.getGrade());
 		descriptionRepository.save(description);
 		Observation observation = observationRepository.findOne(new ObservationPK(subject, date, time));
 		if (observation == null) {
@@ -119,6 +126,26 @@ public class ObservationController {
 		}
 		observation.addDescription(description);
 		observationRepository.save(observation);
-		return observation(model, new InitObservationForm(subject.getId(), form.getDate()));
+		return observation(principal, model, new InitObservationForm(subject.getId(), form.getDate()));
+	}
+	
+	@PostMapping(path="/observation/delete")
+	public String deleteObservation(Principal principal, Model model, @ModelAttribute(name="delForm") DeleteObservationForm delForm) {
+		User user = userRepository.findByEmail(principal.getName());
+		Description description = descriptionRepository.findOne(delForm.getDescriptionId());
+		if (description.getObservator().getId() == user.getId() || principal.getName() == "admin") {
+			Observation observation = observationRepository.findByDescription(description.getId());
+			List<Description> descriptions = observation.getDescriptions();
+			System.out.println(descriptions.size());
+			if (descriptions.size() == 1)
+				observationRepository.delete(observation);
+			else {
+				descriptions.remove(description);
+				observation.setDescriptions(descriptions);
+				observationRepository.save(observation);
+			}
+			descriptionRepository.delete(description);
+		}
+		return observation(principal, model, new InitObservationForm(delForm.getSubjectId(), delForm.getDate()));
 	}
 }

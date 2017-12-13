@@ -10,6 +10,11 @@
     	<th:block th:if="${!canCreate}">
 	    	<div th:replace="observation-fragments:: table (false, ${form})"></div>
     	</th:block>
+    	<form id="delete-form" th:action="@{/observation/delete}" th:object="${delForm}" method="post">
+    		<input id="descriptionId" type="hidden" th:field="*{descriptionId}"></input>
+	    	<input type="hidden" th:value="*{date}" th:field="*{date}"/>
+	    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
+    	</form>
     </th:block>
 
     <th:block th:fragment="table (canCreate, form)">
@@ -22,10 +27,15 @@
 		    				<div th:if="${!iStat.first}" class="col-xs-12 col-sm-2 cell cell-left cell-head cell-empty"
 		    					th:classappend="${(iStat.last? 'cell-last':'') + (iTimeStat.last and iStat.last ? ' cell-bottom':'')}">&nbsp;</div>
 		    				<div class="col-xs-12 col-sm-4 cell" th:text="${description.activity}"
-		    					th:classappend="${(iTimeStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
+		    					th:classappend="${(iTimeStat.first and iStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
 		    				</div>
-		    				<div class="col-xs-12 col-sm-6 cell cell-right obs-grade" th:text="${description.behaviour}" th:value="${description.grade}"
-		    					th:classappend="${(iTimeStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '') + (iStat.last ? ' cell-last' : '')}">
+		    				<div class="col-xs-12 col-sm-6 cell cell-right obs-grade" th:value="${description.grade}"
+		    					th:classappend="${(iTimeStat.first and iStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '') + (iStat.last ? ' cell-last' : '')}">
+		    					<th:block th:if="${#authorization.expression('hasRole(''ADMIN'')') or description.observator.id == userId}">
+			    					<button type="button" class="pull-right button-delete" th:value="${description.id}"><span class="glyphicon glyphicon-remove"></span></button>
+			    					<div class="pull-right" style="width:31px; height: 25px">&nbsp;</div>
+		    					</th:block>
+		    					<div th:text="${description.behaviour}"></div>
 		    				</div>
 		    			</div>
     				</th:block>
@@ -40,7 +50,7 @@
 	   	    <h3>Ajouter une observation :</h3>
 		    <div class="container-fluid">
 		    	<div class="row">
-		    		<div class="col-md-6">
+		    		<div class="col-md-6 form-pad">
 		    			<label for="time">Moment de la journée :</label>
 						<select class="form-control" th:field="${form.timeId}" required="required">
 					   		<option th:each="time : ${allTimes}"
@@ -50,7 +60,7 @@
 				  		</select>
 		    		</div>
 		    	</div>
-		    	<div class="row">
+		    	<div class="row form-pad">
 		    		<div class="col-md-6">
 		    			<label for="activity"> Activité :</label>
 		    			<div class="flexContainer">
@@ -59,18 +69,18 @@
 						</div>
 		    		</div>
 		    	</div>
-		    	<div class="row">
+		    	<div class="row form-pad">
 		    		<div class="col-md-6">
 		    			<label for="activity"> Observations :</label>
 						<div class="flexContainer">	
 							<button type="button" id="grade-btn" class="btn btn-default smile"><i class="fa fa-smile-o fa-3x" style="color: LimeGreen"></i></button>
 							<input id="grade" type="hidden" value="0" th:field="${form.grade}"></input>
-							<textarea id="behaviour" class="form-control inputField" th:field="${form.behaviour}" rows="3" maxlength="250" required="required"></textarea>
+							<textarea id="behaviour" class="form-control inputField" th:field="${form.behaviour}" rows="3" maxlength="250"></textarea>
 							<button class="button-mic" type="button" onclick="dictation('behaviour', this)"><img src="/img/mic.png" alt="Microphone"/></button>
 						</div>
 		    		</div>
 		    	</div>
-		    	<div class="row" th:if="${canCreate}">
+		    	<div class="row form-pad" th:if="${canCreate}">
 		    		<div class="col-md-6">
 				    	<input type="hidden" th:value="${form.date}" th:field="${form.date}"/>
 				    	<input type="hidden" th:value="${form.subjectId}" th:field="${form.subjectId}"/>
