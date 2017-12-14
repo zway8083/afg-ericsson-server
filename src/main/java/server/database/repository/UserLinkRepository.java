@@ -13,4 +13,5 @@ public interface UserLinkRepository extends CrudRepository<UserLink, Long>{
 	List<UserLink> findByUserAndRole(User user, Role role);
 	List<UserLink> findBySubjectAndRole(User subject, Role role);
 	List<UserLink> findByUser(User user);
+	Long countByUserAndSubjectAndRole(User user, User subject, Role role);
 }

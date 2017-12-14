@@ -1,6 +1,6 @@
 package server.database.model;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import org.joda.time.DateTime;
 
 @Entity
 public class Description {
@@ -32,7 +30,7 @@ public class Description {
 		this.observator = observator;
 		this.activity = activity;
 		this.behaviour = behaviour;
-		this.save = new Date(new DateTime().getMillis());
+		this.save = new Date();
 		this.grade = grade;
 	}
 

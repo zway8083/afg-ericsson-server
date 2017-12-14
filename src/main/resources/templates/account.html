@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title>Mon compte</title>
+    <title id="pageTitle">Mon compte</title>
 </head>
 <head>
 	<link href="/css/account.css" rel="stylesheet" />
@@ -47,5 +47,6 @@
 	    	</form>
 		</div>
 	</div>
+    <div th:replace="footer :: footer"></div>
 </body>
 </html>

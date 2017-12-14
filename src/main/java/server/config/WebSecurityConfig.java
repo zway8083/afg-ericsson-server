@@ -37,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					.antMatchers("/report").hasAuthority("GENERATE_NIGHT_REPORT")
 					.antMatchers("/accompanist").hasAuthority("CREATE_ACCOMPANIST")
 					.antMatchers("/observation").hasAnyAuthority("READ_BEHAVIOUR_OBSERVATION", "CREATE_BEHAVIOUR_OBSERVATION")
-					.antMatchers("/account").authenticated()
+					.antMatchers("/account", "/settings").authenticated()
 			.and()
 				.formLogin().loginPage("/login").permitAll()
 			.and()

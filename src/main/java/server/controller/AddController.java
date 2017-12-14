@@ -71,8 +71,6 @@ public class AddController {
 			user.setSleepEnd(userForm.getSleepEnd() != null ? userForm.getSleepEnd() : "7:00");
 		} else {
 			user.setSubject(false);
-			user.setSleepStart(null);
-			user.setSleepEnd(null);
 		}
 		user.setFirstName(userForm.getFirstName());
 		user.setLastName(userForm.getLastName());

@@ -134,6 +134,14 @@ public class User {
 		}
 	}
 
+	public void setSleepStart(Time sleepStart) {
+		this.sleepStart = sleepStart;
+	}
+
+	public void setSleepEnd(Time sleepEnd) {
+		this.sleepEnd = sleepEnd;
+	}
+
 	public boolean isEnabled() {
 		return enabled;
 	}

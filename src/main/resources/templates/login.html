@@ -3,45 +3,48 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="header :: head">
-<title>Login</title>
+<title id="pageTitle">Login</title>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
-	<div th:if="${!#authorization.expression('isAuthenticated()')}" id="main-content" class="container">
-		<form class="form" th:action="@{/login}" method="post">
-			<div th:if="${param.error}" class="alert alert-danger">Utilisateur ou mot de passe invalide.</div>
-			<div th:if="${param.logout}" class="alert alert-info">Vous avez été déconnecté.</div>
-			<div th:if="${param.forgot}" class="alert alert-success">Un nouveau mot de passe vous a été envoyé.</div>
-			<div class="row">
-				<div class="form-group col-md-4">
-					<label for="user" class="control-label">Utilisateur : </label>
-					<input id="user" class="form-control" type="text" name="username" required="required"/>
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col-md-4">
-					<label for="password" class="control-label">Mot de passe : </label>
-					<input id="password" class="form-control" type="password" name="password" required="required"/>
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col-md-4">
-					<a href="/forgot">Mot de passe oublié ?</a>
-				</div>
-			</div>
-			<div class="form-check">
-				<label class="form-check-label">
-					<input type="checkbox" class="form-check-input" name="remember-me"/> Se souvenir de moi
-				</label>
-			</div>
-			<div class="row">
-				<div class="col-md-4">
-					<div class="form-group pull-right">
-						<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+	<th:block th:if="${!#authorization.expression('isAuthenticated()')}">
+		<div id="main-content" class="container">
+			<form class="form" th:action="@{/login}" method="post">
+				<div th:if="${param.error}" class="alert alert-danger">Utilisateur ou mot de passe invalide.</div>
+				<div th:if="${param.logout}" class="alert alert-info">Vous avez été déconnecté.</div>
+				<div th:if="${param.forgot}" class="alert alert-success">Un nouveau mot de passe vous a été envoyé.</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="user" class="control-label">Utilisateur : </label>
+						<input id="user" class="form-control" type="text" name="username" required="required"/>
 					</div>
 				</div>
-			</div>
-		</form>
-	</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="password" class="control-label">Mot de passe : </label>
+						<input id="password" class="form-control" type="password" name="password" required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<a href="/forgot">Mot de passe oublié ?</a>
+					</div>
+				</div>
+				<div class="form-check">
+					<label class="form-check-label">
+						<input type="checkbox" class="form-check-input" name="remember-me"/> Se souvenir de moi
+					</label>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="form-group pull-right">
+							<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	    <div th:replace="footer :: footer"></div>
+	</th:block>
 </body>
 </html>
