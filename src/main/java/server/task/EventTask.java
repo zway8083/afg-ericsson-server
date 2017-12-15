@@ -81,9 +81,10 @@ public class EventTask {
 
 	private void updateEventStat(EventStat eventStat) {
 		Date date = new Date(eventStat.getDate().getTime() + 1);
-		EventStat eventMaxMvts = eventStatRepository.findFirstByDateBeforeOrderByMvtsDesc(date);
+		DateTime weekAgo = new DateTime(date).minusWeeks(1);
+		EventStat eventMaxMvts = eventStatRepository.findFirstByDateBetweenOrderByMvtsDesc(weekAgo.toDate(), date);
 		EventStat eventMinMvts = eventStatRepository.findFirstByDateBeforeAndMvtsGreaterThanEqualOrderByMvtsAsc(date,
-				5);
+				3);
 		if (eventMaxMvts == null || eventMinMvts == null || eventMaxMvts == eventMinMvts) {
 			eventStatRepository.save(eventStat);
 			return;
@@ -123,12 +124,12 @@ public class EventTask {
 				.withMinuteOfHour(timeSleepEnd.getMinuteOfHour()).withSecondOfMinute(0);
 
 		// Margin of error on the start/end theoretical values (hour)
-		int margin = 0;
+		int margin = 1;
 		DateTime startLimit = startTheo.minusHours(margin);
 		DateTime endLimit = endTheo.plusHours(margin);
 
 		// Events from startLimit to endLimit
-		List<Event> events = eventRepository.findByDeviceAndTypeAndDateBetween(device,
+		List<Event> events = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
 				sensorTypeRepository.findByName("luminescence"), startLimit.toDate(), endLimit.toDate());
 
 		if (events.size() == 0) {
@@ -160,16 +161,38 @@ public class EventTask {
 				last = i;
 				continue;
 			}
-			if (events.get(i).getDate().getTime() <= dateTime.minusHours(margin).getMillis())
+			if (events.get(i).getDate().getTime() <= dateTime.minusHours(3).getMillis())
 				break;
 			int j = i;
 			while (j < size && events.get(j).getdValue() > average)
 				j++;
 			if (j != i)
-				last = j;
+				last = j - 1;
 			i = ++j;
 		}
-		return new DateTime(events.get(last).getDate());
+		dateTime = new DateTime(events.get(last).getDate());
+
+		List<Event> eventsMov = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+				sensorTypeRepository.findByName("motion"), dateTime.minusHours(3).toDate(), dateTime.toDate());
+		size = eventsMov.size();
+		i = 0;
+		while (i + 1 < size) {
+			int row = 0;
+			while (i + row + 1 < size && (eventsMov.get(i + 1 + row).getDate().getTime()
+					- eventsMov.get(i + row).getDate().getTime()) <= 10 * 60 * 1000)
+				row++;
+			if (row > 2)
+				return new DateTime(eventsMov.get(i).getDate());
+			i += row;
+			row = 0;
+
+			while (i + 1 < size
+					&& (eventsMov.get(i + 1).getDate().getTime() - eventsMov.get(i).getDate().getTime()) > 10 * 60
+							* 1000)
+				i++;
+		}
+
+		return new DateTime(eventsMov.get(i).getDate());
 	}
 
 	private DateTime findStartNightLimit(List<Event> events, DateTime dateTime, int margin, Double average) {
@@ -177,29 +200,38 @@ public class EventTask {
 		int size = events.size();
 		int last = 0;
 		while (i < size) {
-			if (events.get(i).getDate().getTime() > dateTime.plusHours(margin).getMillis())
+			if (events.get(i).getDate().getTime() > dateTime.plusHours(3).getMillis())
 				break;
+
 			int j = i;
 			while (j < size && events.get(j).getdValue() > average)
 				j++;
+
 			if (j != i)
 				last = j;
 			i = ++j;
 		}
-		if (last >= size)
-			return null;
-		return new DateTime(events.get(last).getDate());
+
+		dateTime = new DateTime(events.get(last).getDate());
+		List<Event> eventsMov = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+				sensorTypeRepository.findByName("motion"), dateTime.toDate(), dateTime.plusHours(3).toDate());
+		i = 0;
+		size = eventsMov.size();
+		while (i + 1 < size
+				&& (eventsMov.get(i + 1).getDate().getTime() - eventsMov.get(i).getDate().getTime()) < 10 * 60 * 1000)
+			i++;
+		return new DateTime(eventsMov.get(i).getDate());
 	}
 
 	private List<List<Event>> getEventLists() {
 		logger.info("Requesting events for: " + endNight.toString("dd/MM/yyy") + " - " + user.getName());
 		eventMotion = eventRepository.findByDeviceAndTypeAndBinValueAndDateBetween(device,
 				sensorTypeRepository.findByName("motion"), true, startNight.toDate(), endNight.toDate());
-		eventTemp = eventRepository.findByDeviceAndTypeAndDateBetween(device,
+		eventTemp = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
 				sensorTypeRepository.findByName("temperature"), startNight.toDate(), endNight.toDate());
-		eventTamper = eventRepository.findByDeviceAndTypeAndDateBetween(device,
+		eventTamper = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
 				sensorTypeRepository.findByName("tamper"), startNight.toDate(), endNight.toDate());
-		eventLum = eventRepository.findByDeviceAndTypeAndDateBetween(device,
+		eventLum = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
 				sensorTypeRepository.findByName("luminescence"), startNight.toDate(), endNight.toDate());
 
 		return Arrays.asList(eventLum, eventMotion, eventTamper, eventTemp);

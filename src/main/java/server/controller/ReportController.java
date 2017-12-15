@@ -134,14 +134,24 @@ public class ReportController {
 			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
 					userLinkRepository, path);
 			reportHTML = eventTask.createHTMLBody();
-			
-			model.addAttribute("showReport", true);
-			model.addAttribute("reportHTML", reportHTML);
-			model.addAttribute("report", report);
-			
-			return "report";
-		} else
-			return "redirect:/report?error";
+		} else {
+			do {
+				@SuppressWarnings("unused")
+				EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
+						userLinkRepository, path);
+				date = date.minusDays(1);
+			} while (eventStatRepository.findByDeviceAndDate(device, date.toDate()) == null);
+			date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
+			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
+					userLinkRepository, path);
+			reportHTML = eventTask.createHTMLBody();
+		}
+		
+		model.addAttribute("showReport", true);
+		model.addAttribute("reportHTML", reportHTML);
+		model.addAttribute("report", report);
+		
+		return "report";
 	}
 
 	@PostMapping(path="/report/mail")

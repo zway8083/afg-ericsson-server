@@ -15,7 +15,8 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
 
 	List<Event> findByDeviceAndType(Device device, SensorType type);
 
-	List<Event> findByDeviceAndTypeAndDateBetween(Device device, SensorType type, Date d1, Date d2);
+	List<Event> findByDeviceAndTypeAndDateBetweenOrderByDateAsc(Device device, SensorType type, Date d1, Date d2);
+	List<Event> findByDeviceAndTypeAndDateBetweenOrderByDateDesc(Device device, SensorType type, Date d1, Date d2);
 
 	List<Event> findByDeviceAndTypeAndBinValueAndDateBetween(Device device, SensorType type, Boolean binValue, Date d1,
 			Date d2);
