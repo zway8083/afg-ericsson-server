@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,6 +52,12 @@ public class EventTask {
 	private String path;
 	private EventStat eventStat;
 
+	private static final int MARGIN_END = 3;
+	private static final int MARGIN_INIT = 1;
+	private static final int WAKEUP_EVENT_INTERVAL = 10 * 60 * 1000; // Milliseconds
+	private static final int WAKEUP_GROUP_SIZE = 5;
+	private static final int MONTH_INTERVAL_GRADE = 3;
+
 	public EventTask(Device device, DateTime date, SensorTypeRepository sensorTypeRepository,
 			EventRepository eventRepository, EventStatRepository eventStatRepository,
 			UserLinkRepository userLinkRepository, String path) {
@@ -76,13 +81,12 @@ public class EventTask {
 				updateEventStat(eventStat);
 			}
 		}
-
 	}
 
 	private void updateEventStat(EventStat eventStat) {
 		Date date = new Date(eventStat.getDate().getTime() + 1);
-		DateTime weekAgo = new DateTime(date).minusWeeks(1);
-		EventStat eventMaxMvts = eventStatRepository.findFirstByDateBetweenOrderByMvtsDesc(weekAgo.toDate(), date);
+		DateTime minDate = new DateTime(date).minusMonths(MONTH_INTERVAL_GRADE);
+		EventStat eventMaxMvts = eventStatRepository.findFirstByDateBetweenOrderByMvtsDesc(minDate.toDate(), date);
 		EventStat eventMinMvts = eventStatRepository.findFirstByDateBeforeAndMvtsGreaterThanEqualOrderByMvtsAsc(date,
 				3);
 		if (eventMaxMvts == null || eventMinMvts == null || eventMaxMvts == eventMinMvts) {
@@ -95,7 +99,7 @@ public class EventTask {
 		eventStatRepository.save(eventStat);
 	}
 
-	public void createEventStat() {
+	private void createEventStat() {
 		eventStat = new EventStat();
 		eventStat.setDate(date.getMillis());
 		eventStat.setDevice(device);
@@ -105,7 +109,6 @@ public class EventTask {
 	}
 
 	private void setNightLimits() {
-		// Time
 		DateTime timeSleepStart = null;
 		DateTime timeSleepEnd = null;
 
@@ -117,110 +120,53 @@ public class EventTask {
 			return;
 		}
 
-		// Theoretical start/end of night
-		DateTime startTheo = date.minusDays(1).withHourOfDay(timeSleepStart.getHourOfDay())
-				.withMinuteOfHour(timeSleepStart.getMinuteOfHour()).withSecondOfMinute(0);
-		DateTime endTheo = date.withHourOfDay(timeSleepEnd.getHourOfDay())
-				.withMinuteOfHour(timeSleepEnd.getMinuteOfHour()).withSecondOfMinute(0);
+		// Given theoretical start/end of night
+		DateTime startTheo = date.minusDays(1).withMillisOfDay(0).withHourOfDay(timeSleepStart.getHourOfDay())
+				.withMinuteOfHour(timeSleepStart.getMinuteOfHour());
+		DateTime endTheo = date.withMillisOfDay(0).withHourOfDay(timeSleepEnd.getHourOfDay())
+				.withMinuteOfHour(timeSleepEnd.getMinuteOfHour());
 
-		// Margin of error on the start/end theoretical values (hour)
-		int margin = 1;
-		DateTime startLimit = startTheo.minusHours(margin);
-		DateTime endLimit = endTheo.plusHours(margin);
+		logger.info("Finding " + date.toString("dd/MM/yyyy") + " night limits for user id=" + user.getId());
 
-		// Events from startLimit to endLimit
-		List<Event> events = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
-				sensorTypeRepository.findByName("luminescence"), startLimit.toDate(), endLimit.toDate());
+		DateTime timeLimit = startTheo.plusHours(MARGIN_INIT);
+		List<Event> movEvents = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateDesc(device,
+				sensorTypeRepository.findByName("motion"), startTheo.toDate(), timeLimit.toDate());
+		startNight = findNightLimit(startTheo, movEvents);
 
-		if (events.size() == 0) {
-			logger.info("No event found");
-			return;
-		}
-
-		Double average = eventRepository.getAverageTypeBetween(device.getId(),
-				sensorTypeRepository.findByName("luminescence").getId(), startLimit.toDate(), endLimit.toDate());
-
-		logger.info("Finding " + date.toString("dd/MM/yyyy") + " night limits for user id=" + user.getId()
-				+ " with lux avg=" + average + ", count=" + events.size());
-
-		startNight = findStartNightLimit(events, startTheo, margin, average);
-		Collections.reverse(events);
-		endNight = findEndNightLimit(events, endTheo, margin, average);
+		timeLimit = endTheo.plusHours(MARGIN_END);
+		movEvents = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+				sensorTypeRepository.findByName("motion"), endTheo.toDate(), timeLimit.toDate());
+		endNight = findNightLimit(endTheo, movEvents);
 
 		logger.info("Found limits (id=" + user.getId() + "): " + "start=" + startNight.toString("dd/MM/yyyy HH:mm")
 				+ ", end=" + endNight.toString("dd/MM/yyyy HH:mm"));
 	}
 
-	private DateTime findEndNightLimit(List<Event> events, DateTime dateTime, int margin, Double average) {
+	private DateTime findNightLimit(DateTime timeTheo, List<Event> eventsMov) {
 		int i = 0;
-		int size = events.size();
-		int last = 0;
+		int size = eventsMov.size();
+
+		ArrayList<ArrayList<Event>> eventLists = new ArrayList<>();
+		ArrayList<Event> list = new ArrayList<>();
+
 		while (i < size) {
-			if (new DateTime(events.get(i).getDate()).isAfter(startNight.plusHours(10))) {
+			list.add(eventsMov.get(i));
+			while (i + 1 < size && (eventsMov.get(i + 1).getDate().getTime()
+					- eventsMov.get(i).getDate().getTime()) < WAKEUP_EVENT_INTERVAL) {
+				list.add(eventsMov.get(i + 1));
 				i++;
-				last = i;
-				continue;
 			}
-			if (events.get(i).getDate().getTime() <= dateTime.minusHours(3).getMillis())
-				break;
-			int j = i;
-			while (j < size && events.get(j).getdValue() > average)
-				j++;
-			if (j != i)
-				last = j - 1;
-			i = ++j;
-		}
-		dateTime = new DateTime(events.get(last).getDate());
-
-		List<Event> eventsMov = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
-				sensorTypeRepository.findByName("motion"), dateTime.minusHours(3).toDate(), dateTime.toDate());
-		size = eventsMov.size();
-		i = 0;
-		while (i + 1 < size) {
-			int row = 0;
-			while (i + row + 1 < size && (eventsMov.get(i + 1 + row).getDate().getTime()
-					- eventsMov.get(i + row).getDate().getTime()) <= 10 * 60 * 1000)
-				row++;
-			if (row > 2)
-				return new DateTime(eventsMov.get(i).getDate());
-			i += row;
-			row = 0;
-
-			while (i + 1 < size
-					&& (eventsMov.get(i + 1).getDate().getTime() - eventsMov.get(i).getDate().getTime()) > 10 * 60
-							* 1000)
-				i++;
-		}
-
-		return new DateTime(eventsMov.get(i).getDate());
-	}
-
-	private DateTime findStartNightLimit(List<Event> events, DateTime dateTime, int margin, Double average) {
-		int i = 0;
-		int size = events.size();
-		int last = 0;
-		while (i < size) {
-			if (events.get(i).getDate().getTime() > dateTime.plusHours(3).getMillis())
-				break;
-
-			int j = i;
-			while (j < size && events.get(j).getdValue() > average)
-				j++;
-
-			if (j != i)
-				last = j;
-			i = ++j;
-		}
-
-		dateTime = new DateTime(events.get(last).getDate());
-		List<Event> eventsMov = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
-				sensorTypeRepository.findByName("motion"), dateTime.toDate(), dateTime.plusHours(3).toDate());
-		i = 0;
-		size = eventsMov.size();
-		while (i + 1 < size
-				&& (eventsMov.get(i + 1).getDate().getTime() - eventsMov.get(i).getDate().getTime()) < 10 * 60 * 1000)
+			eventLists.add(list);
+			list = new ArrayList<>();
 			i++;
-		return new DateTime(eventsMov.get(i).getDate());
+		}
+
+		for (ArrayList<Event> events : eventLists) {
+			if (events.size() >= WAKEUP_GROUP_SIZE)
+				return new DateTime(events.get(0).getDate());
+		}
+
+		return timeTheo;
 	}
 
 	private List<List<Event>> getEventLists() {
@@ -273,25 +219,32 @@ public class EventTask {
 
 	public String createHTMLBody() {
 		Period period = new Period(eventStat.getDuration().getTime());
+		DateTime dateTime = new DateTime(eventStat.getDate());
 
 		String bodyHTML = HTMLGenerator.strongAttributeValue("Sujet", user.getName(), 0)
 				+ HTMLGenerator.strongAttributeValue("Période",
-						startNight.toString("dd/MM/yyyy HH:mm") + " - " + endNight.toString("dd/MM/yyyy HH:mm"), 0)
+						dateTime.minusDays(1).toString("dd/MM/yyyy") + " au " + dateTime.toString("dd/MM/yyyy"), 0)
+				+ HTMLGenerator.strongAttribute("Valeurs éstimées", 0)
+				+ HTMLGenerator.strongAttributeValue("Endormissement", startNight.toString("HH:mm"), 1)
+				+ HTMLGenerator.strongAttributeValue("Réveil", endNight.toString("HH:mm"), 1)
 				+ HTMLGenerator.strongAttributeValue("Durée", period.getHours() + "h et " + period.getMinutes() + "m",
-						0)
+						1)
 				+ HTMLGenerator.strongAttributeValue("Score", String.valueOf(eventStat.getGrade()) + "%", 0)
 				+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventMotion.size()), 0)
 				+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
 
-		DateTime time = startNight;
-		while (time.isEqual(endNight) == false) {
-			DateTime endTime = time.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
+		DateTime startTime = new DateTime(user.getSleepStart());
+		dateTime = dateTime.minusDays(1).withMillisOfDay(0).withHourOfDay(startTime.getHourOfDay())
+				.withMinuteOfHour(startTime.getMinuteOfHour());
+		while (dateTime.isEqual(endNight) == false) {
+			DateTime endTime = dateTime.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
 			if (endTime.isAfter(endNight))
 				endTime = endNight;
 			Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
-					sensorTypeRepository.findByName("motion"), true, time.toDate(), endTime.toDate());
-			bodyHTML += HTMLGenerator.value(time.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count, 1);
-			time = endTime;
+					sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
+			bodyHTML += HTMLGenerator.value(dateTime.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count,
+					1);
+			dateTime = endTime;
 		}
 
 		Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,

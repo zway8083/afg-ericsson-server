@@ -104,7 +104,7 @@ public class ObservationController {
 					grade = 1;
 				else
 					grade = 0;
-				Description description = new Description(null, "", "Note: " + eventStat.getGrade() + "%", grade);
+				Description description = new Description(null, "", "Score : " + eventStat.getGrade() + "%", grade);
 				descriptions.add(description);
 			} else {
 				Observation observation = observationRepository.findOne(new ObservationPK(subject, date, time));
