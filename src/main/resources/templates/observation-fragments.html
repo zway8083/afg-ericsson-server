@@ -31,7 +31,7 @@
 		    				</div>
 		    				<div class="col-xs-12 col-sm-6 cell cell-right obs-grade" th:value="${description.grade}"
 		    					th:classappend="${(iTimeStat.first and iStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '') + (iStat.last ? ' cell-last' : '')}">
-		    					<th:block th:if="${#authorization.expression('hasRole(''ADMIN'')') or description.observator.id == userId}">
+		    					<th:block th:if="${description.observator != null and (#authorization.expression('hasRole(''ADMIN'')') or description.observator.id == userId)}">
 			    					<button type="button" class="pull-right button-delete" th:value="${description.id}"><span class="glyphicon glyphicon-remove"></span></button>
 			    					<div class="pull-right" style="width:31px; height: 25px">&nbsp;</div>
 		    					</th:block>

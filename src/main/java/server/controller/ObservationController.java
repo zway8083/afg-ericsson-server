@@ -18,12 +18,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import server.database.model.Description;
+import server.database.model.EventStat;
 import server.database.model.Observation;
 import server.database.model.ObservationPK;
 import server.database.model.Time;
 import server.database.model.User;
 import server.database.model.UserLink;
 import server.database.repository.DescriptionRepository;
+import server.database.repository.DeviceRepository;
+import server.database.repository.EventStatRepository;
 import server.database.repository.ObservationRepository;
 import server.database.repository.TimeRepository;
 import server.database.repository.UserLinkRepository;
@@ -45,6 +48,10 @@ public class ObservationController {
 	private DescriptionRepository descriptionRepository;
 	@Autowired
 	private UserLinkRepository userLinkRepository;
+	@Autowired
+	private EventStatRepository eventStatRepository;
+	@Autowired
+	private DeviceRepository deviceRepository;
 
 	@GetMapping(path = "/observation")
 	public String initObservation(Authentication authentication, Model model) {
@@ -86,17 +93,31 @@ public class ObservationController {
 		List<Time> allTimes = timeRepository.findAllByOrderByChronoAsc();
 		List<Time> times = new ArrayList<>();
 		for (Time time : allTimes) {
-			Observation observation = observationRepository.findOne(new ObservationPK(subject, date, time));
-			if (observation == null) {
-				continue;
+			List<Description> descriptions = new ArrayList<>();
+			if (time.getChrono() == -10) {
+				EventStat eventStat = eventStatRepository.findByDeviceAndDate(deviceRepository.findOneByUser(subject),
+						curDate.toDate());
+				Integer grade;
+				if (eventStat.getGrade() < 60)
+					grade = 2;
+				else if (eventStat.getGrade() < 90)
+					grade = 1;
+				else
+					grade = 0;
+				Description description = new Description(null, "", "Note: " + eventStat.getGrade() + "%", grade);
+				descriptions.add(description);
+			} else {
+				Observation observation = observationRepository.findOne(new ObservationPK(subject, date, time));
+				if (observation == null)
+					continue;
+				descriptions = observation.getDescriptions();
 			}
-			List<Description> descriptions = observation.getDescriptions();
 			if (descriptions == null || descriptions.size() == 0)
 				continue;
 			hashtable.put(time.getChrono(), descriptions);
 			times.add(time);
 		}
-		
+
 		model.addAttribute("times", times);
 		model.addAttribute("allTimes", allTimes);
 		model.addAttribute("hashtable", hashtable);
@@ -128,9 +149,10 @@ public class ObservationController {
 		observationRepository.save(observation);
 		return observation(principal, model, new InitObservationForm(subject.getId(), form.getDate()));
 	}
-	
-	@PostMapping(path="/observation/delete")
-	public String deleteObservation(Principal principal, Model model, @ModelAttribute(name="delForm") DeleteObservationForm delForm) {
+
+	@PostMapping(path = "/observation/delete")
+	public String deleteObservation(Principal principal, Model model,
+			@ModelAttribute(name = "delForm") DeleteObservationForm delForm) {
 		User user = userRepository.findByEmail(principal.getName());
 		Description description = descriptionRepository.findOne(delForm.getDescriptionId());
 		if (description.getObservator().getId() == user.getId() || principal.getName() == "admin") {
