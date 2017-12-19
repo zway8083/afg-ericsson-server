@@ -37,10 +37,7 @@ public class NewAccompanistRunnable extends EmailRunnable {
 					+ HTMLGenerator.strongAttributeValue("Utilisateur", recipient, 1)
 					+ HTMLGenerator.strongAttributeValue("Mot de passe", rawPassword, 1);
 		}
-		email.concatBody(htmlBody);
-		System.out.println(recipient);
-		System.out.println(htmlBody);
-		
+		email.concatBody(htmlBody);		
 		try {
 			email.send();
 			logger.info("New user email sent to " + recipient + " added by " + (userName != null ? userName : "admin"));

@@ -55,7 +55,7 @@ public class ReportRunnable implements Runnable {
 			if (recipients == null)
 				logger.warn("Nothing sent for device id = " + device.getId());
 		} catch (Exception e) {
-			logger.error("Report error for device id = " + device.getId() + ": " + e);
+			logger.error("Report error for device id = " + device.getId() + ": " + e.getMessage());
 		}
 	}
 }

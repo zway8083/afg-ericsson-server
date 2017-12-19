@@ -33,7 +33,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import server.database.model.Device;
 import server.database.model.User;
@@ -44,6 +43,8 @@ import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
+import server.exception.MissingSleepTimesException;
+import server.exception.NoMotionException;
 import server.model.ReportInfos;
 import server.task.EventTask;
 import server.utils.DateConverter;
@@ -74,11 +75,11 @@ public class ReportController {
 	private String host;
 
 	@GetMapping(path = "/report")
-	public String reportForm(Authentication authentication, Model model, @RequestParam(required=false, name="email") String email) {
+	public String reportForm(Authentication authentication, Model model) {
 		@SuppressWarnings("unchecked")
 		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
 				.getAuthorities();
-		
+
 		List<User> subjects = null;
 		if (authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 			subjects = userRepository.findBySubject(true);
@@ -122,64 +123,72 @@ public class ReportController {
 			return null;
 		}
 	}
-	
-	@PostMapping(path="/report")
-	public String report(@ModelAttribute(name="report") ReportInfos report, Model model) {
+
+	@PostMapping(path = "/report")
+	public String report(@ModelAttribute(name = "report") ReportInfos report, Model model) {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
 		User subject = userRepository.findOne(report.getId());
 		Device device = deviceRepository.findOneByUser(subject);
-		
-		String reportHTML = null;
-		if (eventStatRepository.findByDeviceAndDate(device, date.toDate()) != null) {
-			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
-					userLinkRepository, path);
-			reportHTML = eventTask.createHTMLBody();
-		} else {
-			do {
-				@SuppressWarnings("unused")
-				EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
-						userLinkRepository, path);
-				date = date.minusDays(1);
-			} while (eventStatRepository.findByDeviceAndDate(device, date.toDate()) == null);
-			date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
-			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
-					userLinkRepository, path);
-			reportHTML = eventTask.createHTMLBody();
+
+		try {
+			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository,
+					eventStatRepository, userLinkRepository, path);
+			String reportHTML = eventTask.createHTMLBody();
+			model.addAttribute("reportHTML", reportHTML);
+		} catch (MissingSleepTimesException e) {
+			return "redirect:/report?error=sleepTimes";
+		} catch (NoMotionException e) {
+			return "redirect:/report?error=data";
 		}
-		
+
 		model.addAttribute("showReport", true);
-		model.addAttribute("reportHTML", reportHTML);
 		model.addAttribute("report", report);
-		
+
 		return "report";
 	}
 
-	@PostMapping(path="/report/mail")
+	@PostMapping(path = "/report/mail")
 	public String reportMail(Principal principal, @ModelAttribute ReportInfos report, Model model) {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
 		User subject = userRepository.findOne(report.getId());
 		Device device = deviceRepository.findOneByUser(subject);
-		
-		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
-		userLinkRepository, path);
-		List<String> recipients = eventTask.sendEmail(Arrays.asList(principal.getName()), id, password, host, null);
-		
+
+		List<String> recipients = null;
+		try {
+			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository,
+					eventStatRepository, userLinkRepository, path);
+			recipients = eventTask.sendEmail(Arrays.asList(principal.getName()), id, password, host, null);
+		} catch (MissingSleepTimesException e) {
+			return "redirect:/report?error=sleepTimes";
+		} catch (NoMotionException e) {
+			return "redirect:/report?error=data";
+		}
+
 		if (recipients == null)
-			return "redirect:/report?error&email=" + principal.getName();
+			return "redirect:/report?error=email&email=" + principal.getName();
 		return "redirect:/report?email=" + principal.getName();
 	}
-	
-	@PostMapping(path="/report/dwn")
-	public void reportDwn(HttpServletResponse response, Principal principal, @ModelAttribute ReportInfos report) throws IOException {
+
+	@PostMapping(path = "/report/dwn")
+	public void reportDwn(HttpServletResponse response, Principal principal, @ModelAttribute ReportInfos report)
+			throws IOException {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
 		User user = userRepository.findByEmail(principal.getName());
 		User subject = userRepository.findOne(report.getId());
 		Device device = deviceRepository.findOneByUser(subject);
-		
-		EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
-		userLinkRepository, path);
+
+		EventTask eventTask = null;
+		try {
+			eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
+					userLinkRepository, path);
+		} catch (MissingSleepTimesException e) {
+			response.sendRedirect("/report?error=sleepTimes");
+		} catch (NoMotionException e) {
+			response.sendRedirect("/report?error=data");
+		}
+
 		ArrayList<String> files = eventTask.createCsvReport();
-		
+
 		String name = "reports_" + date.toString("dd-MM-yyyy") + "_" + user.getId() + ".zip";
 		String zipFilePath = zipFiles(name, files);
 		if (zipFilePath == null)

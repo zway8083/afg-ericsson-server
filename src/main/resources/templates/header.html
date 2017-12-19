@@ -30,7 +30,7 @@
 					<th:block sec:authorize="isAuthenticated()">
 						<ul class="nav navbar-nav">
 							<th:block sec:authorize="hasAuthority('ADD_ANY')">
-								<li  class="dropdown">
+								<li class="dropdown">
 									<a class="dropdown-toggle" data-toggle="dropdown" href="#">Ajouts<span class="caret"></span></a>
 									<ul class="dropdown-menu">
 										<li><a href="/add/role">Rôle</a></li>
@@ -38,9 +38,16 @@
 										<li><a href="/add/device">Capteur</a></li>
 										<li><a href="/add/link">Liens utilisateurs</a></li>
 										<li><a href="/add/raspberry">Liens Raspberry-utilisateur</a></li>
-									</ul></li>
-								<li><a href="/get/users">Utilisateurs</a></li>
-								<li><a href="/raspberry">Raspberry I/O</a></li>
+									</ul>
+								</li>
+								<li class ="dropdown">
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#">Outils<span class="caret"></span></a>
+									<ul class="dropdown-menu">
+										<li><a href="/get/users">Liste utilisateurs</a></li>
+										<li><a href="/raspberry">Raspberry I/O</a></li>
+										<li><a href="/generate/eventstat">Recalculer les EventStats</a></li>
+									</ul>
+								</li>
 							</th:block>
 							<li sec:authorize="hasAuthority('GENERATE_NIGHT_REPORT')"><a href="/report">Rapport</a></li>
 							<li sec:authorize="hasAuthority('CREATE_ACCOMPANIST')"><a href="/accompanist">Accompagnateurs</a></li>

@@ -97,6 +97,8 @@ public class ObservationController {
 			if (time.getChrono() == -10) {
 				EventStat eventStat = eventStatRepository.findByDeviceAndDate(deviceRepository.findOneByUser(subject),
 						curDate.toDate());
+				if (eventStat == null || eventStat.getGrade() == null)
+					continue;
 				Integer grade;
 				if (eventStat.getGrade() < 60)
 					grade = 2;
@@ -158,7 +160,6 @@ public class ObservationController {
 		if (description.getObservator().getId() == user.getId() || principal.getName() == "admin") {
 			Observation observation = observationRepository.findByDescription(description.getId());
 			List<Description> descriptions = observation.getDescriptions();
-			System.out.println(descriptions.size());
 			if (descriptions.size() == 1)
 				observationRepository.delete(observation);
 			else {

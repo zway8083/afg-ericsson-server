@@ -19,7 +19,6 @@ public class LoginController {
 
 	@PostMapping(path = "/api/login")
 	public ResponseEntity<?> login(@RequestBody LoginForm loginForm) {
-		System.out.println(loginForm.toString());
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		User user = userRepository.findByEmail(loginForm.getUsername());
 		if (user == null || !encoder.matches(loginForm.getPassword(), user.getPassword()))

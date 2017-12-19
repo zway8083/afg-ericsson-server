@@ -22,6 +22,8 @@ public class EventStat {
 	private Integer mvts;
 	private Time duration;
 	private Integer grade;
+	private java.util.Date startNight;
+	private java.util.Date endNight;
 
 	public EventStat() {
 	}
@@ -81,6 +83,22 @@ public class EventStat {
 			this.grade = 100;
 		else
 			this.grade = grade;
+	}
+
+	public java.util.Date getStartNight() {
+		return startNight;
+	}
+
+	public void setStartNight(java.util.Date startNight) {
+		this.startNight = startNight;
+	}
+
+	public java.util.Date getEndNight() {
+		return endNight;
+	}
+
+	public void setEndNight(java.util.Date endNight) {
+		this.endNight = endNight;
 	}
 
 }

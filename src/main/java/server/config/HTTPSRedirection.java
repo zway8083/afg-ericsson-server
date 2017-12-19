@@ -33,6 +33,7 @@ public class HTTPSRedirection {
 				collection.addPattern("/report/*");
 				collection.addPattern("/accompanist");
 				collection.addPattern("/observation/*");
+				collection.addPattern("/generate/*");
 				collection.addPattern("/account");
 				collection.addPattern("/login");
 				collection.addPattern("/forgot");

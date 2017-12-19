@@ -33,7 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.and()
 				.authorizeRequests()
 					.antMatchers("/", "/api/**", "/forgot", "/css/main.css").permitAll()
-					.antMatchers("/add/**", "/get/**", "/raspberry", "/speech").hasAuthority("ADD_ANY")
+					.antMatchers("/add/**", "/get/**", "/raspberry", "/speech", "/generate/**").hasAuthority("ADD_ANY")
 					.antMatchers("/report").hasAuthority("GENERATE_NIGHT_REPORT")
 					.antMatchers("/accompanist").hasAuthority("CREATE_ACCOMPANIST")
 					.antMatchers("/observation").hasAnyAuthority("READ_BEHAVIOUR_OBSERVATION", "CREATE_BEHAVIOUR_OBSERVATION")

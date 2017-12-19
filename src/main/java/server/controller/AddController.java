@@ -197,7 +197,7 @@ public class AddController {
 
 	@PostMapping(path = "/raspberry")
 	public @ResponseBody String addRaspberry(@ModelAttribute(name = "link") RaspberryLink link) {
-		System.out.println(link.getCreate());
+		//System.out.println(link.getCreate());
 		Raspberry raspberry = null;
 		if (link.getCreate()) {
 			raspberry = new Raspberry();
@@ -215,7 +215,7 @@ public class AddController {
 		} catch (DataIntegrityViolationException e) {
 			return "Ce lien ne peut pas être ajouté : " + user.getName() + " est déjà associé à un Raspberry.";
 		}
-		System.out.println(raspberry.getId() + " " + raspberry.getUsers().size());
+		//System.out.println(raspberry.getId() + " " + raspberry.getUsers().size());
 		return raspberry.getId() + " -> " + user.getName();
 	}
 }

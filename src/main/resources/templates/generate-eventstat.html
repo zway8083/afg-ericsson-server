@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="header :: head">
+    <title id="pageTitle">EventStat</title>
+</head>
+<body>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<div th:if="${param.success}" class="alert alert-success">Calculs effectués</div>
+		<h2>Recalculer les EventStats</h2>
+    	<form action="#" th:action="@{/generate/eventstat}" th:object="${form}" method="post">
+			<div class="row">
+				<div class="form-group col-md-4">
+					<label for="subjectId">Sujet :</label>
+		        	<select id="subjectId" th:field="*{id}" class="form-control" required="required">
+		        		<option th:each="subject : ${subjects}" 
+		        			th:text="${subject.firstName + ' ' + subject.lastName}"
+		        			th:value="${subject.id}">
+		        		</option>
+		        	</select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-4">
+					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+				</div>
+			</div>
+    	</form>
+    </div>
+    <div th:replace="footer :: footer"></div>
+</body>
+</html>
