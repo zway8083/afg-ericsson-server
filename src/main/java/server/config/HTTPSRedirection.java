@@ -36,6 +36,7 @@ public class HTTPSRedirection {
 				collection.addPattern("/generate/*");
 				collection.addPattern("/account");
 				collection.addPattern("/login");
+				collection.addPattern("/logout");
 				collection.addPattern("/forgot");
 				collection.addPattern("/settings");
 				securityConstraint.addCollection(collection);

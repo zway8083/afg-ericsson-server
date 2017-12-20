@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -32,7 +32,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.csrf().ignoringAntMatchers("/api/**")
 			.and()
 				.authorizeRequests()
-					.antMatchers("/", "/api/**", "/forgot", "/css/main.css").permitAll()
+					.antMatchers("/", "/api/**", "/forgot").permitAll()
 					.antMatchers("/add/**", "/get/**", "/raspberry", "/speech", "/generate/**").hasAuthority("ADD_ANY")
 					.antMatchers("/report").hasAuthority("GENERATE_NIGHT_REPORT")
 					.antMatchers("/accompanist").hasAuthority("CREATE_ACCOMPANIST")
@@ -44,18 +44,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.rememberMe()
 				.tokenValiditySeconds(7 * 24 * 60 * 60)
 				.tokenRepository(persistentTokenRepository())
-			.and().logout().permitAll();
+			.and()
+				.logout().permitAll()
+			.and()
+				.exceptionHandling().accessDeniedHandler(accessDeniedHandler());
 	}
 
 	@Autowired
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(authenticationProvider());
 		auth.userDetailsService(userDetailsService);
-	}
-
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/css/main.css");
 	}
 
 	@Bean
@@ -77,4 +75,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		tokenRepositoryImpl.setDataSource(dataSource);
 		return tokenRepositoryImpl;
 	}
+	
+	@Bean
+	public AccessDeniedHandler accessDeniedHandler(){
+	    return new CustomAccessDeniedHandler();
+	}
+	
 }
