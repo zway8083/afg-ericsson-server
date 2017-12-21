@@ -9,6 +9,11 @@
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
+		<th:block th:if="${param.error}">
+			<div th:if="${param.error[0] == 'email'}" class="alert alert-danger">Ajout impossible : cette adresse email est déjà utilisée.</div>
+			<div th:if="${param.message}" class="alert alert-danger" th:text="${'Ajout impossible : ' + param.message[0]}"></div>
+		</th:block>
+		<div th:if="${param.success}" class="alert alert-success">L'utilisateur a bien été ajouté.</div>	
 		<h2>Utilisateur</h2>
     	<form action="#" id="form" th:action="@{/add/user}" th:object="${userForm}" method="post">
     		<div class="form-group">
@@ -37,10 +42,12 @@
     		<div id = "sleepStart" class="form-group">
 		    	<label for="sleepStartInput">Heure de couché habituelle : </label>
 		    	<input id="sleepStartInput" type="time" th:field="*{sleepStart}"/>
+		    	<code>par défaut : 22h00</code>
     		</div>
     		<div id = "sleepEnd" class="form-group">
 		    	<label for="sleepEndInput">Heure de levé habituelle : </label>
 		    	<input id="sleepEndInput" type="time" th:field="*{sleepEnd}"/>
+		    	<code>par défaut : 07h00</code>
     		</div>
 			<button type="submit" class="btn btn-success">
 				<span class="glyphicon glyphicon-plus"></span> Ajouter

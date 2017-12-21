@@ -16,6 +16,7 @@
 			<div th:if="${param.error[0] == 'email'} and ${param.email}" class="alert alert-danger" th:text="${'Le rapport n''a pas pu être envoyé à l''adresse : ' + param.email[0]}"></div>
 			<div th:if="${param.error[0] == 'sleepTimes'}" class="alert alert-danger">Les heures de couché et levé du sujet n'ont pas été renseignées.</div>
 			<div th:if="${param.error[0] == 'data'}" class="alert alert-warning">Aucun rapport n'a été trouvé à cette date.</div>
+			<div th:if="${param.error[0] == 'device'}" class="alert alert-warning">Aucun capteur n'est associé à ce sujet.</div>
 		</th:block>
 		<th:block th:if="${param.error} == null">
 			<div th:if="${param.email}" class="alert alert-success" th:text="${'Le rapport a bien été envoyé à l''adresse : ' + param.email[0]}"></div>

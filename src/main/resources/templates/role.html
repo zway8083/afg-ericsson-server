@@ -6,6 +6,11 @@
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
+		<th:block th:if="${param.error}">
+			<div th:if="${param.error[0] == 'duplicate'}" class="alert alert-danger">Ce rôle existe déjà.</div>
+			<div th:if="${param.message}" class="alert alert-danger" th:text="${'Création impossible : ' + param.message[0]}"></div>
+		</th:block>
+		<div th:if="${param.success}" class="alert alert-success">Le rôle a bien été créé.</div>
 		<h2>Rôle</h2>
 		<form action="#" th:action="@{/add/role}" th:object="${role}"
 			method="post">

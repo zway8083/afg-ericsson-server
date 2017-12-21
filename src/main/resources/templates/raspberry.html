@@ -10,6 +10,11 @@
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
+		<th:block th:if="${param.error}">
+			<div th:if="${param.error[0] == 'duplicate'} and ${param.name}" class="alert alert-danger" th:text="${'Association impossible : ' + param.name[0] + ' est déjà associé à un Raspberry.'}"></div>
+			<div th:if="${param.message}" class="alert alert-danger" th:text="${'Liaison impossible : ' + param.message[0]}"></div>
+		</th:block>
+		<div th:if="${param.success}" class="alert alert-success">Association réussit.</div>
 		<h2>Association Raspberry</h2>
 	    <form action="#" th:action="@{/add/raspberry}" th:object="${raspberryLink}" method="post">
 	    	<div class="form-group">

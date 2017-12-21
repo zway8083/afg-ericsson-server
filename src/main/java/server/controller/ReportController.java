@@ -129,7 +129,8 @@ public class ReportController {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
 		User subject = userRepository.findOne(report.getId());
 		Device device = deviceRepository.findOneByUser(subject);
-
+		if (device == null)
+			return "redirect:/report?error=device";
 		try {
 			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository,
 					eventStatRepository, userLinkRepository, path);
