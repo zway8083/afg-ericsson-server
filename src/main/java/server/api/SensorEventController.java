@@ -1,11 +1,15 @@
 package server.api;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +32,20 @@ public class SensorEventController {
 	private EventRepository eventRepository;
 	@Autowired
 	private SensorTypeRepository sensorTypeRepository;
+
+	@GetMapping("/{id}")
+	public ResponseEntity<Object> arduinoEvent(@PathVariable(name = "id", required = true) Long id) {
+		Device device = deviceRepository.findOne(id);
+		if (device == null)
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		Event event = new Event();
+		event.setType(sensorTypeRepository.findByName("motion"));
+		event.setBinValue(true);
+		event.setDate(new Date());
+		event.setDevice(device);
+		eventRepository.save(event);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
 	@PostMapping
 	public ResponseEntity<String> sensorEvent(@RequestBody EventRequest eventRequest) {

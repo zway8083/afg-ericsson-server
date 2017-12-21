@@ -31,13 +31,12 @@ public class AccountController {
 	
 	@PostMapping(path="/account")
 	public String accountForm(Principal principal, Model model, @ModelAttribute(name="form") AccountForm form) {
+		if (form.getNewPassword().length() < 6)
+			return "redirect:/acount?error=length";
 		User user = userRepository.findByEmail(principal.getName());
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11);
-		if (!encoder.matches(form.getOldPassword(), user.getPassword())) {
-			form.setOldPassword("");
-			model.addAttribute("form", form);
-			return "redirect:/account?error";
-		}
+		if (!encoder.matches(form.getOldPassword(), user.getPassword()))
+			return "redirect:/account?error=mismatch";
 		user.setPassword(encoder.encode(form.getNewPassword()));
 		userRepository.save(user);
 		return "redirect:/account?success";
