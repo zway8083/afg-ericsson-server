@@ -9,5 +9,5 @@ import server.database.model.Raspberry;
 
 public interface InputHistoryRepository extends CrudRepository<InputHistory, Long> {
 	InputHistory findOneByToken(String token);
-	InputHistory findFirstByRaspberryAndInputAndInputSentGreaterThanEqualOrderByInputSentDesc(Raspberry raspberry, String input, Date inputSent);
+	InputHistory findFirstByRaspberryAndOutputOrderByInputSentAsc(Raspberry raspberry, String Output);
 }
