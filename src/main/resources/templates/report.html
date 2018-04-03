@@ -27,17 +27,6 @@
 	    	<form action="#" th:action="@{/report}" th:object="${report}" method="post">
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="subjectId">Sujet :</label>
-			        	<select id="subjectId" th:field="*{id}" class="form-control" required="required">
-			        		<option th:each="subject : ${subjects}" 
-			        			th:text="${subject.firstName + ' ' + subject.lastName}"
-			        			th:value="${subject.id}">
-			        		</option>
-			        	</select>
-					</div>
-				</div>
-				<div class="row">
-					<div class="form-group col-md-4">
 						<label for="datetimepicker" class="">Date :</label>
 						<div class='input-group date' id='datetimepicker'>
 		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
@@ -45,6 +34,17 @@
 		                        <span class="glyphicon glyphicon-calendar"></span>
 		                    </span>
 		                </div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="subjectId">Sujet :</label>
+			        	<select id="subjectId" th:field="*{id}" class="form-control" required="required">
+			        		<option th:each="subject : ${subjects}" 
+			        			th:text="${subject.firstName + ' ' + subject.lastName}"
+			        			th:value="${subject.id}">
+			        		</option>
+			        	</select>
 					</div>
 				</div>
 				<div class="row">
@@ -65,23 +65,23 @@
 		</th:block>
 		
 		<th:block th:if="${showReport}">
-			<div class="container-fluid" style="padding-right: 0px; padding-left: 0px;">
-				<form th:action="@{/report}" th:object="${report1}" method="post">
-			    	<input type="hidden" th:value="*{date}" th:field="*{date}"/>
-			    	<input type="hidden" th:value="*{id}" th:field="*{id}"/>
+			<div class="container-fluid" style="padding-right: 0px; padding-left: 0px; margin-top: 10px; margin-bottom: 10px;">
+				<form th:action="@{/report}" th:object="${prevReport}" method="post">
+					<input type="hidden" th:value="*{date}" th:field="*{date}"/>
+					<input type="hidden" th:value="*{id}" th:field="*{id}"/>
 					<button type="submit" class="btn pull-left" th:inline="text">
 						<span class="glyphicon glyphicon-chevron-left"></span>[[*{date}]]
 					</button>
 				</form>
-				<form th:action="@{/report}" th:object="${report2}" method="post">
-			    	<input type="hidden" th:value="*{date}" th:field="*{date}"/>
-			    	<input type="hidden" th:value="*{id}" th:field="*{id}"/>
+				<form th:action="@{/report}" th:object="${nextReport}" method="post">
+					<input type="hidden" th:value="*{date}" th:field="*{date}"/>
+					<input type="hidden" th:value="*{id}" th:field="*{id}"/>
 					<button type="submit" class="btn pull-right" th:inline="text">
 						[[*{date}]]<span class="glyphicon glyphicon-chevron-right"></span>
 					</button>
 				</form>
 	    	</div>
-			<div class="well well-lg report-grade" th:utext="${reportHTML}" th:value="0"></div>
+			<div class="well well-lg report-grade" th:utext="${reportHTML}"></div>
 			<div style="padding-top: 10px; padding-bottom: 10px;" class="container">
 				<div class="col-md-4">
 					<form class="form-inline" action="#" th:action="@{/report/mail}" th:object="${report}" method="post">
