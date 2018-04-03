@@ -27,17 +27,6 @@
 	    	<form action="#" th:action="@{/report}" th:object="${report}" method="post">
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="datetimepicker" class="">Date :</label>
-						<div class='input-group date' id='datetimepicker'>
-		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
-		                    <span class="input-group-addon">
-		                        <span class="glyphicon glyphicon-calendar"></span>
-		                    </span>
-		                </div>
-					</div>
-				</div>
-				<div class="row">
-					<div class="form-group col-md-4">
 						<label for="subjectId">Sujet :</label>
 			        	<select id="subjectId" th:field="*{id}" class="form-control" required="required">
 			        		<option th:each="subject : ${subjects}" 
@@ -45,6 +34,17 @@
 			        			th:value="${subject.id}">
 			        		</option>
 			        	</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="datetimepicker" class="">Date :</label>
+						<div class='input-group date' id='datetimepicker'>
+		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
+		                    <span class="input-group-addon">
+		                        <span class="glyphicon glyphicon-calendar"></span>
+		                    </span>
+		                </div>
 					</div>
 				</div>
 				<div class="row">
