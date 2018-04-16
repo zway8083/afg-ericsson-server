@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="header :: head">
+    <title id="pageTitle">Generate a report</title>
+</head>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
+    <script src="/scripts/report.js"></script>
+	<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
+	<script src="/scripts/fr.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css"/>
+</head>
+<body>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<th:block th:if="${param.error}">
+			<div th:if="${param.error[0] == 'email'} and ${param.email}" class="alert alert-danger" th:text="${'Le rapport n''a pas pu être envoyé à l''adresse : ' + param.email[0]}"></div>
+			<div th:if="${param.error[0] == 'sleepTimes'}" class="alert alert-danger">The subject's sleep and wake times have not been completed.</div>
+			<div th:if="${param.error[0] == 'data'}" class="alert alert-warning">No reports were found in this date.</div>
+			<div th:if="${param.error[0] == 'device'}" class="alert alert-warning">No sensor is associated with this subject.</div>
+		</th:block>
+		<th:block th:if="${param.error} == null">
+			<div th:if="${param.email}" class="alert alert-success" th:text="${'Le rapport a bien été envoyé à l''adresse : ' + param.email[0]}"></div>
+		</th:block>
+		<h2>Report</h2>
+		<th:block th:if="${initForm}">
+	    	<form action="#" th:action="@{/report}" th:object="${report}" method="post">
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="datetimepicker" class="">Date :</label>
+						<div class='input-group date' id='datetimepicker'>
+		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
+		                    <span class="input-group-addon">
+		                        <span class="glyphicon glyphicon-calendar"></span>
+		                    </span>
+		                </div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="subjectId">Subject :</label>
+			        	<select id="subjectId" th:field="*{id}" class="form-control" required="required">
+			        		<option th:each="subject : ${subjects}" 
+			        			th:text="${subject.firstName + ' ' + subject.lastName}"
+			        			th:value="${subject.id}">
+			        		</option>
+			        	</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Validate</button>
+					</div>
+				</div>
+	    	</form>
+	        <script type="text/javascript">
+	            $(function () {
+	                $('#datetimepicker').datetimepicker({
+	                    locale: 'fr',
+	                    defaultDate: new Date(),
+	                    format: 'DD/MM/YYYY'
+	                });
+	            });
+	        </script>
+		</th:block>
+		
+		<th:block th:if="${showReport}">
+			<div class="container-fluid" style="padding-right: 0px; padding-left: 0px; margin-top: 10px; margin-bottom: 10px;">
+				<form th:action="@{/report}" th:object="${prevReport}" method="post">
+					<input type="hidden" th:value="*{date}" th:field="*{date}"/>
+					<input type="hidden" th:value="*{id}" th:field="*{id}"/>
+					<button type="submit" class="btn pull-left" th:inline="text">
+						<span class="glyphicon glyphicon-chevron-left"></span>[[*{date}]]
+					</button>
+				</form>
+				<form th:action="@{/report}" th:object="${nextReport}" method="post">
+					<input type="hidden" th:value="*{date}" th:field="*{date}"/>
+					<input type="hidden" th:value="*{id}" th:field="*{id}"/>
+					<button type="submit" class="btn pull-right" th:inline="text">
+						[[*{date}]]<span class="glyphicon glyphicon-chevron-right"></span>
+					</button>
+				</form>
+	    	</div>
+			<div class="well well-lg report-grade" th:utext="${reportHTML}"></div>
+			<div style="padding-top: 10px; padding-bottom: 10px;" class="container">
+				<div class="col-md-4">
+					<form class="form-inline" action="#" th:action="@{/report/mail}" th:object="${report}" method="post">
+						<button class="btn btn-info" type="submit"><span class="glyphicon glyphicon-envelope"></span> Send me a copy by email</button>
+						<input type="hidden" th:field="*{date}" th:value="*{date}"/>
+						<input type="hidden" th:field="*{id}" th:value="*{id}"/>
+					</form>
+				</div>
+				<div class="col-md-4">
+					<form class="form-inline" action="#" th:action="@{/report/dwn}" th:object="${report}" method="post">
+						<button class="btn btn-info" type="submit"><span class="glyphicon glyphicon-download-alt"></span> Download data records</button>
+						<input type="hidden" th:field="*{date}" th:value="*{date}"/>
+						<input type="hidden" th:field="*{id}" th:value="*{id}"/>
+					</form>
+				</div>
+			</div>
+		</th:block>
+		
+    </div>
+    <div th:replace="footer :: footer"></div>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="header :: head">
+    <title id="pageTitle">Raspberry-Users Association</title>
+</head>
+<head>
+    <link href="/css/switch.css" rel="stylesheet" />
+    <script src="/scripts/switch-form.js"></script>
+</head>
+<body>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<th:block th:if="${param.error}">
+			<div th:if="${param.error[0] == 'duplicate'} and ${param.name}" class="alert alert-danger" th:text="${'Association impossible : ' + param.name[0] + ' est déjà associé à un Raspberry.'}"></div>
+			<div th:if="${param.message}" class="alert alert-danger" th:text="${'Liaison impossible : ' + param.message[0]}"></div>
+		</th:block>
+		<div th:if="${param.success}" class="alert alert-success">Association succeeds.</div>
+		<h2>Raspberry Association</h2>
+	    <form action="#" th:action="@{/add/raspberry}" th:object="${raspberryLink}" method="post">
+	    	<div class="form-group">
+		    	<label for="switch">Create a new raspberry</label>
+	  			<input class="switch" id="switch" type="checkbox" th:field="*{create}"/>
+	        </div>
+	    	<div class="form-group">
+		    	<label for="user">Associate</label>
+	        	<select id="user" th:field="*{userId}">
+	        		<option th:each="subject : ${subjects}"
+	        			th:text="${subject.lastName + ' ' + subject.firstName}"
+	        			th:value="${subject.id}">
+	        		</option>
+	        	</select>
+	        </div>
+	    	<div class="form-group" id="raspberryList">
+	        	<label for="raspberry">with Raspberry</label>
+		        <select id="raspberry" th:field="*{raspberryId}">
+		        	<option th:each="raspberry : ${raspberries}"
+	        			th:text="${raspberry.id}"
+	        			th:value="${raspberry.id}">
+	        		</option>
+		        </select>
+	        </div>
+    		<div th:replace="form :: button-succ"></div>
+	    </form>
+    </div>
+    <div th:replace="footer :: footer"></div>
+</body>
+</html>

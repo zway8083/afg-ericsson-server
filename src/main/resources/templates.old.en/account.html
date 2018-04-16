@@ -34,15 +34,15 @@
 	    	<form action="#" id="form-password" th:action="@{/account}" th:object="${form}" method="post">
 	    		<div class="form-group">
 			    	<label for="oldPassword">Old password : </label>
-			    	<input class="form-control" id="oldPassword" type="password" th:field="*{oldPassword}" th:value="*{oldPassword}" placeholder="mandatory" required="required"/>
+			    	<input class="form-control" id="oldPassword" type="password" th:field="*{oldPassword}" th:value="*{oldPassword}" placeholder="obligatory" required="required"/>
 	    		</div>
 	    		<div class="form-group">
 			    	<label for="newPassword">New Password : </label>
-			    	<input class="form-control" id="newPassword" type="password" th:field="*{newPassword}" th:value="*{newPassword}" placeholder="mandatory" required="required"/>
+			    	<input class="form-control" id="newPassword" type="password" th:field="*{newPassword}" th:value="*{newPassword}" placeholder="obligatory" required="required"/>
 	    		</div>
 	    		<div class="form-group">
 			    	<label for="repeat">Repeat the password: </label>
-			    	<input class="form-control" id="repeat" type="password" placeholder="mandatory" required="required"/>
+			    	<input class="form-control" id="repeat" type="password" placeholder="obligatory" required="required"/>
 	    		</div>
 	    		<div class="form-group">
 					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Validate</button>

@@ -25,19 +25,19 @@
     		</div>
     		<div class="form-group">
 		    	<label for="lname">Name : </label>
-		    	<input id="lname" type="text" th:field="*{lastName}" placeholder="mandatory" required="required"/>
+		    	<input id="lname" type="text" th:field="*{lastName}" placeholder="obligatory" required="required"/>
     		</div>
     		<div class="form-group">
 		    	<label for="fname" >Surname : </label>
-		    	<input id="fname" type="text" th:field="*{firstName}" placeholder="mandatory" required="required"/>
+		    	<input id="fname" type="text" th:field="*{firstName}" placeholder="obligatory" required="required"/>
     		</div>
     		<div id="emailForm" class="form-group">
 		    	<label for="email">Email : </label>
-		    	<input id="email" type="email" th:field="*{email}" placeholder="mandatory"/>
+		    	<input id="email" type="email" th:field="*{email}" placeholder="obligatory"/>
     		</div>
     		<div id="passwordForm" class="form-group">
 		    	<label for="password">Password : </label>
-		    	<input id="password" type="password" th:field="*{password}" placeholder="mandatory" autocomplete="new-password"/>
+		    	<input id="password" type="password" th:field="*{password}" placeholder="obligatory" autocomplete="new-password"/>
     		</div>
     		<div id = "sleepStart" class="form-group">
 		    	<label for="sleepStartInput">Usual bedtime:</label>
@@ -45,7 +45,7 @@
 		    	<code>By default : 22h00</code>
     		</div>
     		<div id = "sleepEnd" class="form-group">
-		    	<label for="sleepEndInput">Usual Wake up : </label>
+		    	<label for="sleepEndInput">Usual getting up : </label>
 		    	<input id="sleepEndInput" type="time" th:field="*{sleepEnd}"/>
 		    	<code>By default : 07h00</code>
     		</div>

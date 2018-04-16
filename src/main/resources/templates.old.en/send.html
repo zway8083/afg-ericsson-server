@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="header :: head">
+	<title id="pageTitle">Raspberry I/O</title>
+</head>
+<head>
+	<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+	<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+	<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+	<script src="/scripts/app.js"></script>
+</head>
+<body>
+	<noscript>
+		<h2 style="color: #ff0000">Seems your browser doesn't support
+			Javascript! Websocket relies on Javascript being enabled. Please
+			enable Javascript and reload this page!</h2>
+	</noscript>
+	<div th:replace="header :: navbar"></div>
+	<div id="main-content" class="container">
+		<div class="row">
+			<div class="col-md">
+				<form class="form-inline" th:object="${scriptForm}">
+					<div class="form-group">
+						<label for="subject">Raspberry of :</label> <select id="subject" class="form-control" required="required">
+							<option th:each="subject : ${subjects}"
+								th:text="${subject.firstName + ' ' + subject.lastName}"
+								th:value="${subject.id}"></option>
+						</select>
+						<button id="connect" class="btn btn-default" type="submit">Connect</button>
+						<button id="disconnect" class="btn btn-default" type="submit"
+							disabled="disabled">Disconnect</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md">
+				<form class="form-inline">
+					<div class="form-group">
+						<label for="input">Input: </label> <input type="text" id="input"
+							class="form-control" placeholder="input" required="required"/>
+					</div>
+					<button id="send" class="btn btn-default" type="submit">Send</button>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md">
+				<table id="conversation" class="table table-striped">
+					<thead>
+						<tr>
+							<th>Outputs <i id="spinner" class="fa fa-spinner fa-spin" style="font-size:24px"></i></th>
+						</tr>
+					</thead>
+					<tbody id="outputs">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+    <div th:replace="footer :: footer"></div>
+</body>
+</html>

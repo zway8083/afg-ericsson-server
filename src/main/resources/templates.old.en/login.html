@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="header :: head">
+<title id="pageTitle">Login</title>
+</head>
+<body>
+	<div th:replace="header :: navbar"></div>
+	<th:block th:if="${!#authorization.expression('isAuthenticated()')}">
+		<div id="main-content" class="container">
+			<form class="form" th:action="@{/login}" method="post">
+				<div th:if="${param.error}" class="alert alert-danger">Invalid user or password.</div>
+				<div th:if="${param.logout}" class="alert alert-info">You have been disconnected.</div>
+				<div th:if="${param.forgot}" class="alert alert-success">A new password has been sent to you.</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="user" class="control-label">User : </label>
+						<input id="user" class="form-control" type="text" name="username" required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="password" class="control-label">Password : </label>
+						<input id="password" class="form-control" type="password" name="password" required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<a href="/forgot">Forgot your password ?</a>
+					</div>
+				</div>
+				<div class="form-check">
+					<label class="form-check-label">
+						<input type="checkbox" class="form-check-input" name="remember-me"/> Remember me
+					</label>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="form-group pull-right">
+							<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> Validate</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	    <div th:replace="footer :: footer"></div>
+	</th:block>
+</body>
+</html>
