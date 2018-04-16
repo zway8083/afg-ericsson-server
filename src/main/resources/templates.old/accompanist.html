@@ -7,24 +7,17 @@
 	<script src="/scripts/accompanist.js"></script>
 </head>
 <body>
-
-	<!--<form id="delete-form" th:action="@{/accompanist/delete}" th:object="${delForm}" method="post">
-		<input id="accompanistId" type="hidden" th:field="*{accompanistId}"></input>
-    	<input type="hidden" th:value="*{accompanistId}" th:field="*{accompanistId}"/>
-    	<input type="hidden" th:value="*{subjectId}" th:field="*{subjectId}"/>
-	</form>-->
-
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
-		<h2>Accompanists</h2>
+		<h2>Accompagnateurs</h2>
 
 		<form id="form" th:action="@{/accompanist}" th:object="${form}" method="post">
 		    <div class="table-responsive">
 		    	<table class="table table-bordered">
 		    		<thead>
 			    		<tr class="active">
-							<th>Subject</th>
-							<th>Accompanists</th>
+							<th>Sujet</th>
+							<th>Accompagnateurs</th>
 			    		</tr>
 		    		</thead>
 		    		<tbody>
@@ -43,10 +36,7 @@
 		    						<td th:if="${iStat.first}" th:rowspan="${accompanists.size()}"
 		    							th:text="${subject.firstName + ' ' + subject.lastName}"></td>
 				    				<td>
-				    					<button type="button" class="btn btn-delete pull-right">
-											<span class="glyphicon glyphicon-remove" style="color:red"></span>
-										</button>
-				    					<div th:text="${accompanist.firstName + ' ' + accompanist.lastName + ' - ' + accompanist.email}"></div>
+				    					<p th:text="${accompanist.firstName + ' ' + accompanist.lastName + ' - ' + accompanist.email}"></p>
 				    				</td>
 		    					</tr>
 		    				</th:block>
@@ -62,11 +52,11 @@
 			        		</td>
 			        		<td>
 			        			<div class="form-inline form-group">
-							    	<label for="lname">Name :</label>
+							    	<label for="lname">Nom :</label>
 				        			<input id="lname" th:field="*{lastName}" type="text" class="form-control" required="required"/>
 			        			</div>
 			        			<div class="form-inline form-group">
-							    	<label for="fname">Surname :</label>
+							    	<label for="fname">Prénom :</label>
 				        			<input id="fname" th:field="*{firstName}" type="text" class="form-control" required="required"/>
 			        			</div>
 			        			<div class="form-inline form-group">
@@ -79,7 +69,7 @@
 		    	</table>
 		    </div>
 			<button type="submit" class="btn btn-success pull-right">
-				<span class="glyphicon glyphicon-ok"></span> Validate
+				<span class="glyphicon glyphicon-ok"></span> Valider
 			</button>
 	    </form>
     </div>

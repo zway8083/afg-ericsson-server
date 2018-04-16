@@ -43,15 +43,15 @@
 	    </div>
 	    <div th:if="${times.size() == 0}">
 	    	<div class="container-fluid"><div class ="row"><div class="col-md-4">
-	    		<em>No observations</em>
+	    		<em>Aucune observation</em>
 	    	</div></div></div>
 	    </div>
 	    <th:block th:if="${canCreate}">
-	   	    <h3>Add an observation : </h3>
+	   	    <h3>Ajouter une observation :</h3>
 		    <div class="container-fluid">
 		    	<div class="row">
 		    		<div class="col-md-6 form-pad">
-		    			<label for="time">Time of the day : </label>
+		    			<label for="time">Moment de la journée :</label>
 						<select class="form-control" th:field="${form.timeId}" required="required">
 					   		<option th:each="time : ${allTimes}"
 					  			th:text="${time.name}"	
@@ -62,7 +62,7 @@
 		    	</div>
 		    	<div class="row form-pad">
 		    		<div class="col-md-6">
-		    			<label for="activity"> Activity :</label>
+		    			<label for="activity"> Activité :</label>
 		    			<div class="flexContainer">
 							<input id="activity" class="form-control inputField" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
 							<button class="button-mic" type="button" onclick="dictation('activity', this)"><img src="/img/mic.png" alt="Microphone"/></button>
@@ -85,7 +85,7 @@
 				    	<input type="hidden" th:value="${form.date}" th:field="${form.date}"/>
 				    	<input type="hidden" th:value="${form.subjectId}" th:field="${form.subjectId}"/>
 						<button type="submit" class="btn btn-success pull-right">
-							<span class="glyphicon glyphicon-plus"></span> Add
+							<span class="glyphicon glyphicon-plus"></span> Ajouter
 						</button>
 		    		</div>
 		    	</div>

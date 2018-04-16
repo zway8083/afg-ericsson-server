@@ -6,12 +6,12 @@
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
-		<div th:if="${param.success}" class="alert alert-success">Calculation performed</div>
-		<h2>Recalculate EventStats</h2>
+		<div th:if="${param.success}" class="alert alert-success">Calculs effectués</div>
+		<h2>Recalculer les EventStats</h2>
     	<form action="#" th:action="@{/generate/eventstat}" th:object="${form}" method="post">
 			<div class="row">
 				<div class="form-group col-md-4">
-					<label for="subjectId">Subject :</label>
+					<label for="subjectId">Sujet :</label>
 		        	<select id="subjectId" th:field="*{id}" class="form-control" required="required">
 		        		<option th:each="subject : ${subjects}" 
 		        			th:text="${subject.firstName + ' ' + subject.lastName}"
@@ -22,7 +22,7 @@
 			</div>
 			<div class="row">
 				<div class="col-md-4">
-					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Validate</button>
+					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
 				</div>
 			</div>
     	</form>

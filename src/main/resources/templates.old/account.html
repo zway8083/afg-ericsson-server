@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title id="pageTitle">My account</title>
+    <title id="pageTitle">Mon compte</title>
 </head>
 <head>
 	<link href="/css/account.css" rel="stylesheet" />
@@ -11,41 +11,41 @@
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
    		<div th:if="${param.error} and ${param.error[0] == 'mismatch'}" class="alert alert-danger">
-			Incorrect password.
+   			Mot de passe incorrect.
  		</div>
    		<div th:if="${param.error} and ${param.error[0] == 'length'}" class="alert alert-danger">
-			The password must be at least 6 characters long.
+   			Le mot de passe doit comporter au moins 6 caractères.
  		</div>
    		<div th:if="${param.success}" class="alert alert-success">
-			The password has been changed.
+   			Le mot de passe a bien été modifié.
  		</div>
-		<h2>My account</h2>
+		<h2>Mon compte</h2>
 		<div class="well">
 			<div class="width250">
-				<label for="name" class="control-label">Name </label>
+				<label for="name" class="control-label">Nom </label>
 				<input id="name" class="form-control" th:placeholder="${name}" disabled="disabled"/>
 				<label for="email" class="control-label">Email </label>
 				<input id="email" class="form-control" th:placeholder="${email}" disabled="disabled"/>
 			</div>
 		</div>
 		<div class="well clearfix">
-			<h3>Change password</h3>
+			<h3>Changer de mot de passe</h3>
 	   		<div id="error" class="alert alert-danger"></div>
 	    	<form action="#" id="form-password" th:action="@{/account}" th:object="${form}" method="post">
 	    		<div class="form-group">
-			    	<label for="oldPassword">Old password : </label>
-			    	<input class="form-control" id="oldPassword" type="password" th:field="*{oldPassword}" th:value="*{oldPassword}" placeholder="obligatory" required="required"/>
+			    	<label for="oldPassword">Ancien mot de passe : </label>
+			    	<input class="form-control" id="oldPassword" type="password" th:field="*{oldPassword}" th:value="*{oldPassword}" placeholder="obligatoire" required="required"/>
 	    		</div>
 	    		<div class="form-group">
-			    	<label for="newPassword">New Password : </label>
-			    	<input class="form-control" id="newPassword" type="password" th:field="*{newPassword}" th:value="*{newPassword}" placeholder="obligatory" required="required"/>
+			    	<label for="newPassword">Nouveau mot de passe : </label>
+			    	<input class="form-control" id="newPassword" type="password" th:field="*{newPassword}" th:value="*{newPassword}" placeholder="obligatoire" required="required"/>
 	    		</div>
 	    		<div class="form-group">
-			    	<label for="repeat">Repeat the password: </label>
-			    	<input class="form-control" id="repeat" type="password" placeholder="obligatory" required="required"/>
+			    	<label for="repeat">Répétez le mot de passe : </label>
+			    	<input class="form-control" id="repeat" type="password" placeholder="obligatoire" required="required"/>
 	    		</div>
 	    		<div class="form-group">
-					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Validate</button>
+					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
 				</div>
 	    	</form>
 		</div>

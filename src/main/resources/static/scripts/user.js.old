@@ -16,8 +16,8 @@ $(function() {
 			$("#sleepEnd").hide();
 			$("#password").prop('required', true);
 			$("#email").prop('required', true);
-			$("#email").attr("placeholder", "obligatory");
-			$("#password").attr("placeholder", "obligatory");
+			$("#email").attr("placeholder", "obligatoire");
+			$("#password").attr("placeholder", "obligatoire");
 		}
 	});
 });
