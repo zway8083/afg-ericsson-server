@@ -239,7 +239,7 @@ public class EventTask {
 				+ HTMLGenerator.strongAttributeValue("Movement number", String.valueOf(eventStat.getMvts()), 0)
 				+ HTMLGenerator.strongAttribute("Estimate values", 0)
 				+ HTMLGenerator.strongAttributeValue("Drowsiness", startNight.toString("HH:mm"), 1)
-				+ HTMLGenerator.strongAttributeValue("Wake up", endNight.toString("HH:mm"), 1) + HTMLGenerator
+				+ HTMLGenerator.strongAttributeValue("Getting up", endNight.toString("HH:mm"), 1) + HTMLGenerator
 						.strongAttributeValue("Duration", period.getHours() + "h et " + period.getMinutes() + "m", 1)
 				+ HTMLGenerator.strongAttribute("Movements by time slot", 0);
 
