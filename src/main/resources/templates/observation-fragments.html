@@ -26,10 +26,13 @@
 		    					th:classappend="${(iTimeStat.first ? 'cell-top':'') + (!iStat.last or (iTimeStat.last and iStat.last) ? ' cell-bottom':'')}"></div>
 		    				<div th:if="${!iStat.first}" class="col-xs-12 col-sm-2 cell cell-left cell-head cell-empty"
 		    					th:classappend="${(iStat.last? 'cell-last':'') + (iTimeStat.last and iStat.last ? ' cell-bottom':'')}">&nbsp;</div>
-		    				<div class="col-xs-12 col-sm-4 cell" th:text="${description.activity}"
+		    				<div class="col-xs-12 col-sm-4 cell" th:if="${description.observator== null}" th:text="(${description.activity}) "
 		    					th:classappend="${(iTimeStat.first and iStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
 		    				</div>
-		    				<div class="col-xs-12 col-sm-6 cell cell-right obs-grade" th:value="${description.grade}"
+							<div class="col-xs-12 col-sm-4 cell" th:if="${description.observator}" th:text="(${description.activity}) + ' (' + (${description.observator.firstName}) +')'"
+		    					th:classappend="${(iTimeStat.first and iStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '')}">
+		    				</div>
+							<div class="col-xs-12 col-sm-6 cell cell-right obs-grade" th:value="${description.grade}"
 		    					th:classappend="${(iTimeStat.first and iStat.first ? 'cell-top' : '') + (iStat.last and iTimeStat.last ? ' cell-bottom' : '') + (iStat.last ? ' cell-last' : '')}">
 		    					<th:block th:if="${description.observator != null and (#authorization.expression('hasRole(''ADMIN'')') or description.observator.id == userId)}">
 			    					<button type="button" class="pull-right button-delete" th:value="${description.id}"><span class="glyphicon glyphicon-remove"></span></button>

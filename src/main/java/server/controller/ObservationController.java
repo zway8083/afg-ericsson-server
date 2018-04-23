@@ -66,7 +66,10 @@ public class ObservationController {
 			User curUser = userRepository.findByEmail(authentication.getName());
 			List<UserLink> links = userLinkRepository.findByUser(curUser);
 			for (UserLink userLink : links)
+			{
+				if(!subjects.contains(userLink.getSubject()))
 				subjects.add(userLink.getSubject());
+			}	
 		}
 
 		model.addAttribute("init", true);

@@ -1,5 +1,25 @@
 package server.controller;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,28 +33,21 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
 import server.database.model.Device;
 import server.database.model.User;
 import server.database.model.UserLink;
-import server.database.repository.*;
+import server.database.repository.DeviceRepository;
+import server.database.repository.EventRepository;
+import server.database.repository.EventStatRepository;
+import server.database.repository.SensorTypeRepository;
+import server.database.repository.UserLinkRepository;
+import server.database.repository.UserRepository;
 import server.exception.MissingSleepTimesException;
 import server.exception.NoMotionException;
 import server.model.ReportInfos;
 import server.task.EventTask;
 import server.utils.DateConverter;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Controller
 public class ReportController {
@@ -75,7 +88,11 @@ public class ReportController {
 			User curUser = userRepository.findByEmail(authentication.getName());
 			List<UserLink> links = userLinkRepository.findByUser(curUser);
 			for (UserLink userLink : links)
+			{
+				if(!subjects.contains(userLink.getSubject()))
 				subjects.add(userLink.getSubject());
+			}
+			
 		}
 
 		model.addAttribute("initForm", true);
@@ -113,6 +130,7 @@ public class ReportController {
 
 	@PostMapping(path = "/report")
 	public String report(@ModelAttribute(name = "report") ReportInfos report, Model model) {
+		
 		DateTime curDate = DateConverter.toDateTime(report.getDate());
 		String prevDate = DateConverter.toFormatString(curDate.minusDays(1));
 		model.addAttribute("prevReport", new ReportInfos(report.getId(), prevDate));
