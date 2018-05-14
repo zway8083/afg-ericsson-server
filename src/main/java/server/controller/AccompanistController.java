@@ -17,7 +17,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import server.database.model.Role;
 import server.database.model.User;
@@ -69,16 +73,24 @@ public class AccompanistController {
 			}
 		}
 
-		Role accmp = roleRepository.findByName("ROLE_ACCOMPANIST");
 		Hashtable<Long, List<User>> hashtable = new Hashtable<>();
 		for (User subject : subjects) {
-			List<UserLink> subjectLinks = userLinkRepository.findBySubjectAndRole(subject, accmp);
+			List<UserLink> subjectLinks = userLinkRepository.findBySubject(subject);
+			String email = authentication.getName();
+			User curUser = userRepository.findByEmail(email);
 			List<User> accompanists = new ArrayList<>();
 			for (UserLink userLink : subjectLinks)
+				if (!accompanists.contains(userLink.getUser()) && !(userLink.getUser().equals(curUser)))
 				accompanists.add(userLink.getUser());
 			hashtable.put(subject.getId(), accompanists);
 		}
 
+		List<Role> roles = roleRepository.findAll();
+		roles.remove(roleRepository.findByName("ROLE_ADMIN"));
+		roles.remove(roleRepository.findByName("ROLE_SUBJECT"));
+		
+		model.addAttribute("roles", roles);
+		
 		model.addAttribute("subjects", subjects);
 		model.addAttribute("hashtable", hashtable);
 		model.addAttribute("form", new AccompanistForm());
@@ -105,7 +117,8 @@ public class AccompanistController {
 		String accmpEmail = form.getEmail();
 		String rawPassword = null;
 		if (userRepository.findByEmail(accmpEmail) == null) {
-			Role accompanist = roleRepository.findByName("ROLE_ACCOMPANIST");
+			
+			Role accompanist = roleRepository.findByName(form.getRoleStr());
 			List<Role> roles = Arrays.asList(accompanist);
 
 			rawPassword = RandomStringGenerator.randomString(10);
@@ -134,23 +147,31 @@ public class AccompanistController {
 		return accompanist(authentication, model);
 	}
 	
-	/*@PostMapping(path = "/accompanist/delete")
-	public String deleteAccompanist(Principal principal, Model model,
-			@ModelAttribute(name = "delForm") DeleteAccompanistForm delForm) {
-		User user = userRepository.findByEmail(principal.getName());
-		if (accompanist.getAccompanist().getId() == user.getId() || principal.getName() == "admin") {
-			List<UserLink> subjectLinks = userLinkRepository.findBySubjectAndRole(user.getId(), accompanist.getId());
-			List<User> accompanists = subjectLinks.getAccompanist();
-			if (accompanist.size() == 1)
-				UserLinkRepository.delete(accompanist);
-			else {
-				accompanist.remove(accompanist);
-				accompanist.setAccompanists(accompanist);
-				UserLinkRepository.save(accompanist);
+	
+	    @PostMapping(path = "/accompanist/{idAccompanist}/{idSubject}/delete")
+		public String deleteAccompanistLink(Authentication authentication,Model model,
+				@PathVariable("idAccompanist") long idAccompanist,@PathVariable("idSubject") long idSubject, final RedirectAttributes redirectAttributes) {
+                
+	    	@SuppressWarnings("unchecked")
+			Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
+					.getAuthorities();
+	    	
+				logger.debug("delete accompanist : {}", idAccompanist);
+				User subject= userRepository.findOne(idSubject);
+				User accompanist= userRepository.findOne(idAccompanist);
+				userLinkRepository.delete(userLinkRepository.findBySubjectAndUser(subject, accompanist));
+				
+				redirectAttributes.addFlashAttribute("css", "success");
+				redirectAttributes.addFlashAttribute("msg", "User is deleted!");
+			
+		    
+	    	
+	    	
+	    	return "redirect:/accompanist";
+
 			}
-			UserLinkRepository.delete(accompanist);
-		}
-		return accompanist(principal, model, new AccompanistForm(delForm.getSubjectId(), delForm.getDate()));
-	}*/
+	
+	
+	
 	
 }
