@@ -2,6 +2,7 @@ package server.model;
 
 public class AccompanistForm {
 	private Long subjectId;
+	private String roleStr;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -39,6 +40,14 @@ public class AccompanistForm {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getRoleStr() {
+		return roleStr;
+	}
+
+	public void setRoleStr(String roleStr) {
+		this.roleStr = roleStr;
 	}
 
 }
