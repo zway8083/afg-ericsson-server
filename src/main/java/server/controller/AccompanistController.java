@@ -116,10 +116,11 @@ public class AccompanistController {
 		
 		String accmpEmail = form.getEmail();
 		String rawPassword = null;
-		if (userRepository.findByEmail(accmpEmail) == null) {
+				User accompanist = userRepository.findByEmail(accmpEmail);
+		if (accompanist == null) {
 			
-			Role accompanist = roleRepository.findByName(form.getRoleStr());
-			List<Role> roles = Arrays.asList(accompanist);
+			Role role = roleRepository.findByName(form.getRoleStr());
+			List<Role> roles = Arrays.asList(role);
 
 			rawPassword = RandomStringGenerator.randomString(10);
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11);
@@ -135,14 +136,39 @@ public class AccompanistController {
 			newAccompanist.setRoles(roles);
 			userRepository.save(newAccompanist);
 
-			UserLink link = new UserLink(newAccompanist, subject, accompanist);
+			UserLink link = new UserLink(newAccompanist, subject, role);
 			userLinkRepository.save(link);
+			
+			
+			NewAccompanistRunnable runnable = new NewAccompanistRunnable(emailId, emailPassword, emailHost, accmpEmail,
+					rawPassword, name, subject.getName(), logger);
+			Thread thread = new Thread(runnable);
+			thread.start();
+		}
+		else {
+
+			List<User> accompanists = new ArrayList<>();
+			List<UserLink> subjectLinks = userLinkRepository.findBySubject(subject);
+				
+			for (UserLink userLink : subjectLinks)
+				accompanists.add(userLink.getUser());
+			
+		    if (!accompanists.contains(accompanist)){
+		    	
+		    	Role role = roleRepository.findByName(form.getRoleStr());
+			    UserLink link = new UserLink(accompanist, subject, role);
+			    userLinkRepository.save(link);
+			
+		    
+			    NewAccompanistRunnable runnable = new NewAccompanistRunnable(emailId, emailPassword, emailHost, accmpEmail,
+						rawPassword, name, subject.getName(), logger);
+				Thread thread = new Thread(runnable);
+				thread.start();
+		    }
+		    
 		}
 
-		NewAccompanistRunnable runnable = new NewAccompanistRunnable(emailId, emailPassword, emailHost, accmpEmail,
-				rawPassword, name, subject.getName(), logger);
-		Thread thread = new Thread(runnable);
-		thread.start();
+
 
 		return accompanist(authentication, model);
 	}

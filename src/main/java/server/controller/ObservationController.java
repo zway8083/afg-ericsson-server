@@ -9,13 +9,18 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import server.database.model.Description;
 import server.database.model.EventStat;
@@ -129,18 +134,19 @@ public class ObservationController {
 		model.addAttribute("obsForm", true);
 		model.addAttribute("form", form);
 		model.addAttribute("userId", user.getId());
-		model.addAttribute("delForm", new DeleteObservationForm(subject.getId(), initForm.getDate()));
+		
 		return "observation";
 	}
 
-	@PostMapping(path = "/observation/submit")
-	public String submitObservation(Principal principal, Model model,
+	
+	
+	@PostMapping(value = "/observation/submit")
+	public String  submitObservation(Principal principal, Model model,
 			@ModelAttribute(name = "form") ObservationForm form) {
 		User observator = userRepository.findByEmail(principal.getName());
 		User subject = userRepository.findOne(form.getSubjectId());
 		Time time = timeRepository.findOne(form.getTimeId());
 		Date date = DateConverter.toSQLDate(form.getDate());
-
 		Description description = new Description(observator, form.getActivity(), form.getBehaviour(), form.getGrade());
 		descriptionRepository.save(description);
 		Observation observation = observationRepository.findOne(new ObservationPK(subject, date, time));
@@ -152,15 +158,26 @@ public class ObservationController {
 		}
 		observation.addDescription(description);
 		observationRepository.save(observation);
-		return observation(principal, model, new InitObservationForm(subject.getId(), form.getDate()));
+		
+		
+		observation(principal, model, new InitObservationForm(subject.getId(), form.getDate()));
+		
+		return "observation"; 
+			
 	}
 
-	@PostMapping(path = "/observation/delete")
-	public String deleteObservation(Principal principal, Model model,
-			@ModelAttribute(name = "delForm") DeleteObservationForm delForm) {
-		User user = userRepository.findByEmail(principal.getName());
-		Description description = descriptionRepository.findOne(delForm.getDescriptionId());
-		if (description.getObservator().getId() == user.getId() || principal.getName() == "admin") {
+	@PostMapping(path = "/observation/{idDescription}/delete")
+	public String deleteAccompanistLink(Authentication authentication,Principal principal,Model model,
+			 @PathVariable("idDescription") long idDescription,@ModelAttribute(name = "form") ObservationForm form) {
+      
+		@SuppressWarnings("unchecked")
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
+				.getAuthorities();
+		
+		User curUser = userRepository.findByEmail(authentication.getName());
+		Description description = descriptionRepository.findOne(idDescription);
+		
+		if (description.getObservator().getId() == curUser.getId() ||authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
 			Observation observation = observationRepository.findByDescription(description.getId());
 			List<Description> descriptions = observation.getDescriptions();
 			if (descriptions.size() == 1)
@@ -169,9 +186,13 @@ public class ObservationController {
 				descriptions.remove(description);
 				observation.setDescriptions(descriptions);
 				observationRepository.save(observation);
-			}
+			     }
 			descriptionRepository.delete(description);
 		}
-		return observation(principal, model, new InitObservationForm(delForm.getSubjectId(), delForm.getDate()));
+	
+		
+		
+		
+		 return observation(principal,model, new InitObservationForm(form.getSubjectId(), form.getDate()));
 	}
 }
