@@ -11,7 +11,7 @@ $(function(){
 
 function confirmDeleteMessage(accompanistFirstName,accompanistId,subjectFirstName,subjectId){
 
-	if (confirm("Are you sure want to delete " + accompanistFirstName+" from the subject "+subjectFirstName +"?"))
+	if (confirm("Voulez vous supprimer " + accompanistFirstName+" du sujet "+subjectFirstName +"?"))
 	{
 		
 	//post("/accompanist/"+accompanistId+"/"+subjectId+"/delete");

@@ -21,7 +21,7 @@
 			<div class="col-md">
 				<form class="form-inline" th:object="${scriptForm}">
 					<div class="form-group">
-						<label for="subject">Raspberry of :</label> <select id="subject" class="form-control" required="required">
+						<label for="subject">Raspberry de :</label> <select id="subject" class="form-control" required="required">
 							<option th:each="subject : ${subjects}"
 								th:text="${subject.firstName + ' ' + subject.lastName}"
 								th:value="${subject.id}"></option>

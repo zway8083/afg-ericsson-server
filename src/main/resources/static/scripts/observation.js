@@ -45,7 +45,7 @@ $(function() {
 
 function confirmDeleteMessage(descriptionId){
 
-	if (confirm("Are you sure want to delete your description?"))
+	if (confirm("Voulez vous supprimer votre description?"))
 	{
 		
 	var deleteForm = document.getElementById("deleteForm");

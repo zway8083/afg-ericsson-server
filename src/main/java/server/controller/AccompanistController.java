@@ -87,7 +87,7 @@ public class AccompanistController {
 
 		List<Role> roles = roleRepository.findAll();
 		roles.remove(roleRepository.findByName("ROLE_ADMIN"));
-		roles.remove(roleRepository.findByName("ROLE_SUBJECT"));
+		roles.remove(roleRepository.findByName("ROLE_SUJET"));
 		
 		model.addAttribute("roles", roles);
 		
@@ -116,7 +116,7 @@ public class AccompanistController {
 		
 		String accmpEmail = form.getEmail();
 		String rawPassword = null;
-				User accompanist = userRepository.findByEmail(accmpEmail);
+		User accompanist = userRepository.findByEmail(accmpEmail);
 		if (accompanist == null) {
 			
 			Role role = roleRepository.findByName(form.getRoleStr());
@@ -168,7 +168,7 @@ public class AccompanistController {
 		    
 		}
 
-
+		
 
 		return accompanist(authentication, model);
 	}

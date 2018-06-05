@@ -1,21 +1,21 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title>Users Association</title>
+    <title>Association d'utilisateurs</title>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
 		<th:block th:if="${param.error}">
-			<div th:if="${param.error[0] == 'duplicate'}" class="alert alert-danger">This link already exists.</div>
-			<div th:if="${param.error[0] == 'role'}" class="alert alert-danger">No role selected</div>
+			<div th:if="${param.error[0] == 'duplicate'}" class="alert alert-danger">Ce lien existe déjà.</div>
+			<div th:if="${param.error[0] == 'role'}" class="alert alert-danger">Aucun rôle sélectionné</div>
 			<div th:if="${param.message}" class="alert alert-danger" th:text="${'Liaison impossible : ' + param.message[0]}"></div>
 		</th:block>
-		<div th:if="${param.success}" class="alert alert-success">The link has been created.</div>
+		<div th:if="${param.success}" class="alert alert-success">Le lien a bien été créé.</div>
 		<h2>Association</h2>
     	<form action="#" th:action="@{/add/link}" th:object="${userLink}" method="post">
 			<div class="form-group">
-				<label for="user">User </label>
+				<label for="user">L'utilisateur </label>
         		<select id="user" th:field="*{userId}">
 	        		<option th:each="user : ${users}" 
 	        			th:text="${user.lastName + ' ' + user.firstName}"
@@ -24,14 +24,14 @@
         		</select>
 			</div>
 			<div class="form-group">
-				<label>is : </label>
+				<label>est : </label>
 		        <div th:each="role, iter : ${allRoles}">
 		        	<input th:id="${iter.index}" type="checkbox" th:field="*{checkedRoles}" th:value="${role.name}"/>
 		        	<label class="small" th:for="${iter.index}" th:text="${role.name}"></label>
 		        </div>
 			</div>
 			<div class="form-group">
-				<label for="subject">of subject</label>
+				<label for="subject">du sujet</label>
 	        	<select id="subject" th:field="*{subjectId}">
 	        		<option th:each="subject : ${subjects}" 
 	        			th:text="${subject.lastName + ' ' + subject.firstName}"

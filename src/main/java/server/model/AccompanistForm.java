@@ -6,6 +6,7 @@ public class AccompanistForm {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private String error;
 
 	public AccompanistForm() {
 	}
@@ -48,6 +49,14 @@ public class AccompanistForm {
 
 	public void setRoleStr(String roleStr) {
 		this.roleStr = roleStr;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
 	}
 
 }
