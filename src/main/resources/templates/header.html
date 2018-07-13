@@ -48,6 +48,8 @@
 									</ul>
 								</li>
 							</th:block>
+							<li sec:authorize="hasAuthority('CREATE_DEVICE')"><a href="/mydevices">Mes Capteurs</a></li>
+							<li sec:authorize="hasAuthority('CREATE_SUBJECT')"><a href="/mysubjects">Mes Sujets</a></li>
 							<li sec:authorize="hasAuthority('GENERATE_NIGHT_REPORT')"><a href="/report">Rapport</a></li>
 							<li sec:authorize="hasAuthority('CREATE_ACCOMPANIST')"><a href="/accompanist">Accompagnateurs</a></li>
 							<li sec:authorize="hasAuthority('READ_BEHAVIOUR_OBSERVATION') or hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')"><a href="/observation">Observation</a></li>
