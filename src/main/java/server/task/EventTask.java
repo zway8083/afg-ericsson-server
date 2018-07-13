@@ -231,8 +231,8 @@ public class EventTask {
 		DateTime dateTime = new DateTime(eventStat.getDate());
 
 		String bodyHTML = HTMLGenerator.strongAttributeValue("Sujet", user.getName(), 0)
-				+ HTMLGenerator.strongAttributeValue("Period",
-						"night of " + dateTime.minusDays(1).toString("dd/MM/yyyy") + " to "
+				+ HTMLGenerator.strongAttributeValue("Période",
+						"nuit du " + dateTime.minusDays(1).toString("dd/MM/yyyy") + " au "
 								+ dateTime.toString("dd/MM/yyyy"),
 						0)
 				+ HTMLGenerator.strongAttributeValue("Score", String.valueOf(eventStat.getGrade()) + "%", 0)
@@ -261,7 +261,7 @@ public class EventTask {
 
 		bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
 		ArrayList<ArrayList<String>> table = new ArrayList<>();
-		ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Duré", "Mouvements", "Score"));
+		ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Durée", "Mouvements", "Score"));
 		table.add(list);
 		for (int i = 7; i >= 0; i--) {
 			EventStat stat = eventStatRepository.findByDeviceAndDate(device,
