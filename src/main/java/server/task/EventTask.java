@@ -92,7 +92,7 @@ public class EventTask {
 		{
 		    
 		     if (eventStat ==null) {
-		    	
+		    	 
 		    		throw new NoMotionException(user.getId(), startTheo, endTheo);
 		     }  
 		}
