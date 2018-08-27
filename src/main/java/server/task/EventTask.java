@@ -84,25 +84,34 @@ public class EventTask {
 		startTheo = date.minusDays(1).withHourOfDay(timeSleepStart.getHourOfDay())
 				.withMinuteOfHour(timeSleepStart.getMinuteOfHour());
 		endTheo = date.withHourOfDay(timeSleepEnd.getHourOfDay()).withMinuteOfHour(timeSleepEnd.getMinuteOfHour());
-
+		
 		SensorType motion = sensorTypeRepository.findByName("motion");
+		eventStat = eventStatRepository.findByDeviceAndDate(device, date.toDate());
 		if (eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device, motion, true, startTheo.toDate(),
 				endTheo.toDate()) < 3)
-			throw new NoMotionException(user.getId(), startTheo, endTheo);
-
-		eventStat = eventStatRepository.findByDeviceAndDate(device, date.toDate());
-		if (eventStat == null) {
-			setNightLimits();
-			if (startNight == null || endNight == null)
-				eventLists = null;
-			else {
+		{
+		    
+		     if (eventStat ==null) {
+		    	
+		    		throw new NoMotionException(user.getId(), startTheo, endTheo);
+		     } 
+		}
+		else {
+			if (eventStat == null) {
+				setNightLimits();
+				if (startNight == null || endNight == null)
+					eventLists = null;
+				else {
+					eventLists = getEventLists();
+					createEventStat();
+				}
+			} else {
+				startNight = new DateTime(eventStat.getStartNight().getTime());
+				endNight = new DateTime(eventStat.getEndNight().getTime());
 				eventLists = getEventLists();
-				createEventStat();
 			}
-		} else {
-			startNight = new DateTime(eventStat.getStartNight().getTime());
-			endNight = new DateTime(eventStat.getEndNight().getTime());
-			eventLists = getEventLists();
+			
+			
 		}
 	}
 
@@ -229,6 +238,8 @@ public class EventTask {
 	public String createHTMLBody() {
 		Period period = new Period(eventStat.getDuration().getTime());
 		DateTime dateTime = new DateTime(eventStat.getDate());
+		startNight= new DateTime(eventStat.getStartNight());
+		endNight= new DateTime(eventStat.getEndNight());
 
 		String bodyHTML = HTMLGenerator.strongAttributeValue("Sujet", user.getName(), 0)
 				+ HTMLGenerator.strongAttributeValue("Période",
@@ -239,7 +250,7 @@ public class EventTask {
 				+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventStat.getMvts()), 0)
 				+ HTMLGenerator.strongAttribute("Valeurs éstimées", 0)
 				+ HTMLGenerator.strongAttributeValue("Endormissement", startNight.toString("HH:mm"), 1)
-				+ HTMLGenerator.strongAttributeValue("Réveil", endNight.toString("HH:mm"), 1) + HTMLGenerator
+				+ HTMLGenerator.strongAttributeValue("Réveil",endNight.toString("HH:mm") , 1) + HTMLGenerator
 						.strongAttributeValue("Durée", period.getHours() + "h et " + period.getMinutes() + "m", 1)
 				+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
 
