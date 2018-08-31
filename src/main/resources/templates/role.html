@@ -1,21 +1,21 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-	<title>Ajout d'un rôle</title>
+	<title>Adding a role</title>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
 		<th:block th:if="${param.error}">
-			<div th:if="${param.error[0] == 'duplicate'}" class="alert alert-danger">Ce rôle existe déjà.</div>
+			<div th:if="${param.error[0] == 'duplicate'}" class="alert alert-danger">This role already exists.</div>
 			<div th:if="${param.message}" class="alert alert-danger" th:text="${'Création impossible : ' + param.message[0]}"></div>
 		</th:block>
-		<div th:if="${param.success}" class="alert alert-success">Le rôle a bien été créé.</div>
-		<h2>Rôle</h2>
+		<div th:if="${param.success}" class="alert alert-success">The role has been created.</div>
+		<h2>Role</h2>
 		<form action="#" th:action="@{/add/role}" th:object="${role}"
 			method="post">
 			<div class="form-group">
-				<label for="name">Nom : </label>
+				<label for="name">Name : </label>
 				<input id="name" type="text" th:field="*{name}" />
 			</div>
     		<div th:replace="form :: buttons"></div>

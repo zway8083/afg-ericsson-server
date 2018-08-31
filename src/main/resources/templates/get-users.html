@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title>Utilisateurs</title>
+    <title>Users</title>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
-		<h2>Utilisateurs</h2>
+		<h2>Users</h2>
 		<th:block th:each="elem: ${users}" th:with="userId=${elem.key}, user=${elem.value}">
 			<div class="well">
 				<h4 th:text="${user.lastName + ' ' + user.firstName + (user.subject ? ' (Sujet)' : '')}"></h4>

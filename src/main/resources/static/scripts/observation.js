@@ -1,5 +1,4 @@
 var grade = 0;
-history.pushState({},"","/observation");
 
 $(function() {
 	$("#grade").attr("value", 0);
@@ -40,27 +39,8 @@ $(function() {
 		$(this).css("box-shadow", "5px 0px 0px 0px " + color + " inset");
 	});
 	
-	
+	$(".button-delete").click(function() {
+		$("#descriptionId").val($(this).attr("value"));
+		$("#delete-form").submit();
+	});
 });
-
-function confirmDeleteMessage(descriptionId){
-
-	if (confirm("Voulez vous supprimer votre description?"))
-	{
-		
-	var deleteForm = document.getElementById("deleteForm");
-	
-	deleteForm.method="post";
-    deleteForm.action="/observation/"+descriptionId+"/delete";
-	deleteForm.submit();
-
-   
-	return true;
-	}
-	else{ 
-		
-		
-		return false;}
-	
-	
-}

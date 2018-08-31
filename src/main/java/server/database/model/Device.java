@@ -91,8 +91,6 @@ public class Device {
 
 	@Override
 	public String toString() {
-		return "Capteur: NS =" + Arrays.toString(serial);
+		return "Device [id=" + id + ", serial=" + Arrays.toString(serial) + "]";
 	}
-	
-	
 }

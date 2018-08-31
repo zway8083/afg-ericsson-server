@@ -3,7 +3,7 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="header :: head">
-	<title id="pageTitle">Réglages</title>
+	<title id="pageTitle">settings</title>
 	<th:block th:fragment="head-inc">
 	<link href="/css/settings.css" rel="stylesheet"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
@@ -16,10 +16,10 @@
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
-		<div th:if="${param.suggestion}" class="alert alert-info">Merci, nous avons bien reçu votre suggestion.</div>
-		<h2>Réglages</h2>
+		<div th:if="${param.suggestion}" class="alert alert-info">Thank you, we have received your suggestion.</div>
+		<h2>settings</h2>
 		<th:block sec:authorize="hasRole('ROLE_PARENT') or hasRole('ROLE_ADMIN')">
-			<h3><span class="glyphicon glyphicon-bed"></span> Horaires de sommeil</h3>
+			<h3><span class="glyphicon glyphicon-bed"></span>Sleep schedules</h3>
 			<th:block th:each="form: ${forms}">
 				<div class="well well-sm">
 					<h4 th:text="${form.name}"></h4>
@@ -27,7 +27,7 @@
 						<form class="form-night" th:action="@{/settings/sleep}" th:object="${nightForm}" method="post">
 							<div class="col-md-2 col-xs-5">
 								<div class="form-group">
-					                <label class="control-label" for="dpStart">Couché </label>
+					                <label class="control-label" for="dpStart">Bedtime </label>
 					                <div class="input-group date sleep-start" id="dpStart">
 					                    <input type="button" class="form-control" maxlength="5" name="sleepStart" id="sleepStart" th:value="${form.sleepStart}" required="required"/>
 					                    <span class="input-group-addon">
@@ -38,7 +38,7 @@
 							</div>
 							<div class="col-md-2 col-xs-5">
 								<div class="form-group">
-					                <label class="control-label" for="dpEnd">Levé </label>
+					                <label class="control-label" for="dpEnd">Wake up </label>
 					                <div class="input-group date sleep-end" id="dpEnd">
 					                    <input type='button' class="form-control" maxlength="5" name="sleepEnd" id="sleepEnd" th:value="${form.sleepEnd}" required="required"/>
 					                    <span class="input-group-addon">
@@ -60,12 +60,12 @@
 		<form id="suggestionForm" th:action="@{/settings/suggestion}" th:object="${suggestionForm}" method="post">
 			<div class="row">
 				<div class="col-md-8">
-					<textarea class="form-control" rows="10" maxlength="500" form="suggestionForm" th:field="*{suggestion}" required="required" placeholder="Laissez-nous ici vos remarques, avis, problèmes rencontrés, idées d'amélioration..."></textarea>
+					<textarea class="form-control" rows="10" maxlength="500" form="suggestionForm" th:field="*{suggestion}" required="required" placeholder="Leave us here your comments, opinions, problems encountered, ideas for improvement ..."></textarea>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-8">
-					<button class="btn btn-info pull-right sugg-submit"><span class="glyphicon glyphicon-send"></span> Envoyer</button>
+					<button class="btn btn-info pull-right sugg-submit"><span class="glyphicon glyphicon-send"></span> Send</button>
 				</div>
 			</div>
 		</form>

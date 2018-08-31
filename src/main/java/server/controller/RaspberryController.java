@@ -1,16 +1,11 @@
 package server.controller;
 
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import server.database.model.InputHistory;
 import server.database.model.Raspberry;
 import server.database.model.User;
@@ -18,6 +13,11 @@ import server.database.repository.InputHistoryRepository;
 import server.database.repository.RaspberryRepository;
 import server.database.repository.UserRepository;
 import server.model.Message;
+import server.utils.RandomStringGenerator;
+
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class RaspberryController {
@@ -48,29 +48,22 @@ public class RaspberryController {
 			raspberryRepository.save(raspberry);
 			return null;
 		}
+
 		String input = message.getMessage();
-		raspberry.setInput(input);
-		Date now = new Date();
-		raspberryRepository.save(raspberry);
+		String token = randomToken();
+		InputHistory history = new InputHistory(raspberry, input, new Date(), token);
+		inputHistoryRepository.save(history);
 
-		InputHistory history = inputHistoryRepository
-				.findFirstByRaspberryAndInputAndInputSentGreaterThanEqualOrderByInputSentDesc(raspberry, input, now);
-
-		while (history == null || history.getOutput() == null) {
-			try {
-				TimeUnit.SECONDS.sleep(5);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			if (history != null) {
-				history = inputHistoryRepository.findOne(history.getId());
-			} else {
-				history = inputHistoryRepository
-						.findFirstByRaspberryAndInputAndInputSentGreaterThanEqualOrderByInputSentDesc(raspberry, input,
-								now);
-			}
+		while (history.getOutput() == null) {
+			TimeUnit.SECONDS.sleep(5);
+			history = inputHistoryRepository.findOneByToken(token);
 		}
-
 		return new Message(history.getOutput());
+	}
+
+	private String randomToken() {
+		String token = RandomStringGenerator.randomString(10);
+		InputHistory history = inputHistoryRepository.findOneByToken(token);
+		return history != null ? randomToken() : token;
 	}
 }
