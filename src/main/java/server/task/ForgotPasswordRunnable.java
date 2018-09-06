@@ -17,13 +17,13 @@ public class ForgotPasswordRunnable extends EmailRunnable {
 	@Override
 	public void run() {
 		email.addRecipient(recipient);
-		email.setSubject("Projet AFG Autisme - Ericsson : nouveau mot de passe");
+		email.setSubject("Projet AFG Autisme - Ericsson : Verification Email");
 		
 		String htmlBody = "";
 		if (rawPassword != null) {
 			htmlBody += HTMLGenerator.value("Identifiants :", 0)
 					+ HTMLGenerator.strongAttributeValue("Utilisateur", recipient, 1)
-					+ HTMLGenerator.strongAttributeValue("Mot de passe", rawPassword, 1);
+					+ HTMLGenerator.strongAttributeValue("Code", rawPassword, 1);
 		}
 		email.concatBody(htmlBody);
 		

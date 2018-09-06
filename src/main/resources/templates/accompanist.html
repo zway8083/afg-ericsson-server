@@ -16,15 +16,15 @@
 
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
-		<h2>Accompanists</h2>
+		<h2>Accompagnateurs</h2>
 
 		<form id="form" th:action="@{/accompanist}" th:object="${form}" method="post">
 		    <div class="table-responsive">
 		    	<table class="table table-bordered">
 		    		<thead>
 			    		<tr class="active">
-							<th>Subject</th>
-							<th>Accompanists</th>
+							<th>Sujet</th>
+							<th>Accompagnateurs</th>
 			    		</tr>
 		    		</thead>
 		    		<tbody>
@@ -43,11 +43,13 @@
 		    						<td th:if="${iStat.first}" th:rowspan="${accompanists.size()}"
 		    							th:text="${subject.firstName + ' ' + subject.lastName}"></td>
 				    				<td>
-				    					<button type="button" class="btn btn-delete pull-right">
+										<form id="deleteForm" th:action="@{/accompanist}"  method="post">
+				    					 <button id="buttonDelete"  type="button" class="btn btn-delete pull-right" th:onclick="'confirmDeleteMessage(\''+ ${accompanist.firstName} +'\',\''+ ${accompanist.id} +'\',\''+ ${subject.firstName} +'\',\''+ ${subject.id} +'\');'" >
 											<span class="glyphicon glyphicon-remove" style="color:red"></span>
-										</button>
-				    					<div th:text="${accompanist.firstName + ' ' + accompanist.lastName + ' - ' + accompanist.email}"></div>
-				    				</td>
+										 </button>	
+										 <div   th:text="${accompanist.firstName + ' ' + accompanist.lastName + ' - ' + accompanist.email}"></div>
+										</form>
+									</td>
 		    					</tr>
 		    				</th:block>
 		    			</th:block>
@@ -62,25 +64,33 @@
 			        		</td>
 			        		<td>
 			        			<div class="form-inline form-group">
-							    	<label for="lname">Name :</label>
+							    	<label for="lname">Nom :&emsp;&emsp;&ensp;</label>
 				        			<input id="lname" th:field="*{lastName}" type="text" class="form-control" required="required"/>
 			        			</div>
 			        			<div class="form-inline form-group">
-							    	<label for="fname">Surname :</label>
+							    	<label for="fname">Prénom :&emsp;</label>
 				        			<input id="fname" th:field="*{firstName}" type="text" class="form-control" required="required"/>
 			        			</div>
 			        			<div class="form-inline form-group">
-							    	<label for="email">Email :</label>
+							    	<label for="email">Email :&emsp;&ensp;&nbsp;&nbsp;</label>
 				        			<input id="email" th:field="*{email}" type="email" class="form-control" required="required"/>
-			        			</div>
+								</div>
+								<div class="form-inline form-group">
+							    	<label for="role">Role :&emsp;&emsp;&ensp;</label>
+									<select class="form-control" id="role" th:field="*{roleStr}" required="required">
+										<option th:each="role : ${roles}" th:text="${#strings.substringAfter(role.name,'ROLE_')}"
+											th:value="${role.name}"></option>
+									</select>
+								</div>
+								<button type="submit" class="btn btn-success pull-right">
+									<span class="glyphicon glyphicon-ok"></span> Ajouter
+								</button>
 			        		</td>
 		    			</tr>
 		    		</tbody>
 		    	</table>
 		    </div>
-			<button type="submit" class="btn btn-success pull-right">
-				<span class="glyphicon glyphicon-ok"></span> Validate
-			</button>
+
 	    </form>
     </div>
     <div th:replace="footer :: footer"></div>

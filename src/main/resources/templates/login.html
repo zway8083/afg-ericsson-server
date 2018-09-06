@@ -10,35 +10,39 @@
 	<th:block th:if="${!#authorization.expression('isAuthenticated()')}">
 		<div id="main-content" class="container">
 			<form class="form" th:action="@{/login}" method="post">
-				<div th:if="${param.error}" class="alert alert-danger">Invalid user or password.</div>
-				<div th:if="${param.logout}" class="alert alert-info">You have been disconnected.</div>
-				<div th:if="${param.forgot}" class="alert alert-success">A new password has been sent to you.</div>
+				<div th:if="${param.error}" class="alert alert-danger">Utilisateur ou mot de passe invalide.</div>
+				<div th:if="${param.logout}" class="alert alert-info">Vous avez été déconnecté.</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="user" class="control-label">User : </label>
+						<label for="user" class="control-label">Utilisateur : </label>
 						<input id="user" class="form-control" type="text" name="username" required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="password" class="control-label">Password : </label>
+						<label for="password" class="control-label">Mot de passe : </label>
 						<input id="password" class="form-control" type="password" name="password" required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<a href="/forgot">Forgot your password ?</a>
+						<a href="/signup">Créez un nouveau compte</a>
 					</div>
+				</div>
+				<div class="row">
+						<div class="form-group col-md-4">
+							  <a href="/forgot">Mot de passe oublié ?</a>
+						</div>
 				</div>
 				<div class="form-check">
 					<label class="form-check-label">
-						<input type="checkbox" class="form-check-input" name="remember-me"/> Remember me
+						<input type="checkbox" class="form-check-input" name="remember-me"/> Se souvenir de moi
 					</label>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
 						<div class="form-group pull-right">
-							<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> Validate</button>
+							<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
 						</div>
 					</div>
 				</div>

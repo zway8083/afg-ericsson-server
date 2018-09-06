@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head th:include="header :: head">
+<title id="pageTitle">Sign up</title>
+</head>
+<head>
+ <script src="/scripts/password.js"></script>
+</head>
+<body>
+	<div th:replace="header :: navbar"></div>
+	<th:block th:if="${!#authorization.expression('isAuthenticated()')}">
+		<div id="main-content" class="container">
+			<div th:if="${param.error} and ${param.error[0] == 'mismatch'}" class="alert alert-danger">
+				Mot de passe incorrect.
+		    </div>
+			<div th:if="${param.error} and ${param.error[0] == 'length'}" class="alert alert-danger">
+				Le mot de passe doit comporter au moins 6 caractères.
+			</div>
+			<div th:if="${param.error}" class="alert alert-danger">
+					L'émail existe déja.
+			</div>
+			<div id="error" class="alert alert-danger"></div>	
+			<form class="form" id="form-password" action="#" th:object="${form}" th:action="@{/signup}" method="post">
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="name" class="control-label">Nom </label>
+						<input id="name" th:field="*{name}" class="form-control" type="text" required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label for="surname" class="control-label">Prénom </label>
+						<input id="surname" th:field="*{surname}" class="form-control" type="text" required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label class="control-label">Email </label>
+						<input id="email" th:field="*{email}" class="form-control" type="email" required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label class="control-label">Mot de passe  </label>
+						<input id="newPassword" th:field="*{password}" name="newPassword" class="form-control" type="password"  required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<label  class="control-label">Retapez le mot de passe </label>
+						<input id="repeat" class="form-control" type="password"  required="required"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-md-4">
+						<a href="/login">Se connecter</a>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<div class="form-group pull-right">
+							<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> S'inscrire</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	    <div th:replace="footer :: footer"></div>
+	</th:block>
+</body>
+</html>

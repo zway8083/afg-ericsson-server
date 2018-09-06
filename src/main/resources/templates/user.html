@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title>Add user</title>
+    <title>Ajout d'utilisateur</title>
 </head>
 <head>
     <script src="/scripts/user.js"></script>
@@ -10,47 +10,47 @@
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
 		<th:block th:if="${param.error}">
-			<div th:if="${param.error[0] == 'email'}" class="alert alert-danger">Can not add: This email address is already used.</div>
+			<div th:if="${param.error[0] == 'email'}" class="alert alert-danger">Ajout impossible : cette adresse email est déjà utilisée.</div>
 			<div th:if="${param.message}" class="alert alert-danger" th:text="${'Ajout impossible : ' + param.message[0]}"></div>
 		</th:block>
-		<div th:if="${param.success}" class="alert alert-success">The user has been added.</div>	
-		<h2>User</h2>
+		<div th:if="${param.success}" class="alert alert-success">L'utilisateur a bien été ajouté.</div>	
+		<h2>Utilisateur</h2>
     	<form action="#" id="form" th:action="@{/add/user}" th:object="${userForm}" method="post">
     		<div class="form-group">
-		    	<label for="role">Role : </label>
+		    	<label for="role">Rôle : </label>
 		    	<select class="" id="role" th:field="*{roleStr}" required="required">
 					<option th:each="role : ${roles}" th:text="${#strings.substringAfter(role.name,'ROLE_')}"
 						th:value="${role.name}"></option>
 				</select>
     		</div>
     		<div class="form-group">
-		    	<label for="lname">Name : </label>
-		    	<input id="lname" type="text" th:field="*{lastName}" placeholder="mandatory" required="required"/>
+		    	<label for="lname">Nom : </label>
+		    	<input id="lname" type="text" th:field="*{lastName}" placeholder="obligatoire" required="required"/>
     		</div>
     		<div class="form-group">
-		    	<label for="fname" >Surname : </label>
-		    	<input id="fname" type="text" th:field="*{firstName}" placeholder="mandatory" required="required"/>
+		    	<label for="fname" >Prénom : </label>
+		    	<input id="fname" type="text" th:field="*{firstName}" placeholder="obligatoire" required="required"/>
     		</div>
     		<div id="emailForm" class="form-group">
 		    	<label for="email">Email : </label>
-		    	<input id="email" type="email" th:field="*{email}" placeholder="mandatory"/>
+		    	<input id="email" type="email" th:field="*{email}" placeholder="obligatoire"/>
     		</div>
     		<div id="passwordForm" class="form-group">
-		    	<label for="password">Password : </label>
-		    	<input id="password" type="password" th:field="*{password}" placeholder="mandatory" autocomplete="new-password"/>
+		    	<label for="password">Mot de passe : </label>
+		    	<input id="password" type="password" th:field="*{password}" placeholder="obligatoire" autocomplete="new-password"/>
     		</div>
     		<div id = "sleepStart" class="form-group">
-		    	<label for="sleepStartInput">Usual bedtime:</label>
+		    	<label for="sleepStartInput">Heure de couché habituelle : </label>
 		    	<input id="sleepStartInput" type="time" th:field="*{sleepStart}"/>
-		    	<code>By default : 22h00</code>
+		    	<code>par défaut : 22h00</code>
     		</div>
     		<div id = "sleepEnd" class="form-group">
-		    	<label for="sleepEndInput">Usual Wake up : </label>
+		    	<label for="sleepEndInput">Heure de levé habituelle : </label>
 		    	<input id="sleepEndInput" type="time" th:field="*{sleepEnd}"/>
-		    	<code>By default : 07h00</code>
+		    	<code>par défaut : 07h00</code>
     		</div>
 			<button type="submit" class="btn btn-success">
-				<span class="glyphicon glyphicon-plus"></span> Add
+				<span class="glyphicon glyphicon-plus"></span> Ajouter
 			</button>
     	</form>
 	</div>
