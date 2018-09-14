@@ -29,7 +29,7 @@ public class NewAccompanistRunnable extends EmailRunnable {
 		email.setSubject("Projet AFG Autisme - Ericsson");
 
 		final String line1 = (userName != null ? userName : "Un administrateur") + " vous a nommé accompagnateur de : <strong>" + subjectName + "</strong>.";
-		final String line2 = "Rendez-vous sur <a href=\"http://35.187.36.227/\">http://35.187.36.227/</a>.";
+		final String line2 = "Rendez-vous sur <a href=\"http://ericsson.afg-autisme.com/\">http://ericsson.afg-autisme.com/</a>.";
 
 		String htmlBody = HTMLGenerator.value(line1, 0) + HTMLGenerator.value(line2, 0);
 		if (rawPassword != null) {
