@@ -7,9 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import server.database.model.Role;
 import server.database.model.Suggestion;
@@ -20,6 +18,7 @@ import server.database.repository.SuggestionRepository;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
 import server.model.NightHoursForm;
+import server.model.UserForm;
 import server.utils.DateConverter;
 
 @Controller
@@ -54,17 +53,28 @@ public class SettingsController {
 		List<NightHoursForm> forms = new ArrayList<>();
 		for (User subject : subjects) {
 			NightHoursForm form = new NightHoursForm(subject.getId(), subject.getName(), DateConverter.toFormatTime(subject.getSleepStart()),
-					DateConverter.toFormatTime(subject.getSleepEnd()));
+					DateConverter.toFormatTime(subject.getSleepEnd()), Boolean.toString(subject.getEmailStatus()));
 			forms.add(form);
 		}
+
 
 		model.addAttribute("forms", forms);
 		model.addAttribute("nightForm", new NightHoursForm());
 		model.addAttribute("subjects", subjects);
 		model.addAttribute("suggestionForm", new Suggestion());
+		//model.addAttribute("EmailONForm", new UserForm());
 		return "settings";
 	}
-	
+
+	//@RequestMapping(value = "/setting/emailon" , method = RequestMethod. POST)
+	//public String addDevice(@RequestParam(defaultValue = "true") boolean checkbox) {
+	//	if (checkbox) {
+			// do something if checkbox is checked
+	//	}
+
+	//	return "view";
+	//}
+
 	@PostMapping(path="/settings/sleep")
 	public String setSleepHours(Principal principal, Model model, @ModelAttribute(name="nightForm") NightHoursForm form) {
 		Role admin = roleRepository.findByName("ROLE_ADMIN");
@@ -74,6 +84,7 @@ public class SettingsController {
 		if (user.getRoles().contains(admin) || userLinkRepository.countByUserAndSubjectAndRole(user, subject, parent) > 0) {
 			subject.setSleepStart(DateConverter.toTime(form.getSleepStart()));
 			subject.setSleepEnd(DateConverter.toTime(form.getSleepEnd()));
+			subject.setEmailStatus(form.getEmailStatus());
 			userRepository.save(user);
 		}
 		
@@ -89,4 +100,18 @@ public class SettingsController {
 		suggestionRepository.save(suggestion);
 		return "redirect:/settings?suggestion";
 	}
+
+//	@PostMapping(path="/settings/Emailon")
+//	public String EmailON (Principal principal, @ModelAttribute(name="EmailONForm") UserForm userform ) {
+//		Role admin = roleRepository.findByName("ROLE_ADMIN");
+//		Role parent = roleRepository.findByName("ROLE_PARENT");
+//		User user = userRepository.findByEmail(principal.getName());
+//		User subject = userRepository.findOne(userform.getSubjectId());
+//		if (user.getRoles().contains(admin) || userLinkRepository.countByUserAndSubjectAndRole(user, subject, parent) > 0) {
+//			subject.setEmailStatus(userform.getEmailStatus());
+//			userRepository.save(user);
+//		}
+
+//		return "redirect:/settings";
+//	}
 }

@@ -8,8 +8,18 @@ public class UserForm {
 	private String password;
 	private String sleepStart;
 	private String sleepEnd;
+	private Long subjectId;
+	private String emailON;
 
 	public UserForm() {
+	}
+
+	public Long getSubjectId() {
+		return subjectId;
+	}
+
+	public void setSubjectId(Long subjectId) {
+		this.subjectId = subjectId;
 	}
 
 	public String getRoleStr() {
@@ -60,12 +70,11 @@ public class UserForm {
 		this.sleepStart = sleepStart;
 	}
 
-	public String getSleepEnd() {
-		return sleepEnd;
-	}
+	public String getSleepEnd() {return sleepEnd;}
 
-	public void setSleepEnd(String sleepEnd) {
-		this.sleepEnd = sleepEnd;
-	}
+	public void setSleepEnd(String sleepEnd) {this.sleepEnd = sleepEnd;}
 
+	public String getEmailStatus() { return emailON; }
+
+	public void setEmailStatus(String emailON ) { this.emailON = emailON;}
 }

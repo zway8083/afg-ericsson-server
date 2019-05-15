@@ -31,6 +31,7 @@ public class User {
 	@Column(unique = true)
 	private String email;
 	private String password;
+
 	@Column(nullable = false)
 	private boolean subject = false;
 	private Time sleepStart;
@@ -38,6 +39,7 @@ public class User {
 
 	@Column(nullable = false)
 	private boolean enabled;
+	private boolean emailON	;
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
@@ -98,9 +100,20 @@ public class User {
 		return firstName + " " + lastName;
 	}
 
-	public Time getSleepStart() {
-		return sleepStart;
-	}
+	 public boolean getEmailStatus() {return emailON;}
+
+	 public void setEmailStatus(String emailonstr ) {
+		 if (emailonstr == null || emailonstr.isEmpty())
+			 emailON = false;
+		 else {
+			 emailON = true;
+			 //setSleepHour(timeStr, sleepStart);
+		 }
+	 }
+
+	public Time getSleepStart() {return sleepStart;}
+
+
 
 	public void setSleepStart(String timeStr) {
 		if (timeStr == null || timeStr.isEmpty())

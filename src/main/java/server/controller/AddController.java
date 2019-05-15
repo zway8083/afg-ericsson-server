@@ -83,6 +83,7 @@ public class AddController {
 			user.setSubject(true);
 			user.setSleepStart(userForm.getSleepStart().isEmpty() ? "22:00" : userForm.getSleepStart());
 			user.setSleepEnd(userForm.getSleepEnd().isEmpty() ? "7:00" : userForm.getSleepEnd());
+			user.setEmailStatus(userForm.getEmailStatus().isEmpty() ? "check" : userForm.getEmailStatus());
 		} else
 			user.setSubject(false);
 		user.setFirstName(formatFirstName(userForm.getFirstName()));

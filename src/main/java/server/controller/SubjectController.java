@@ -80,6 +80,7 @@ public class SubjectController {
 		subject.setSubject(true);
 		subject.setSleepStart("22:00");
 		subject.setSleepEnd("7:00");
+		subject.setEmailStatus("check");
 		subject.setFirstName(formatFirstName(form.getFirstName()));
 		subject.setLastName(form.getLastName().toUpperCase());
 		subject.setEnabled(false);
