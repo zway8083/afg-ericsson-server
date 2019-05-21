@@ -7,6 +7,7 @@ public class NightHoursForm {
 	private String sleepEnd;
 	private String emailON;
 
+
 	public NightHoursForm() {
 	}
 
@@ -50,15 +51,17 @@ public class NightHoursForm {
 		this.name = name;
 	}
 
-	public String getEmailStatus() { return emailON; }
+	public String getEmailON() {return emailON;}
 
-	public void setEmailStatus(String emailON ) { this.emailON = emailON;}
+	public void setEmailON(String emailON) {this.emailON = emailON; }
+
 
 	@Override
 	public String toString() {
 		return "NightHoursForm [" + (subjectId != null ? "subjectId=" + subjectId + ", " : "")
 				+ (name != null ? "name=" + name + ", " : "")
 				+ (sleepStart != null ? "sleepStart=" + sleepStart + ", " : "")
-				+ (sleepEnd != null ? "sleepEnd=" + sleepEnd : "") + "]";
+				+ (sleepEnd != null ? "sleepEnd=" + sleepEnd : "")
+				+ (emailON  != null ? "emailON=" + emailON : "") + "]";
 	}
 }

@@ -57,18 +57,10 @@
 							<div class="col-md-1 col-xs-5">
 							</div>
 							<div class="col-md-5 col-xs-5">
-								<div class="form-group">
-<!-- 									<label class="control-label" for="dpEmail">emailon </label>
-									<div class="input-group date sleep-end" id="dpEmail">
-										<input type='button' class="form-control" maxlength="5" name="sleepEnd" id="emailON" th:value="${form.emailON}" required="required"/>
-										<span class="input-group-addon">
-					                        <span class="glyphicon glyphicon-time"></span>
-					                    </span>
-									</div> -->
-								</div>
-									<input type="checkbox" id="emailON" name="emailON" value="check"/>    <!--th:value="${userform.emailON}" -->
-									<!--									<p id="text" style="display:none">Checkbox is CHECKED!</p>
-								</div>-->
+								<!--<div class="input-group date email-checked " id="dpEmail">-->
+									<input type="checkbox" id="emailON" name="emailON" th:attr="value = ${form.emailON}"  />
+									<label th:for="${#ids.next('emailON')}">  Oui <span class="glyphicon glyphicon-check"></span> , NON <span class="glyphicon glyphicon glyphicon-unchecked"></span> </label>
+								<!--</div>-->
 							</div>
 
 							<input type="hidden" th:value="${form.subjectId}" id="subjectId" name="subjectId"/>

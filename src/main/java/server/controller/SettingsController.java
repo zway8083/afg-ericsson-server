@@ -53,7 +53,7 @@ public class SettingsController {
 		List<NightHoursForm> forms = new ArrayList<>();
 		for (User subject : subjects) {
 			NightHoursForm form = new NightHoursForm(subject.getId(), subject.getName(), DateConverter.toFormatTime(subject.getSleepStart()),
-					DateConverter.toFormatTime(subject.getSleepEnd()), Boolean.toString(subject.getEmailStatus()));
+					DateConverter.toFormatTime(subject.getSleepEnd()), Boolean.toString(subject.isEmailON()));
 			forms.add(form);
 		}
 
@@ -84,7 +84,7 @@ public class SettingsController {
 		if (user.getRoles().contains(admin) || userLinkRepository.countByUserAndSubjectAndRole(user, subject, parent) > 0) {
 			subject.setSleepStart(DateConverter.toTime(form.getSleepStart()));
 			subject.setSleepEnd(DateConverter.toTime(form.getSleepEnd()));
-			subject.setEmailStatus(form.getEmailStatus());
+			subject.setEmailON(form.getEmailON());
 			userRepository.save(user);
 		}
 		
@@ -101,17 +101,4 @@ public class SettingsController {
 		return "redirect:/settings?suggestion";
 	}
 
-//	@PostMapping(path="/settings/Emailon")
-//	public String EmailON (Principal principal, @ModelAttribute(name="EmailONForm") UserForm userform ) {
-//		Role admin = roleRepository.findByName("ROLE_ADMIN");
-//		Role parent = roleRepository.findByName("ROLE_PARENT");
-//		User user = userRepository.findByEmail(principal.getName());
-//		User subject = userRepository.findOne(userform.getSubjectId());
-//		if (user.getRoles().contains(admin) || userLinkRepository.countByUserAndSubjectAndRole(user, subject, parent) > 0) {
-//			subject.setEmailStatus(userform.getEmailStatus());
-//			userRepository.save(user);
-//		}
-
-//		return "redirect:/settings";
-//	}
 }

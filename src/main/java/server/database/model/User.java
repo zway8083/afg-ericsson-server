@@ -100,16 +100,15 @@ public class User {
 		return firstName + " " + lastName;
 	}
 
-	 public boolean getEmailStatus() {return emailON;}
+	public boolean isEmailON() {return emailON;}
 
-	 public void setEmailStatus(String emailonstr ) {
-		 if (emailonstr == null || emailonstr.isEmpty())
-			 emailON = false;
-		 else {
-			 emailON = true;
-			 //setSleepHour(timeStr, sleepStart);
-		 }
-	 }
+	public void setEmailON(String emailonstr) {
+		if (emailonstr == null || emailonstr.isEmpty())
+			emailON = false;
+		else {
+			emailON = true;
+		}
+	}
 
 	public Time getSleepStart() {return sleepStart;}
 
@@ -171,6 +170,7 @@ public class User {
 		this.roles = roles;
 	}
 
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -198,6 +198,6 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + "]";
+			return "User [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + "]";
 	}
 }

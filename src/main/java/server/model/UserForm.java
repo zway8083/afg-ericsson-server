@@ -74,7 +74,8 @@ public class UserForm {
 
 	public void setSleepEnd(String sleepEnd) {this.sleepEnd = sleepEnd;}
 
-	public String getEmailStatus() { return emailON; }
+	public String getEmailON() {return emailON;}
 
-	public void setEmailStatus(String emailON ) { this.emailON = emailON;}
+	public void setEmailON(String emailON) {this.emailON = emailON;}
+
 }

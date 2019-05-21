@@ -49,10 +49,11 @@
 		    	<input id="sleepEndInput" type="time" th:field="*{sleepEnd}"/>
 		    	<code>par défaut : 07h00</code>
     		</div>
+
 			<div id = "emailON" class="form-group">
 				<label for="emailONInput">Recevoir rapport quotidiennement : </label>
 				<input id="emailONInput" type="boolean" th:field="*{emailON}"/>
-				<code>par défaut : activé</code>
+				<code>par défaut : true</code>
 			</div>
 			<button type="submit" class="btn btn-success">
 				<span class="glyphicon glyphicon-plus"></span> Ajouter

@@ -15,4 +15,5 @@ public interface DeviceRepository extends CrudRepository<Device, Long> {
 	Device findBySerial(int[] serial);
 
 	List<Device> findAll();
+
 }
