@@ -38,30 +38,21 @@ public class RenameController {
     private long id;
 
     @GetMapping(path = "/rename/*")
-    public String rename(Principal principal, Model model, HttpServletRequest request){
-
+    public String rename(Principal principal, Model model, HttpServletRequest request,Authentication authentication){
+        Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
+                .getAuthorities();
         User subject;
         id = getIdUrl(request);
-        subject = userRepository.findOne(id);
-        logger.info(Long.toString(id));
-        Role admin = roleRepository.findByName("ROLE_ADMIN");
-        Role parent = roleRepository.findByName("ROLE_PARENT");
-        User user = userRepository.findByEmail(principal.getName());
-        List<User> subjects;
-
-        if (user.getRoles().contains(admin)) {
-            subjects = userRepository.findBySubject(true);
-        } else {
-            subjects = new ArrayList<>();
-            List<UserLink> links = userLinkRepository.findByUserAndRole(user, parent);
-            if (!links.isEmpty()) {
-                for (UserLink link : links)
-                    subjects.add(link.getSubject());
-            }
+        if(!userRepository.exists(id)){
+            return "error";
         }
+        subject = userRepository.findOne(id);
 
+        logger.info(userLinkRepository.findBySubjectAndUser(subject,userRepository.findByEmail(principal.getName())).toString());
+        if(userLinkRepository.findBySubjectAndUser(subject,userRepository.findByEmail(principal.getName())).isEmpty()){
+            return "error";
+        }
         model.addAttribute("subject",subject);
-        model.addAttribute("subjects", subjects);
         model.addAttribute("form", new SubjectForm());
         return "rename";
     }
@@ -70,11 +61,6 @@ public class RenameController {
         String idStr=request.getRequestURL().toString() + "?" + request.getQueryString();
         String[] temp= idStr.split(Pattern.quote("?"));
         temp=temp[0].split(Pattern.quote("/"));
-        for(String i : temp){
-            logger.info(i);
-        }
-
-
         return Integer.parseInt(temp[temp.length-1]);
     }
     @PostMapping(path = "/rename")
