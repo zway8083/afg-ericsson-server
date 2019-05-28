@@ -25,6 +25,7 @@ public class NewAccompanistRunnable extends EmailRunnable {
 
 	@Override
 	public void run() {
+		logger.info("password du nouvel accompagnateur" + rawPassword);
 		email.addRecipient(recipient);
 		email.setSubject("Projet AFG Autisme - Ericsson");
 
@@ -35,9 +36,15 @@ public class NewAccompanistRunnable extends EmailRunnable {
 		if (rawPassword != null) {
 			htmlBody += HTMLGenerator.value("Identifiants :", 0)
 					+ HTMLGenerator.strongAttributeValue("Utilisateur", recipient, 1)
-					+ HTMLGenerator.strongAttributeValue("Mot de passe", rawPassword, 1);
+					+ HTMLGenerator.strongAttributeValue("Mot de passe provisoire", rawPassword, 1);
 		}
-		email.concatBody(htmlBody);		
+		final String line3 = "Vous pouvez retrouver les observations de <strong>" + subjectName + "</strong> dans l'onglet <strong>" + "Observation" + "</strong>.";
+		final String line4 = "N'hésitez pas à changer votre mot de passe dans l'onglet <strong>" + "Observation" + "</strong>.";
+
+		htmlBody +=HTMLGenerator.value(line3, 0) + HTMLGenerator.value(line4, 0);
+
+		email.concatBody(htmlBody);
+
 		try {
 			email.send();
 			logger.info("New user email sent to " + recipient + " added by " + (userName != null ? userName : "admin"));

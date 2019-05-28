@@ -57,11 +57,24 @@
 							<div class="col-md-1 col-xs-5">
 							</div>
 							<div class="col-md-5 col-xs-5">
-								<!--<div class="input-group date email-checked " id="dpEmail">-->
+								<!--<div class="input-group checkbox checkbox " id="dpEmail">-->
 									<input type="checkbox" id="emailON" name="emailON" th:attr="value = ${form.emailON}"  />
-									<label th:for="${#ids.next('emailON')}">  Oui <span class="glyphicon glyphicon-check"></span> , NON <span class="glyphicon glyphicon glyphicon-unchecked"></span> </label>
+									<label th:for="${#ids.next('emailON')}">  Oui <span class="glyphicon glyphicon-check"></span> , NON <span class="glyphicon glyphicon glyphicon-unchecked"></span>  <a title = "Si vous cochez cette case, tout les accompagnateurs recevront quotidiennement par email un rapport du sommeil. Si vous la décochez, alors personne ne recevra quotidiennement d'email. "> <span class ="glyphicon glyphicon-info-sign"> </span> </a> </label>
 								<!--</div>-->
 							</div>
+
+
+							<!--<script>
+								$(function(){
+									var test = localStorage.input === 'true'? true: false;
+									$('input').prop('checked', test);
+								});
+
+								$('input').on('change', function() {
+									localStorage.input = $(this).is(':checked');
+									console.log($(this).is(':checked'));
+								});
+							</script>-->
 
 							<input type="hidden" th:value="${form.subjectId}" id="subjectId" name="subjectId"/>
 							<div class="col-md-1 col-xs-1">

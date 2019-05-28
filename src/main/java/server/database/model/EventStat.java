@@ -24,6 +24,8 @@ public class EventStat {
 	private Integer grade;
 	private java.util.Date startNight;
 	private java.util.Date endNight;
+	private Integer levelBatterie;
+
 
 	public EventStat() {
 	}
@@ -83,6 +85,21 @@ public class EventStat {
 			this.grade = 100;
 		else
 			this.grade = grade;
+	}
+	public Integer getLevelBatterie() {
+		return levelBatterie;
+	}
+
+	public void setLevelBatterie(Integer levelBatterie) {
+		if (levelBatterie<0){
+			this.levelBatterie =0;
+		}
+		else if (levelBatterie > 100){
+			this.levelBatterie=100;
+		}
+		else {
+			this.levelBatterie = levelBatterie;
+		}
 	}
 
 	public java.util.Date getStartNight() {

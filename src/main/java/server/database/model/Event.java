@@ -24,6 +24,7 @@ public class Event {
 	private SensorType type;
 	private Double dValue;
 	private Boolean binValue;
+	private Double Blevel;
 
 	public Event() {
 	}
@@ -71,6 +72,10 @@ public class Event {
 	public void setBinValue(Boolean binValue) {
 		this.binValue = binValue;
 	}
+
+	public Double getBlevel() { return Blevel;}
+
+	public void setBlevel(Double blevel) { Blevel = blevel;}
 
 	@Override
 	public String toString() {
