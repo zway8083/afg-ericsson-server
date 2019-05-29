@@ -50,14 +50,33 @@ public class SettingsController {
 			}
 		}
 
+		boolean EmailOnStatus[]= new boolean[subjects.size()];
+		int i=0;
 		List<NightHoursForm> forms = new ArrayList<>();
 		for (User subject : subjects) {
 			NightHoursForm form = new NightHoursForm(subject.getId(), subject.getName(), DateConverter.toFormatTime(subject.getSleepStart()),
 					DateConverter.toFormatTime(subject.getSleepEnd()), Boolean.toString(subject.isEmailON()));
 			forms.add(form);
+			EmailOnStatus[i]=subject.isEmailON();
+			i++;
 		}
 
 
+
+
+		//List<User> userson = userRepository.findByEmailON(true);
+
+		//for (User users : userson) {
+		//	boolean valueEmail;
+			//logger.info(user.getName() + " a le rapport coché et a l'ID " + user.getId());
+			//logger.info("On a le user " + user.getName() + " et le device" + device.getId() + " asssocié au user " + device.getUser().getId());
+			//logger.info("Comparaison entre ID user " + user.getId() + " et user_id " + device.getUser().getId());
+		//	valueEmail = (users.isEmailON());
+		//	}
+
+
+
+		model.addAttribute("EmailOnStatus", EmailOnStatus);
 		model.addAttribute("forms", forms);
 		model.addAttribute("nightForm", new NightHoursForm());
 		model.addAttribute("subjects", subjects);

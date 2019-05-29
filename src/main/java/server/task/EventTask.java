@@ -140,6 +140,7 @@ public class EventTask {
 		eventStat.setEndNight(new java.sql.Date(endNight.getMillis()));
 		eventStat.setDuration(endNight.getMillis() - startNight.getMillis());
 		setEventStatGrade();
+		//setEventStatLevelBatterie();
 		eventStatRepository.save(eventStat);
 	}
 
@@ -291,6 +292,7 @@ public class EventTask {
 		}
 
 		bodyHTML += HTMLGenerator.table(table, 1);
+		bodyHTML += HTMLGenerator.strongAttributeValue("Niveau de la Batterie", String.valueOf(eventStat.getMvts()) +"%", 0);
 
 		return bodyHTML;
 	}
