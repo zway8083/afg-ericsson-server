@@ -79,7 +79,7 @@ public class SignUpController {
 		Thread thread = new Thread(runnable);
 		thread.start();
 		
-		logger.info("Sent new code to: " + form.getEmail());
+		logger.info("Sent new code: "+resultStr+ " to: " + form.getEmail());
 		
 		return "validatecode";
 	}

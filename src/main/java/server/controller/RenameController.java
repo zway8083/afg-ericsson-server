@@ -47,11 +47,13 @@ public class RenameController {
             return "error";
         }
         subject = userRepository.findOne(id);
-
-        logger.info(userLinkRepository.findBySubjectAndUser(subject,userRepository.findByEmail(principal.getName())).toString());
+        boolean pair;
+        pair=(subject.getName().length()%2==0);
+        //logger.info(userLinkRepository.findBySubjectAndUser(subject,userRepository.findByEmail(principal.getName())).toString());
         if(userLinkRepository.findBySubjectAndUser(subject,userRepository.findByEmail(principal.getName())).isEmpty()){
             return "error";
         }
+        model.addAttribute("pair",pair);
         model.addAttribute("subject",subject);
         model.addAttribute("form", new SubjectForm());
         return "rename";

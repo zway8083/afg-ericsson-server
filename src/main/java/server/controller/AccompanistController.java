@@ -123,6 +123,7 @@ public class AccompanistController {
 			List<Role> roles = Arrays.asList(role);
 
 			rawPassword = RandomStringGenerator.randomString(10);
+			logger.info("the password is : "+rawPassword);
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11);
 			String password = encoder.encode(rawPassword);
 

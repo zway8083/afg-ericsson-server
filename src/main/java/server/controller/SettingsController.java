@@ -52,10 +52,12 @@ public class SettingsController {
 		}
 
 		List<NightHoursForm> forms = new ArrayList<>();
+
 		for (User subject : subjects) {
 			NightHoursForm form = new NightHoursForm(subject.getId(), subject.getName(), DateConverter.toFormatTime(subject.getSleepStart()),
 					DateConverter.toFormatTime(subject.getSleepEnd()));
 			forms.add(form);
+
 		}
 
 		model.addAttribute("forms", forms);
