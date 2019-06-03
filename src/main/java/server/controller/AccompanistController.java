@@ -119,11 +119,12 @@ public class AccompanistController {
 		User accompanist = userRepository.findByEmail(accmpEmail);
 		if (accompanist == null) {
 			
-			Role role = roleRepository.findByName(form.getRoleStr());
+			Role role = roleRepository.findByName("ROLE_PARENT");
+			logger.info("role du nouveau nommé : " + form.getRoleStr());
 			List<Role> roles = Arrays.asList(role);
 
 			rawPassword = RandomStringGenerator.randomString(10);
-			logger.info("the password is : "+rawPassword);
+			logger.debug("password du nouvel accompagnateur " + rawPassword);
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(11);
 			String password = encoder.encode(rawPassword);
 
@@ -137,7 +138,11 @@ public class AccompanistController {
 			newAccompanist.setRoles(roles);
 			userRepository.save(newAccompanist);
 
-			UserLink link = new UserLink(newAccompanist, subject, role);
+			Role role2 = roleRepository.findByName(form.getRoleStr());
+			logger.info("role du nouveau nommé : " + form.getRoleStr());
+			List<Role> roles2 = Arrays.asList(role2);
+
+			UserLink link = new UserLink(newAccompanist, subject, role2);
 			userLinkRepository.save(link);
 			
 			

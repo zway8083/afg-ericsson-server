@@ -5,15 +5,18 @@ public class NightHoursForm {
 	private String name;
 	private String sleepStart;
 	private String sleepEnd;
+	private String emailON;
+
 
 	public NightHoursForm() {
 	}
 
-	public NightHoursForm(Long subjectId, String name, String sleepStart, String sleepEnd) {
+	public NightHoursForm(Long subjectId, String name, String sleepStart, String sleepEnd, String emailON) {
 		this.subjectId = subjectId;
 		this.name = name;
 		this.sleepStart = sleepStart;
 		this.sleepEnd = sleepEnd;
+		this.emailON = emailON;
 	}
 
 	public Long getSubjectId() {
@@ -48,11 +51,17 @@ public class NightHoursForm {
 		this.name = name;
 	}
 
+	public String getEmailON() {return emailON;}
+
+	public void setEmailON(String emailON) {this.emailON = emailON; }
+
+
 	@Override
 	public String toString() {
 		return "NightHoursForm [" + (subjectId != null ? "subjectId=" + subjectId + ", " : "")
 				+ (name != null ? "name=" + name + ", " : "")
 				+ (sleepStart != null ? "sleepStart=" + sleepStart + ", " : "")
-				+ (sleepEnd != null ? "sleepEnd=" + sleepEnd : "") + "]";
+				+ (sleepEnd != null ? "sleepEnd=" + sleepEnd : "")
+				+ (emailON  != null ? "emailON=" + emailON : "") + "]";
 	}
 }

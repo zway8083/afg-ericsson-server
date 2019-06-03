@@ -45,7 +45,7 @@
 				    				<td>
 										<form id="deleteForm" th:action="@{/accompanist}"  method="post">
 				    					 <button id="buttonDelete"  type="button" class="btn btn-delete pull-right" th:onclick="'confirmDeleteMessage(\''+ ${accompanist.firstName} +'\',\''+ ${accompanist.id} +'\',\''+ ${subject.firstName} +'\',\''+ ${subject.id} +'\');'" >
-											<span class="glyphicon glyphicon-remove" style="color:red"></span>
+											<span class="glyphicon glyphicon-trash" style="color:red"></span>
 										 </button>	
 										 <div   th:text="${accompanist.firstName + ' ' + accompanist.lastName + ' - ' + accompanist.email}"></div>
 										</form>

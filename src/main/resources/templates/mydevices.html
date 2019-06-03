@@ -40,7 +40,7 @@
 								<td>
 									<form id="deleteForm" th:action="@{/mydevices}"  method="post">
 									 <button id="buttonDelete"  type="button" class="btn btn-delete pull-right" th:onclick="'confirmDeleteMessage(\''+ ${subject.firstName} +'\',\''+ ${device.toString()}+'\',\''+ ${device.id} +'\');'" >
-										<span class="glyphicon glyphicon-remove" style="color:red"></span>
+										<span class="glyphicon glyphicon-trash" style="color:red"></span>
 									 </button>	
 									 <div   th:text="${device.toString()}"></div>
 									</form>

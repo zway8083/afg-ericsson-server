@@ -2,10 +2,12 @@ package server.api;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -15,13 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import server.database.model.Device;
-import server.database.model.Event;
-import server.database.model.SensorType;
-import server.database.repository.DeviceRepository;
-import server.database.repository.EventRepository;
-import server.database.repository.SensorTypeRepository;
+import server.database.model.*;
+import server.database.repository.*;
 import server.model.EventRequest2;
+import server.task.NewBoxRegisteredRunnable;
 
 @Controller
 @RequestMapping(path = "/api/event2")
@@ -33,6 +32,19 @@ public class SensorEventController2 {
 	private EventRepository eventRepository;
 	@Autowired
 	private SensorTypeRepository sensorTypeRepository;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private UserLinkRepository userLinkRepository;
+	@Autowired
+	private RoleRepository roleRepository;
+
+	@Value("${report.email.id}")
+	private String emailId;
+	@Value("${report.email.password}")
+	private String emailPassword;
+	@Value("${report.email.host}")
+	private String emailHost;
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Object> arduinoEvent(@PathVariable(name = "id", required = true) Long id) {
@@ -46,6 +58,7 @@ public class SensorEventController2 {
 		eventRepository.save(event);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+
 
 	@PostMapping
 	public ResponseEntity<String> sensorEvent2(@RequestBody EventRequest2 eventRequest) {
@@ -65,6 +78,21 @@ public class SensorEventController2 {
 				//event.setdValue(eventRequest.getdValue());
 				event.setDate(eventRequest.getData()[i]);
 				logger.info(eventRequest.getData()[i].toString());
+
+
+				if (eventRequest.getData()[i].toString().equals("1970-01-01 01:00:42") ){
+					Device device = deviceRepository.findBySerial(eventRequest.getSerial());
+					User subject = userRepository.findById(device.getUser().getId());
+					Role parent = roleRepository.findByName("ROLE_PARENT");
+					List<UserLink> subjectRelated = userLinkRepository.findBySubjectAndRole(subject,parent);
+					for (UserLink userparent : subjectRelated){
+						logger.info("Le lien avec le sujet " + subject.getId() + " a pour parent " + userparent.getUser().getId() + "dont l'adresse email est " + userparent.getUser().getEmail());
+						NewBoxRegisteredRunnable runnable = new NewBoxRegisteredRunnable(emailId, emailPassword, emailHost, userparent.getUser().getEmail(), userparent.getUser().getName(), subject.getName(), logger);
+						Thread thread = new Thread(runnable);
+						thread.start();}
+				}
+
+
 				SensorType sensorType = sensorTypeRepository.findByName(eventRequest.getType());
 				event.setType(sensorType);
 				Device device = deviceRepository.findBySerial(eventRequest.getSerial());

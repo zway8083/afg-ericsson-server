@@ -7,9 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import server.database.model.Role;
 import server.database.model.Suggestion;
@@ -20,6 +18,7 @@ import server.database.repository.SuggestionRepository;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
 import server.model.NightHoursForm;
+import server.model.UserForm;
 import server.utils.DateConverter;
 
 @Controller
@@ -51,15 +50,20 @@ public class SettingsController {
 			}
 		}
 
+		boolean EmailOnStatus[]= new boolean[subjects.size()];
+		int i=0;
 		List<NightHoursForm> forms = new ArrayList<>();
-
 		for (User subject : subjects) {
 			NightHoursForm form = new NightHoursForm(subject.getId(), subject.getName(), DateConverter.toFormatTime(subject.getSleepStart()),
-					DateConverter.toFormatTime(subject.getSleepEnd()));
+					DateConverter.toFormatTime(subject.getSleepEnd()), Boolean.toString(subject.isEmailON()));
 			forms.add(form);
-
+			EmailOnStatus[i]=subject.isEmailON();
+			i++;
 		}
 
+
+
+		model.addAttribute("EmailOnStatus", EmailOnStatus);
 		model.addAttribute("forms", forms);
 		model.addAttribute("nightForm", new NightHoursForm());
 		model.addAttribute("subjects", subjects);
@@ -76,6 +80,7 @@ public class SettingsController {
 		if (user.getRoles().contains(admin) || userLinkRepository.countByUserAndSubjectAndRole(user, subject, parent) > 0) {
 			subject.setSleepStart(DateConverter.toTime(form.getSleepStart()));
 			subject.setSleepEnd(DateConverter.toTime(form.getSleepEnd()));
+			subject.setEmailON(form.getEmailON());
 			userRepository.save(user);
 		}
 		

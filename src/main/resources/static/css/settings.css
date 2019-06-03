@@ -9,3 +9,9 @@ well h4 {
 .sugg-submit {
 	margin-top: 10px;
 }
+
+#emailON{
+	/*width:30px; height: 30px;*/
+	transform: scale(2.5);
+	margin : 0.9rem
+}

@@ -2,7 +2,8 @@ package server.config;
 
 import server.database.model.User;
 import server.database.repository.UserLinkRepository;
-import server.database.repository.UserRepository;;import java.security.Principal;
+import server.database.repository.UserRepository;
+import java.security.Principal;
 
 public class Security {
     public UserLinkRepository getUserLinkRepository() {

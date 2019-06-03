@@ -11,6 +11,7 @@ $(function() {
 			$("#password").prop('required', false);
 			$("#email").attr("placeholder", "");
 			$("#password").attr("placeholder", "");
+
 		} else {
 			$("#sleepStart").hide();
 			$("#sleepEnd").hide();
@@ -18,6 +19,7 @@ $(function() {
 			$("#email").prop('required', true);
 			$("#email").attr("placeholder", "mandatory");
 			$("#password").attr("placeholder", "mandatory");
+
 		}
 	});
 });
