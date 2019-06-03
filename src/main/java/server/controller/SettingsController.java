@@ -63,19 +63,6 @@ public class SettingsController {
 
 
 
-
-		//List<User> userson = userRepository.findByEmailON(true);
-
-		//for (User users : userson) {
-		//	boolean valueEmail;
-			//logger.info(user.getName() + " a le rapport coché et a l'ID " + user.getId());
-			//logger.info("On a le user " + user.getName() + " et le device" + device.getId() + " asssocié au user " + device.getUser().getId());
-			//logger.info("Comparaison entre ID user " + user.getId() + " et user_id " + device.getUser().getId());
-		//	valueEmail = (users.isEmailON());
-		//	}
-
-
-
 		model.addAttribute("EmailOnStatus", EmailOnStatus);
 		model.addAttribute("forms", forms);
 		model.addAttribute("nightForm", new NightHoursForm());
@@ -84,15 +71,6 @@ public class SettingsController {
 		//model.addAttribute("EmailONForm", new UserForm());
 		return "settings";
 	}
-
-	//@RequestMapping(value = "/setting/emailon" , method = RequestMethod. POST)
-	//public String addDevice(@RequestParam(defaultValue = "true") boolean checkbox) {
-	//	if (checkbox) {
-			// do something if checkbox is checked
-	//	}
-
-	//	return "view";
-	//}
 
 	@PostMapping(path="/settings/sleep")
 	public String setSleepHours(Principal principal, Model model, @ModelAttribute(name="nightForm") NightHoursForm form) {
