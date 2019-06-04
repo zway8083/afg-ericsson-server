@@ -1,7 +1,7 @@
 $(function() {
 	$("#sleepStart").hide();
 	$("#sleepEnd").hide();
-	$("#password").prop('required', true);
+	$(	"#password").prop('required', true);
 	$("#email").prop('required', true);
 	$('#role').on('change', function() {
 		if (this.value === 'ROLE_SUJET') {
