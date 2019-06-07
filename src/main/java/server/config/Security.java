@@ -1,5 +1,6 @@
 package server.config;
 
+import server.database.model.Device;
 import server.database.model.User;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
@@ -25,13 +26,19 @@ public class Security {
     private UserLinkRepository userLinkRepository;
     private UserRepository userRepository;
 
-    public Security(){}
+    public Security(UserRepository userRepository,UserLinkRepository userLinkRepository){
+        this.userRepository=userRepository;
+        this.userLinkRepository=userLinkRepository;
+    }
 
     public boolean checkAutority(Principal principal, User subject){
         return !userLinkRepository.findBySubjectAndUser(subject, userRepository.findByEmail(principal.getName())).isEmpty();
     }
     public boolean checkAutority(User parent,User subject){
         return !userLinkRepository.findBySubjectAndUser(subject,parent).isEmpty();
+    }
+    public boolean checkAutority(Principal principal, Device device){
+        return checkAutority(principal,device.getUser());
     }
 
 
