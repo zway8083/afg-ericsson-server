@@ -17,7 +17,7 @@ public class HTTPSRedirection {
 
 	@Value("${server.port}")
 	private int serverPortHttps;
-	
+
 	@Bean
 	public EmbeddedServletContainerFactory servletContainer() {
 		TomcatEmbeddedServletContainerFactory tomcat = new TomcatEmbeddedServletContainerFactory() {

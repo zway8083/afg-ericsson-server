@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import server.config.Security;
 import server.database.model.Role;
 import server.database.model.User;
 import server.database.model.UserLink;
@@ -100,20 +101,25 @@ public class AccompanistController {
 	@PostMapping(path = "/accompanist")
 	public String accompanistForm(Authentication authentication, Model model,
 			@ModelAttribute(name = "form") AccompanistForm form) {
-		
+
 		@SuppressWarnings("unchecked")
 		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
 				.getAuthorities();
-		
+
 		String name;
 		if (authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN")))
 			name = "Un administrateur";
 		else {
 			name = userRepository.findByEmail(authentication.getName()).getName();
 		}
-		
+		Security security= new Security(userRepository,userLinkRepository);
+
 		User subject = userRepository.findOne(form.getSubjectId());
-		
+		if(!security.checkAutority(userRepository.findByEmail(authentication.getName()),subject)){
+			logger.info("redirected");
+			return "redirect:/logout";
+		}
+		logger.info("not redirected");
 		String accmpEmail = form.getEmail();
 		String rawPassword = null;
 		User accompanist = userRepository.findByEmail(accmpEmail);
