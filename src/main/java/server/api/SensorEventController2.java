@@ -24,7 +24,7 @@ import server.task.NewBoxRegisteredRunnable;
 
 @Controller
 @RequestMapping(path = "/api/event2")
-public class SensorEventController2 {
+public class 	SensorEventController2 {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	@Autowired
 	private DeviceRepository deviceRepository;
@@ -80,7 +80,7 @@ public class SensorEventController2 {
 				logger.info(eventRequest.getData()[i].toString());
 
 
-				if (eventRequest.getData()[i].toString().equals("1970-01-01 01:00:42") ){
+				if (eventRequest.getData()[i].toString().equals("Thu Jan 01 01:00:42 CET 1970") ){
 					Device device = deviceRepository.findBySerial(eventRequest.getSerial());
 					User subject = userRepository.findById(device.getUser().getId());
 					Role parent = roleRepository.findByName("ROLE_PARENT");

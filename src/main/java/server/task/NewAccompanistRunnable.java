@@ -39,7 +39,7 @@ public class NewAccompanistRunnable extends EmailRunnable {
 					+ HTMLGenerator.strongAttributeValue("Mot de passe provisoire", rawPassword, 1);
 		}
 		final String line3 = "Vous pouvez retrouver les observations de <strong>" + subjectName + "</strong> dans l'onglet <strong>" + "Observation" + "</strong>.";
-		final String line4 = "N'hésitez pas à changer votre mot de passe dans l'onglet <strong>" + "Observation" + "</strong>.";
+		final String line4 = "N'hésitez pas à changer votre mot de passe dans l'onglet <strong>" + "Réglages" + "</strong>.";
 
 		htmlBody +=HTMLGenerator.value(line3, 0) + HTMLGenerator.value(line4, 0);
 
