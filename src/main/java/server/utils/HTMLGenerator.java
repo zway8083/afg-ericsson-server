@@ -2,7 +2,7 @@ package server.utils;
 
 import java.util.ArrayList;
 
-public class HTMLGenerator {
+public class   HTMLGenerator {
 	private final static String indentStyle = "style=\"%s-left: %dpx;\"";
 	private final static int indentBase = 30;
 

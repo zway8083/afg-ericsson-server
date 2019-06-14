@@ -92,7 +92,7 @@ public class Device {
 	}
 
 	@Override
-	public String toString() {return "Capteur: NS =" + Arrays.toString(serial).replace(',','-');
+	public String toString() {return "Capteur: NS =" + Arrays.toString(serial).replace(", ","-");
 	}
 	
 	

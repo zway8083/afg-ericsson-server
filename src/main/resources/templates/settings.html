@@ -57,12 +57,12 @@
 							<div class="col-md-1 col-xs-5">
 							</div>
 							<div class="col-md-5 col-xs-5">
-								<input type="checkbox" id="emailON" name="emailON" th:attr="value = ${form.emailON}" th:checked="${EmailOnStatus[(iter.count)-1]}" />
+								<input type="checkbox" id="emailON" name="emailON" th:attr="value = ${form.emailON}" th:checked="${EmailOnStatus[(iter.count)-1]}"/>
 								<label th:for="${#ids.next('emailON')}">  Oui <span class="glyphicon glyphicon-check"></span> , NON <span class="glyphicon glyphicon glyphicon-unchecked"></span>  <a title = "Si vous cochez cette case, tout les accompagnateurs recevront quotidiennement par email un rapport du sommeil. Si vous la décochez, alors personne ne recevra quotidiennement d'email. "> <span class ="glyphicon glyphicon-info-sign"> </span> </a> </label>
 							</div>
 							<input type="hidden" th:value="${form.subjectId}" id="subjectId" name="subjectId"/>
 							<div class="col-md-1 col-xs-1">
-								<button type="submit" class="btn btn-success dp-submit"><span class="glyphicon glyphicon-ok"></span></button>
+								<button type="submit" class="btn btn-success dp-submit"><span class="glyphicon glyphicon-ok"></span> Valider </button>
 							</div>
 
 							<a th:href="|/rename/${form.subjectId}|">Renommer</a>

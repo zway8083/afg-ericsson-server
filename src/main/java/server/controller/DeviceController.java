@@ -1,5 +1,6 @@
 package server.controller;
 
+import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import server.config.Security;
 import server.database.model.AppiotRef;
 import server.database.model.Device;
 import server.database.model.Raspberry;
@@ -97,10 +99,12 @@ public class DeviceController {
 		@SuppressWarnings("unchecked")
 		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
 				.getAuthorities();
-		
+		Security security=new Security(userRepository,userLinkRepository);
 		User user = userRepository.findOne(device.getUserId());
 		device.setUser(user);
-		
+		if(!security.checkAutority(((Principal) authentication.getPrincipal()),user)){
+			return mydevices(authentication,model);
+		}
 		String num_ser=SnGenerate();
 		device.setSerial(num_ser);
 		while (deviceRepository.findBySerial(device.getSerial())!=null)
@@ -126,10 +130,14 @@ public class DeviceController {
 	    	@SuppressWarnings("unchecked")
 			Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
 					.getAuthorities();
-	    	
+	    	Security security=new Security(userRepository,userLinkRepository);
+
 				
 	    	Device device=deviceRepository.findOne(idDevice);
-	        
+	        if(!security.checkAutority(((Principal) authentication.getPrincipal()),device)){
+	        	logger.info(authentication.getName()+" tried to delete "+device.getSerialStr()+" but had not the rights.");
+	        	return "redirect:/mydevices";
+			}
 	    	device.setUser(null);
 	    	deviceRepository.save(device);
 	    	
