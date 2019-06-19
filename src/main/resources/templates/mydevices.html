@@ -43,10 +43,6 @@
 										<span class="glyphicon glyphicon-trash" style="color:red"></span>
 									 </button>	
 									 <div   th:text="${device.toString()}"></div>
-										<div>
-											<input type="checkbox" id="deviceactif" name="deviceactif"/> <!--th:attr="value = ${form.emailON}" th:checked="${EmailOnStatus[(iter.count)-1]}"-->
-											<label> <!--th:for="${#ids.next('emailON')}">--> Capteur actif <a title = "Choississez le capteur qui doit être actif pour votre sujet. Si vous n'avez qu'un seul capteur, alors celui-ci est actif par défaut"> <span class ="glyphicon glyphicon-info-sign"> </span> </a> </label>
-										</div>
 									</form>
 								</td>
 							</tr>

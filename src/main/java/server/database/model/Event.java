@@ -17,6 +17,9 @@ public class Event {
 	@ManyToOne
 	@NotNull
 	private Device device;
+	@ManyToOne
+	@NotNull
+	private User user;
 	@NotNull
 	private Date date;
 	@ManyToOne
@@ -73,9 +76,15 @@ public class Event {
 		this.binValue = binValue;
 	}
 
-	public Double getBlevel() { return Blevel;}
 
-	public void setBlevel(Double blevel) { Blevel = blevel;}
+	public User getUser() { return user; }
+
+	public void setUser(User user) { this.user = user; }
+
+
+	//public Double getBlevel() { return Blevel;}
+
+	//public void setBlevel(Double blevel) { Blevel = blevel;}
 
 	@Override
 	public String toString() {

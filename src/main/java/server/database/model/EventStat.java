@@ -24,7 +24,9 @@ public class EventStat {
 	private Integer grade;
 	private java.util.Date startNight;
 	private java.util.Date endNight;
-	private Integer levelBatterie;
+	//private Integer levelBatterie;
+	@ManyToOne
+	private User user;
 
 
 	public EventStat() {
@@ -86,21 +88,21 @@ public class EventStat {
 		else
 			this.grade = grade;
 	}
-	public Integer getLevelBatterie() {
-		return levelBatterie;
-	}
+	//public Integer getLevelBatterie() {
+	//	return levelBatterie;
+	//}
 
-	public void setLevelBatterie(Integer levelBatterie) {
-		if (levelBatterie<0){
-			this.levelBatterie =0;
-		}
-		else if (levelBatterie > 100){
-			this.levelBatterie=100;
-		}
-		else {
-			this.levelBatterie = levelBatterie;
-		}
-	}
+	//public void setLevelBatterie(Integer levelBatterie) {
+	//	if (levelBatterie<0){
+	//		this.levelBatterie =0;
+	//	}
+	//	else if (levelBatterie > 100){
+	//		this.levelBatterie=100;
+	//	}
+	//	else {
+	//		this.levelBatterie = levelBatterie;
+	//	}
+	//}
 
 	public java.util.Date getStartNight() {
 		return startNight;
@@ -117,5 +119,10 @@ public class EventStat {
 	public void setEndNight(java.util.Date endNight) {
 		this.endNight = endNight;
 	}
+
+	public User getUser() { return user; }
+
+	public void setUser(User user) { this.user = user; }
+
 
 }
