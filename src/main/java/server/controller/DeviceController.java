@@ -151,11 +151,11 @@ public class DeviceController {
 	    {
 	    	SecureRandom random = new SecureRandom();
 	    	String resultStr;
-	    	int result = random.nextInt(1000);
+	    	int result = random.nextInt(900)+100;
     		resultStr =result+"";
 	    	for(int i=1;i<8;i++)
 	    	{ 	 		
-	    		result = random.nextInt(1000);
+	    		result = random.nextInt(900)+100;
 	    		resultStr =resultStr+"-"+result;	
 	    	}
 	       

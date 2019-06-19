@@ -97,6 +97,7 @@ public class 	SensorEventController2 {
 				event.setType(sensorType);
 				Device device = deviceRepository.findBySerial(eventRequest.getSerial());
 				event.setDevice(device);
+				event.setUser(device.getUser());
 				eventRepository.save(event);
 				//return new ResponseEntity<String>(HttpStatus.CREATED);
 			} catch (Exception e) {

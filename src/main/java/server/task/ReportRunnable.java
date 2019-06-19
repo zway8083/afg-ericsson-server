@@ -51,9 +51,11 @@ public class ReportRunnable implements Runnable {
 		try {
 			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository,
 					eventStatRepository, userLinkRepository, path);
-			List<String> recipients = eventTask.sendEmail(id, password, host, eventTask.createCsvReport());
-			if (recipients == null)
-				logger.warn("Nothing sent for device id = " + device.getId());
+			if(device.getUser().isEmailON()) {
+				List<String> recipients = eventTask.sendEmail(id, password, host, eventTask.createCsvReport());
+				if (recipients == null)
+					logger.warn("Nothing sent for device id = " + device.getId());
+			}
 		} catch (Exception e) {
 			logger.error("Report error for device id = " + device.getId() + ": " + e.getMessage());
 		}
