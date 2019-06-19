@@ -132,9 +132,8 @@ public class DeviceController {
 					.getAuthorities();
 	    	Security security=new Security(userRepository,userLinkRepository);
 
-				
 	    	Device device=deviceRepository.findOne(idDevice);
-	        if(!security.checkAutority(((Principal) authentication.getPrincipal()),device)){
+	        if(!security.checkAutority(authentication,device)){
 	        	logger.info(authentication.getName()+" tried to delete "+device.getSerialStr()+" but had not the rights.");
 	        	return "redirect:/mydevices";
 			}
