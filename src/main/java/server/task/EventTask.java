@@ -63,18 +63,17 @@ public class EventTask {
 	private static final int WAKEUP_GROUP_SIZE = 5;
 	private static final int MONTH_GRADE_INTERVAL = 3;
 
-	public EventTask(Device device, DateTime date, SensorTypeRepository sensorTypeRepository,
+	public EventTask(User user, DateTime date, SensorTypeRepository sensorTypeRepository,
 					 EventRepository eventRepository, EventStatRepository eventStatRepository,
 					 UserLinkRepository userLinkRepository, String path) throws MissingSleepTimesException, NoMotionException {
-		this.device = device;
 		this.date = date.withMillisOfDay(0);
 		this.sensorTypeRepository = sensorTypeRepository;
 		this.eventRepository = eventRepository;
 		this.eventStatRepository = eventStatRepository;
 		this.userLinkRepository = userLinkRepository;
 		this.path = path;
-		user = device.getUser();
-		logger.info("id du device : "+ device.getId() + " et Id du user : " + user.getId());
+        this.user=user;
+
 		if (user.getSleepStart() == null || user.getSleepEnd() == null)
 			throw new MissingSleepTimesException(user.getId());
 		DateTime timeSleepStart = new DateTime(user.getSleepStart().getTime());
@@ -132,7 +131,7 @@ public class EventTask {
 	private void createEventStat() {
 		eventStat = new EventStat();
 		eventStat.setDate(date.getMillis());
-		eventStat.setDevice(device);
+		//eventStat.setDevice(device);
 		eventStat.setMvts(eventMotion.size());
 		eventStat.setStartNight(new java.sql.Date(startNight.getMillis()));
 		eventStat.setEndNight(new java.sql.Date(endNight.getMillis()));

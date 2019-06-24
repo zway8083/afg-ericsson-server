@@ -66,7 +66,7 @@ public class Generate {
 		while (date.getMillis() <= last.getMillis()) {
 			try {
 				@SuppressWarnings("unused")
-				EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository, null, "");
+				EventTask eventTask = new EventTask(user, date, sensorTypeRepository, eventRepository, eventStatRepository, null, "");
 			} catch (MissingSleepTimesException e) {
 				//System.out.println(e.getMessage());
 			} catch (NoMotionException e) {

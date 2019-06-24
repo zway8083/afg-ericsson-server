@@ -138,11 +138,13 @@ public class ReportController {
 		model.addAttribute("nextReport", new ReportInfos(report.getId(), nextDate));
 
 		User user = userRepository.findOne(report.getId());
-		Device device = deviceRepository.findOneByUser(user);
-		if (device == null)
+		//Device device = deviceRepository.findOneByUser(user);
+		//if (device == null)
+        List<Device> devices = deviceRepository.findByUser(user);
+        if (devices.isEmpty())
 			return "redirect:/report?error=device";
 		try {
-			EventTask eventTask = new EventTask(device, curDate, sensorTypeRepository, eventRepository,eventStatRepository, userLinkRepository, path);
+			EventTask eventTask = new EventTask(user, curDate, sensorTypeRepository, eventRepository,eventStatRepository, userLinkRepository, path);
 			String reportHTML = eventTask.createHTMLBody();
 			model.addAttribute("reportHTML", reportHTML);
 		} catch (MissingSleepTimesException e) {
@@ -161,11 +163,11 @@ public class ReportController {
 	public String reportMail(Principal principal, @ModelAttribute ReportInfos report, Model model) {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
 		User user = userRepository.findOne(report.getId());
-		Device device = deviceRepository.findOneByUser(user);
+		//Device device = deviceRepository.findOneByUser(user);
 
 		List<String> recipients = null;
 		try {
-			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository,
+			EventTask eventTask = new EventTask(user, date, sensorTypeRepository, eventRepository,
 					eventStatRepository, userLinkRepository, path);
 			recipients = eventTask.sendEmail(Arrays.asList(principal.getName()), id, password, host, null);
 		} catch (MissingSleepTimesException e) {
@@ -185,11 +187,11 @@ public class ReportController {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
 		User user = userRepository.findByEmail(principal.getName());
 		User subject = userRepository.findOne(report.getId());
-		Device device = deviceRepository.findOneByUser(subject);
+		//Device device = deviceRepository.findOneByUser(subject);
 
 		EventTask eventTask = null;
 		try {
-			eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository, eventStatRepository,
+			eventTask = new EventTask(subject, date, sensorTypeRepository, eventRepository, eventStatRepository,
 					userLinkRepository, path);
 		} catch (MissingSleepTimesException e) {
 			response.sendRedirect("/report?error=sleepTimes");
