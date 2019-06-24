@@ -44,8 +44,8 @@ public class ReportScheduled {
 	private UserRepository userRepository;
 
 
-	//@Scheduled(cron = "0 0 8 * * *")
-	@Scheduled(cron = "*/30 * * * * *") //envoit tout les 15 secondes.
+	@Scheduled(cron = "0 0 8 * * *")
+	//@Scheduled(cron = "*/30 * * * * *") //envoit tout les 15 secondes.
 
 
 	public void run() {

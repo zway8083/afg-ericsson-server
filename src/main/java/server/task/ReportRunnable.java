@@ -55,7 +55,6 @@ public class ReportRunnable implements Runnable {
 			EventTask eventTask = new EventTask(user, date, sensorTypeRepository, eventRepository,
 					eventStatRepository, userLinkRepository, path);
 			if(user.isEmailON()) {
-				logger.info("trying to send email to " + host + "associé au sujet " + user.getId());
 				List<String> recipients = eventTask.sendEmail(id, password, host, eventTask.createCsvReport());
 				if (recipients == null)
 					logger.warn("Nothing sent for user id = " + user.getId());
