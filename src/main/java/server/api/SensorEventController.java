@@ -43,6 +43,7 @@ public class SensorEventController {
 		event.setBinValue(true);
 		event.setDate(new Date());
 		event.setDevice(device);
+		event.setUser(device.getUser());
 		eventRepository.save(event);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

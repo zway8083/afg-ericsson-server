@@ -45,21 +45,22 @@ public class ReportScheduled {
 
 
 	@Scheduled(cron = "0 0 8 * * *")
-	//@Scheduled(cron = "*/15 * * * * *") envoit tout les 15 secondes.
+	//@Scheduled(cron = "*/30 * * * * *") //envoit tout les 15 secondes.
 
 
 	public void run() {
 		logger.info("Report task begin");
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
 
-		List<Device> devices = deviceRepository.findAll();
-		for (Device device : devices) {
-			if (device.getId() == 3)
-				continue;
-			ReportRunnable runnable = new ReportRunnable(path, device, new DateTime(), sensorTypeRepository,
+		//List<Device> devices = deviceRepository.findAll();
+		List<User> users = userRepository.findBySubject(true);
+		for (User user : users) {
+			//if (device.getId() == 3)
+			//	continue;
+			ReportRunnable runnable = new ReportRunnable(path, user, new DateTime(), sensorTypeRepository,
 					eventRepository, eventStatRepository, userLinkRepository, id, password, host);
 			executorService.execute(runnable);
-			logger.info("Started report for device id= " + device.getId());
+			logger.info("Started report for user id= " + user.getId());
 		}
 	}
 }

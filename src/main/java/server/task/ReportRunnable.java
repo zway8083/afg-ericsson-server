@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import server.database.model.Device;
+import server.database.model.User;
 import server.database.repository.EventRepository;
 import server.database.repository.EventStatRepository;
 import server.database.repository.SensorTypeRepository;
@@ -22,6 +23,7 @@ public class ReportRunnable implements Runnable {
 	private String id;
 	private String password;
 	private String host;
+	private User user;
 
 	private SensorTypeRepository sensorTypeRepository;
 	private EventRepository eventRepository;
@@ -31,11 +33,11 @@ public class ReportRunnable implements Runnable {
 	public ReportRunnable() {
 	}
 
-	public ReportRunnable(String path, Device device, DateTime date, SensorTypeRepository sensorTypeRepository,
-			EventRepository eventRepository, EventStatRepository eventStatRepository,
-			UserLinkRepository userLinkRepository, String id, String password, String host) {
+	public ReportRunnable(String path, User user, DateTime date, SensorTypeRepository sensorTypeRepository,
+						  EventRepository eventRepository, EventStatRepository eventStatRepository,
+						  UserLinkRepository userLinkRepository, String id, String password, String host) {
 		this.path = path;
-		this.device = device;
+		//this.device = device;
 		this.date = date;
 		this.sensorTypeRepository = sensorTypeRepository;
 		this.eventRepository = eventRepository;
@@ -44,20 +46,21 @@ public class ReportRunnable implements Runnable {
 		this.id = id;
 		this.password = password;
 		this.host = host;
+		this.user = user;
 	}
 
 	@Override
 	public void run() {
 		try {
-			EventTask eventTask = new EventTask(device, date, sensorTypeRepository, eventRepository,
+			EventTask eventTask = new EventTask(user, date, sensorTypeRepository, eventRepository,
 					eventStatRepository, userLinkRepository, path);
-			if(device.getUser().isEmailON()) {
+			if(user.isEmailON()) {
 				List<String> recipients = eventTask.sendEmail(id, password, host, eventTask.createCsvReport());
 				if (recipients == null)
-					logger.warn("Nothing sent for device id = " + device.getId());
+					logger.warn("Nothing sent for user id = " + user.getId());
 			}
 		} catch (Exception e) {
-			logger.error("Report error for device id = " + device.getId() + ": " + e.getMessage());
+			logger.error("Report error for user id = " + user.getId() + ": " + e.getMessage());
 		}
 	}
 }

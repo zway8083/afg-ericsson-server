@@ -103,8 +103,8 @@ public class ObservationController {
 		for (Time time : allTimes) {
 			List<Description> descriptions = new ArrayList<>();
 			if (time.getChrono() == -10) {
-				EventStat eventStat = eventStatRepository.findByDeviceAndDate(deviceRepository.findOneByUser(subject),
-						curDate.toDate());
+				EventStat eventStat = eventStatRepository.findByUserAndDate(subject,curDate.toDate());
+				//EventStat eventStat = eventStatRepository.findByDeviceAndDate(deviceRepository.findOneByUser(subject),curDate.toDate());
 				if (eventStat == null || eventStat.getGrade() == null)
 					continue;
 				Integer grade;
