@@ -137,13 +137,12 @@ public class ReportController {
 		String nextDate = DateConverter.toFormatString(curDate.plusDays(1));
 		model.addAttribute("nextReport", new ReportInfos(report.getId(), nextDate));
 
-		User subject = userRepository.findOne(report.getId());
-		Device device = deviceRepository.findOneByUser(subject);
+		User user = userRepository.findOne(report.getId());
+		Device device = deviceRepository.findOneByUser(user);
 		if (device == null)
 			return "redirect:/report?error=device";
 		try {
-			EventTask eventTask = new EventTask(device, curDate, sensorTypeRepository, eventRepository,
-					eventStatRepository, userLinkRepository, path);
+			EventTask eventTask = new EventTask(device, curDate, sensorTypeRepository, eventRepository,eventStatRepository, userLinkRepository, path);
 			String reportHTML = eventTask.createHTMLBody();
 			model.addAttribute("reportHTML", reportHTML);
 		} catch (MissingSleepTimesException e) {
@@ -161,8 +160,8 @@ public class ReportController {
 	@PostMapping(path = "/report/mail")
 	public String reportMail(Principal principal, @ModelAttribute ReportInfos report, Model model) {
 		DateTime date = new DateTime(DateConverter.toSQLDate(report.getDate()).getTime());
-		User subject = userRepository.findOne(report.getId());
-		Device device = deviceRepository.findOneByUser(subject);
+		User user = userRepository.findOne(report.getId());
+		Device device = deviceRepository.findOneByUser(user);
 
 		List<String> recipients = null;
 		try {

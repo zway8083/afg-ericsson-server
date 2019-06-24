@@ -64,8 +64,8 @@ public class EventTask {
 	private static final int MONTH_GRADE_INTERVAL = 3;
 
 	public EventTask(Device device, DateTime date, SensorTypeRepository sensorTypeRepository,
-			EventRepository eventRepository, EventStatRepository eventStatRepository,
-			UserLinkRepository userLinkRepository, String path) throws MissingSleepTimesException, NoMotionException {
+					 EventRepository eventRepository, EventStatRepository eventStatRepository,
+					 UserLinkRepository userLinkRepository, String path) throws MissingSleepTimesException, NoMotionException {
 		this.device = device;
 		this.date = date.withMillisOfDay(0);
 		this.sensorTypeRepository = sensorTypeRepository;
@@ -74,7 +74,7 @@ public class EventTask {
 		this.userLinkRepository = userLinkRepository;
 		this.path = path;
 		user = device.getUser();
-
+		logger.info("id du device : "+ device.getId() + " et Id du user : " + user.getId());
 		if (user.getSleepStart() == null || user.getSleepEnd() == null)
 			throw new MissingSleepTimesException(user.getId());
 		DateTime timeSleepStart = new DateTime(user.getSleepStart().getTime());
@@ -84,17 +84,15 @@ public class EventTask {
 		startTheo = date.minusDays(1).withHourOfDay(timeSleepStart.getHourOfDay())
 				.withMinuteOfHour(timeSleepStart.getMinuteOfHour());
 		endTheo = date.withHourOfDay(timeSleepEnd.getHourOfDay()).withMinuteOfHour(timeSleepEnd.getMinuteOfHour());
-		
+
 		SensorType motion = sensorTypeRepository.findByName("motion");
-		eventStat = eventStatRepository.findByDeviceAndDate(device, date.toDate());
-		if (eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device, motion, true, startTheo.toDate(),
-				endTheo.toDate()) < 3)
+		eventStat = eventStatRepository.findByUserAndDate(user, date.toDate());
+		//EventStat eventStat2 = eventStatRepository.findByDeviceAndDate(device, date.toDate());
+		if (eventRepository.countByUserAndTypeAndBinValueAndDateBetween(user, motion, true, startTheo.toDate(),endTheo.toDate()) < 3)//eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device, motion, true, startTheo.toDate(),endTheo.toDate()) < 3)
 		{
-		    
-		     if (eventStat ==null) {
-		    	 
-		    		throw new NoMotionException(user.getId(), startTheo, endTheo);
-		     }  
+			if (eventStat ==null) {
+				throw new NoMotionException(user.getId(), startTheo, endTheo);
+			}
 		}
 		else {
 			if (eventStat == null) {
@@ -110,8 +108,8 @@ public class EventTask {
 				endNight = new DateTime(eventStat.getEndNight().getTime());
 				eventLists = getEventLists();
 			}
-			
-			
+
+
 		}
 	}
 
@@ -148,13 +146,18 @@ public class EventTask {
 		logger.info("Finding " + date.toString("dd/MM/yyyy") + " night limits for user id=" + user.getId());
 
 		DateTime timeLimit = startTheo.plusHours(MARGIN_INIT);
-		List<Event> movEvents = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateDesc(device,
+		List<Event> movEvents = eventRepository.findByUserAndTypeAndDateBetweenOrderByDateDesc(user,
 				sensorTypeRepository.findByName("motion"), startTheo.toDate(), timeLimit.toDate());
+
+		//List<Event> movEvents = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateDesc(device,
+		//		sensorTypeRepository.findByName("motion"), startTheo.toDate(), timeLimit.toDate());
 		startNight = findNightLimit(startTheo, movEvents);
 
 		timeLimit = endTheo.plusHours(MARGIN_END);
-		movEvents = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+		movEvents = eventRepository.findByUserAndTypeAndDateBetweenOrderByDateAsc(user,
 				sensorTypeRepository.findByName("motion"), endTheo.toDate(), timeLimit.toDate());
+		//movEvents = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+		//		sensorTypeRepository.findByName("motion"), endTheo.toDate(), timeLimit.toDate());
 		endNight = findNightLimit(endTheo, movEvents);
 
 		logger.info("Found limits (id=" + user.getId() + "): " + "start=" + startNight.toString("dd/MM/yyyy HH:mm")
@@ -190,14 +193,27 @@ public class EventTask {
 
 	private List<List<Event>> getEventLists() {
 		logger.info("Requesting events for: " + endNight.toString("dd/MM/yyy") + " - " + user.getName());
-		eventMotion = eventRepository.findByDeviceAndTypeAndBinValueAndDateBetween(device,
+
+		eventMotion = eventRepository.findByUserAndTypeAndBinValueAndDateBetween(user,
 				sensorTypeRepository.findByName("motion"), true, startNight.toDate(), endNight.toDate());
-		eventTemp = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+
+		//eventMotion = eventRepository.findByDeviceAndTypeAndBinValueAndDateBetween(device,
+		//		sensorTypeRepository.findByName("motion"), true, startNight.toDate(), endNight.toDate());
+
+		eventTemp = eventRepository.findByUserAndTypeAndDateBetweenOrderByDateAsc(user,
 				sensorTypeRepository.findByName("temperature"), startNight.toDate(), endNight.toDate());
-		eventTamper = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+		eventTamper = eventRepository.findByUserAndTypeAndDateBetweenOrderByDateAsc(user,
 				sensorTypeRepository.findByName("tamper"), startNight.toDate(), endNight.toDate());
-		eventLum = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+		eventLum = eventRepository.findByUserAndTypeAndDateBetweenOrderByDateAsc(user,
 				sensorTypeRepository.findByName("luminescence"), startNight.toDate(), endNight.toDate());
+
+
+//		eventTemp = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+//				sensorTypeRepository.findByName("temperature"), startNight.toDate(), endNight.toDate());
+//		eventTamper = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+//				sensorTypeRepository.findByName("tamper"), startNight.toDate(), endNight.toDate());
+//		eventLum = eventRepository.findByDeviceAndTypeAndDateBetweenOrderByDateAsc(device,
+//				sensorTypeRepository.findByName("luminescence"), startNight.toDate(), endNight.toDate());
 
 		return Arrays.asList(eventLum, eventMotion, eventTamper, eventTemp);
 	}
@@ -260,15 +276,16 @@ public class EventTask {
 			DateTime endTime = dateTime.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
 			if (endTime.isAfter(endNight))
 				endTime = endNight;
-			Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
-					sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
+
+			Long count = eventRepository.countByUserAndTypeAndBinValueAndDateBetween(user, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
+			//Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
 			bodyHTML += HTMLGenerator.value(dateTime.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count,
 					1);
 			dateTime = endTime;
 		}
 
-		Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,
-				sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
+		Long count = eventRepository.countByUserAndTypeAndBinValueAndDateBetween(user,sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
+		//Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
 		bodyHTML += HTMLGenerator.strongAttributeValue("Nombre de secousse", String.valueOf(count), 0);
 
 		bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
@@ -276,8 +293,8 @@ public class EventTask {
 		ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Durée", "Mouvements", "Score"));
 		table.add(list);
 		for (int i = 7; i >= 0; i--) {
-			EventStat stat = eventStatRepository.findByDeviceAndDate(device,
-					new java.sql.Date(date.minusDays(i).getMillis()));
+			EventStat stat = eventStatRepository.findByUserAndDate(user, new java.sql.Date(date.minusDays(i).getMillis()));
+			//EventStat stat = eventStatRepository.findByDeviceAndDate(device, new java.sql.Date(date.minusDays(i).getMillis()));
 			if (stat == null)
 				continue;
 			DateTime curDate = new DateTime(stat.getDate().getTime());
@@ -298,7 +315,7 @@ public class EventTask {
 	}
 
 	public List<String> sendEmail(List<String> recipients, String id, String password, String host,
-			ArrayList<String> files) {
+								  ArrayList<String> files) {
 		try {
 			Email email = new Email(id, password, host, true);
 			email.setSubject("Relevés de la nuit du " + startNight.toString("dd/MM/yyyy") + " au "

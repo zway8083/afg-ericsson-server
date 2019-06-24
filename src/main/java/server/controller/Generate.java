@@ -48,8 +48,9 @@ public class Generate {
 	public String generateEventStat(@ModelAttribute(name = "form") UserIdForm form) {
 		User user = userRepository.findOne(form.getId());
 		Device device = deviceRepository.findOneByUser(user);
-		
-		List<EventStat> stats = eventStatRepository.findAllByDeviceOrderByDateAsc(device);
+
+		List<EventStat> stats = eventStatRepository.findAllByUserOrderByDateAsc(user);
+		//List<EventStat> stats = eventStatRepository.findAllByDeviceOrderByDateAsc(device);
 		DateTime date;
 		DateTime last;
 		if (stats == null || stats.isEmpty() || stats.size() < 2) {
