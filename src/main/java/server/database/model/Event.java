@@ -18,6 +18,7 @@ public class Event {
 	@NotNull
 	private Device device;
 	@ManyToOne
+
 	private User user;
 	@NotNull
 	private Date date;

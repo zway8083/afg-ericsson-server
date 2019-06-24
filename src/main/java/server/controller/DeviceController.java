@@ -102,7 +102,7 @@ public class DeviceController {
 		Security security=new Security(userRepository,userLinkRepository);
 		User user = userRepository.findOne(device.getUserId());
 		device.setUser(user);
-		if(!security.checkAutority(((Principal) authentication.getPrincipal()),user)){
+		if(!security.checkAutority(authentication,user)){
 			return mydevices(authentication,model);
 		}
 		String num_ser=SnGenerate();
