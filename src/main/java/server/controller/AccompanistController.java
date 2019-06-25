@@ -115,7 +115,7 @@ public class AccompanistController {
 		Security security= new Security(userRepository,userLinkRepository);
 
 		User subject = userRepository.findOne(form.getSubjectId());
-		if(!security.checkAutority(userRepository.findByEmail(authentication.getName()),subject)){
+		if(!security.checkAutority(authentication,subject)){
 			logger.info("redirected");
 			return "redirect:/logout";
 		}
@@ -197,14 +197,14 @@ public class AccompanistController {
 				logger.debug("delete accompanist : {}", idAccompanist);
 				User subject= userRepository.findOne(idSubject);
 				User accompanist= userRepository.findOne(idAccompanist);
-				userLinkRepository.delete(userLinkRepository.findBySubjectAndUser(subject, accompanist));
-				
-				redirectAttributes.addFlashAttribute("css", "success");
-				redirectAttributes.addFlashAttribute("msg", "User is deleted!");
-			
-		    
-	    	
-	    	
+				Security security=new Security(userRepository,userLinkRepository);
+				if(security.checkAutority(authentication,subject)){
+					userLinkRepository.delete(userLinkRepository.findBySubjectAndUser(subject, accompanist));
+					redirectAttributes.addFlashAttribute("css", "success");
+					redirectAttributes.addFlashAttribute("msg", "User is deleted!");
+				}
+
+
 	    	return "redirect:/accompanist";
 
 			}

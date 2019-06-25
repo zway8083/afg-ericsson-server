@@ -1,6 +1,7 @@
 package server.config;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import server.database.model.Device;
 import server.database.model.User;
 import server.database.repository.UserLinkRepository;
@@ -37,10 +38,10 @@ public class Security {
     Principalement l'utilisateur (Principal, Authtication, User) sur:
     un sujet (User) ou un capteur (Device)
      */
-    public boolean checkAutority(Principal principal, User subject){
+    private boolean checkAutority(Principal principal, User subject){
         return !userLinkRepository.findBySubjectAndUser(subject, userRepository.findByEmail(principal.getName())).isEmpty();
     }
-    public boolean checkAutority(User parent,User subject){
+    private boolean checkAutority(User parent, User subject){
         return !userLinkRepository.findBySubjectAndUser(subject,parent).isEmpty();
     }
     public boolean checkAutority(User parent,Device device){
@@ -50,11 +51,14 @@ public class Security {
         return checkAutority(principal,device.getUser());
     }
     public boolean checkAutority(Authentication authentication, User subject){
-        return checkAutority(userRepository.findByEmail(authentication.getName()),subject);
+        return checkAutority(userRepository.findByEmail(authentication.getName()),subject)||
+                authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
     public boolean checkAutority(Authentication authentication, Device device){
-        return checkAutority(userRepository.findByEmail(authentication.getName()),device.getUser());
+        return checkAutority(userRepository.findByEmail(authentication.getName()),device.getUser())||
+                authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
+
 
 
 }
