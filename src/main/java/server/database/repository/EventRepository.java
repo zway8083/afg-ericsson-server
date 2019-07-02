@@ -12,6 +12,7 @@ import server.database.model.SensorType;
 import server.database.model.User;
 
 public interface EventRepository extends CrudRepository<Event, Integer> {
+	List<Event> findAll();
 	List<Event> findByDevice(Device device);
 
 	List<Event> findByDeviceAndType(Device device, SensorType type);

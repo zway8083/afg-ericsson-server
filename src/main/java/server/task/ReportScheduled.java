@@ -55,8 +55,6 @@ public class ReportScheduled {
 		//List<Device> devices = deviceRepository.findAll();
 		List<User> users = userRepository.findBySubject(true);
 		for (User user : users) {
-			//if (device.getId() == 3)
-			//	continue;
 			ReportRunnable runnable = new ReportRunnable(path, user, new DateTime(), sensorTypeRepository,
 					eventRepository, eventStatRepository, userLinkRepository, id, password, host);
 			executorService.execute(runnable);
@@ -64,32 +62,3 @@ public class ReportScheduled {
 		}
 	}
 }
-//	public void run() throws NoUserForThisDeviceException {
-//		logger.info("Report task begin");
-//		ExecutorService executorService = Executors.newFixedThreadPool(4);
-//		List<User> userson = userRepository.findByEmailON(true);
-//		List<Device> devices = deviceRepository.findAll();
-//		for ( Device device : devices) {
-//			if (device.getUser() == null){
-//				logger.info("gestion de l'exception. On ne fait rien ");
-//				//throw new NoUserForThisDeviceException(device.getUser().getId());
-//			}
-//			else {
-//				logger.info( "device numéro " + device.getId() + " associé au user " + device.getUser().getId());
-//				for (User user : userson) {
-//					logger.info(user.getName() + " a le rapport coché et a l'ID " + user.getId());
-//					logger.info("On a le user " + user.getName() + " et le device" + device.getId() + " asssocié au user " + device.getUser().getId());
-//					logger.info("Comparaison entre ID user " + user.getId() + " et user_id " + device.getUser().getId());
-//					if (device.getUser().getId() == user.getId()) {
-//						if (device.getId() == 3)
-//							continue;
-//						ReportRunnable runnable = new ReportRunnable(path, device, new DateTime(), sensorTypeRepository,
-//							eventRepository, eventStatRepository, userLinkRepository, id, password, host);
-//						executorService.execute(runnable);
-//						logger.info("Started report for device id= " + device.getId());
-//					}
-//				}
-//			}
-//		}
-//	}
-//}

@@ -75,6 +75,12 @@
 		    </div>
 		
 	    </form>
+		<form class="form-inline" action="#" th:action="@{/device/dwn}" th:object="${ActiveAtLeastOnceDevice}" method="post">
+			<th:block sec:authorize="hasAuthority('ADD_ANY')">
+				<button class="btn btn-info" type="submit"><span class="glyphicon glyphicon-download-alt"></span> Télécharger la liste de Capteurs déjà activé</button>
+				<a title = "Si les noms comportant des accents ne s'affiche pas correctement, veuillez suivre la procédure suivante : ouvrir excel et créer une nouveau classeur. Dans le menu Données, cliquer sur “A partir du texte”. Enfin choisissez votre fichier. Dans la boîte de dialogue “Origine du fichier”, choisissez “65001 : Unicode (UTF-8)”."> <span class ="glyphicon glyphicon-info-sign"> </span> </a>
+			</th:block>
+		</form>
     </div>
     <div th:replace="footer :: footer"></div>
 </body>

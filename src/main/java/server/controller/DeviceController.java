@@ -1,5 +1,9 @@
 package server.controller;
 
+import java.io.*;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -7,15 +11,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,23 +32,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import server.config.Security;
-import server.database.model.AppiotRef;
-import server.database.model.Device;
-import server.database.model.Raspberry;
-
-import server.database.model.Role;
-import server.database.model.User;
-import server.database.model.UserLink;
-import server.database.repository.AppiotRefRepository;
+import server.database.model.*;
 import server.database.repository.DeviceRepository;
-import server.database.repository.RaspberryRepository;
 import server.database.repository.RoleRepository;
 import server.database.repository.UserLinkRepository;
 import server.database.repository.UserRepository;
-import server.model.AccompanistForm;
-import server.model.SubjectForm;
-import server.task.NewAccompanistRunnable;
-import server.utils.RandomStringGenerator;
+import server.database.repository.EventRepository;
+import server.model.DeviceInfos;
+import server.task.DeviceTask;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class DeviceController {
@@ -52,7 +54,11 @@ public class DeviceController {
 	private UserLinkRepository userLinkRepository;
 	@Autowired
 	private DeviceRepository deviceRepository;
+	@Autowired
+	private EventRepository eventRepository;
 
+	@Value("${report.path}")
+	private String path;
 
 
 	@GetMapping(path = "/mydevices")
@@ -88,10 +94,35 @@ public class DeviceController {
 		model.addAttribute("subjects", subjects);
 		model.addAttribute("hashtable", hashtable);
 		model.addAttribute("device", new Device());
+		model.addAttribute("ActiveAtLeastOnceDevice",new DeviceInfos());
 		return "mydevices";
+	}
 
-		
+	private String zipFiles(String zipFileName, List<String> filePaths) {
+		try {
+			File firstFile = new File(filePaths.get(0));
+			String zipFilePath = firstFile.getParent() + "/" + zipFileName;
+
+			FileOutputStream fos = new FileOutputStream(zipFilePath);
+			ZipOutputStream zos = new ZipOutputStream(fos);
+
+			for (String aFile : filePaths) {
+				zos.putNextEntry(new ZipEntry(new File(aFile).getName()));
+
+				byte[] bytes = Files.readAllBytes(Paths.get(aFile));
+				zos.write(bytes, 0, bytes.length);
+				zos.closeEntry();
+			}
+			zos.close();
+			return zipFilePath;
+		} catch (FileNotFoundException ex) {
+			logger.error("Error creating zip file: file does not exist: " + ex);
+			return null;
+		} catch (IOException ex) {
+			logger.error("Error creating zip file: I/O error: " + ex);
+			return null;
 		}
+	}
 
 	@PostMapping(path = "/mydevices")
 	public String mydevicesForm(Authentication authentication, Model model,
@@ -122,49 +153,65 @@ public class DeviceController {
 	
 		return mydevices(authentication, model);
 
-			}
+	}
 	
-	    @PostMapping(path = "/mydevices/{idDevice}/delete")
-		public String deleteDevice(Authentication authentication,Model model,
-				@PathVariable("idDevice") long idDevice,final RedirectAttributes redirectAttributes) {
-                
-	    	@SuppressWarnings("unchecked")
-			Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
-					.getAuthorities();
-	    	Security security=new Security(userRepository,userLinkRepository);
+	@PostMapping(path = "/mydevices/{idDevice}/delete")
+	public String deleteDevice(Authentication authentication,Model model,
+							   @PathVariable("idDevice") long idDevice,final RedirectAttributes redirectAttributes) {
+		@SuppressWarnings("unchecked")
+		Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication.getAuthorities();
+		Security security=new Security(userRepository,userLinkRepository);
 
-	    	Device device=deviceRepository.findOne(idDevice);
-	        if(!security.checkAutority(authentication,device)){
-	        	logger.info(authentication.getName()+" tried to delete "+device.getSerialStr()+" but had not the rights.");
-	        	return "redirect:/mydevices";
-			}
-	    	device.setUser(null);
-	    	deviceRepository.save(device);
-	    	
-	    	
-	    		    	
+	    Device device=deviceRepository.findOne(idDevice);
+	    if(!security.checkAutority(authentication,device)){
+	    	logger.info(authentication.getName()+" tried to delete "+device.getSerialStr()+" but had not the rights.");
 	    	return "redirect:/mydevices";
-
-			}
-	    
-	    public String SnGenerate()
-	    {
-	    	SecureRandom random = new SecureRandom();
-	    	String resultStr;
-	    	int result = random.nextInt(900)+100;
-    		resultStr =result+"";
-	    	for(int i=1;i<8;i++)
-	    	{ 	 		
-	    		result = random.nextInt(900)+100;
-	    		resultStr =resultStr+"-"+result;	
-	    	}
-	       
-	    	return resultStr;
 	    }
-	    
-	
+	    device.setUser(null);
+	    deviceRepository.save(device);
 
-	
-	
+	    return "redirect:/mydevices";
+
+	}
+	    
+	public String SnGenerate() {
+		SecureRandom random = new SecureRandom();
+	    String resultStr;
+	    int result = random.nextInt(900)+100;
+    	resultStr =result+"";
+	    for(int i=1;i<8;i++) {
+	    	result = random.nextInt(900)+100;
+	    	resultStr =resultStr+"-"+result;
+	    }
+	    return resultStr;
+	}
+
+	@PostMapping(path = "/device/dwn")
+	public void reportDwn(HttpServletResponse response, Principal principal, @ModelAttribute DeviceInfos devicelist)
+			throws IOException {
+
+		DateTime date = new DateTime();
+		logger.info("path : " +path);
+		logger.info("on prend la date " + date.toString("dd-MM-yyyy"));
+		DeviceTask deviceTask = new DeviceTask(date,eventRepository,deviceRepository,roleRepository,userLinkRepository, path);
+
+		logger.info("je suis avant la création du csv");
+		ArrayList<String> files = deviceTask.createCsvActiveListDevice();
+
+		String name = "Liste_Capteurs_déjà_activé_au_moins_une_fois_au_" + date.toString("dd-MM-yyyy") + ".zip";
+		String zipFilePath = zipFiles(name, files);
+		if (zipFilePath == null)
+			return;
+		File zipFile = new File(zipFilePath);
+
+		String mimeType = URLConnection.guessContentTypeFromName(zipFilePath);
+		if (mimeType == null)
+			mimeType = "application/octet-stream";
+		response.setContentType(mimeType);
+		response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", zipFile.getName()));
+		InputStream inputStream = new BufferedInputStream(new FileInputStream(zipFile));
+		FileCopyUtils.copy(inputStream, response.getOutputStream());
+
+	}
 
 }
