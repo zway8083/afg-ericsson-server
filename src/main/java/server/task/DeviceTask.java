@@ -60,7 +60,7 @@ public class DeviceTask {
 		try {
 		    fileWriter = new FileWriter(fileName);
 		    PrintWriter printWriter = new PrintWriter(fileWriter);
-			printWriter.println("Device, Prénom Sujet Associé, Nom Sujet Associé, Premier parent(on en donne un seul ici), date de dernière connexion");
+			printWriter.println("Id du Device, Serial Number du device, Prénom Sujet Associé, Nom Sujet Associé, Premier parent(on en donne un seul ici), date de dernière connexion");
 
 			List<Device> devices =deviceRepository.findAll();
 			for(Device device: devices){
@@ -91,12 +91,11 @@ public class DeviceTask {
                         }
 
                     }
-                    //User subject = userRepository.findById(device.getUser().getId());
                     //logger.info(EmailParent);
                     logger.info("on retient la date : " + lastconnectiondate.toString() + "pour le device : " + device.getId());
 
 
-			        printWriter.printf("%s,%s,%s,%s,%s\n", device.getId(),first_name,last_name,EmailParent,lastconnectiondate.toString());
+			        printWriter.printf("%s,%s,%s,%s,%s,%s\n", device.getId(), device.toString(),first_name,last_name,EmailParent,lastconnectiondate.toString());
 			    }
 			}
 			printWriter.close();
