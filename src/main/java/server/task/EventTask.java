@@ -304,11 +304,42 @@ public class EventTask {
 			String mvts = String.valueOf(stat.getMvts());
 			String grade = stat.getGrade() != null ? String.valueOf(stat.getGrade()) + "%" : "";
 			list = new ArrayList<>(Arrays.asList(day, daytime, mvts, grade));
+			logger.info(list.toString());
 			table.add(list);
 		}
+		logger.info("taille de la matrice table : " + table.size());
 
 		bodyHTML += HTMLGenerator.table(table, 1);
-		//bodyHTML += HTMLGenerator.strongAttributeValue("Niveau de la Batterie", String.valueOf(eventStat.getMvts()) +"%", 0);
+
+		bodyHTML += HTMLGenerator.strongAttribute("Tendance de sommeil sur les deux dernières semaines", 0);
+		ArrayList<ArrayList<String>> bar = new ArrayList<>();
+
+		ArrayList<String> list2 = new ArrayList<>();
+		for (int i =15; i>=0; i--) {
+			EventStat stat = eventStatRepository.findByUserAndDate(user, new java.sql.Date(date.minusDays(i).getMillis()));
+			if (stat == null)
+				continue;
+			String value = stat.getGrade() != null ? String.valueOf(stat.getGrade()) + "%" : "";
+			list2.add(value);
+		}
+		logger.info(list2.toString());
+		bar.add(list2);
+		list2 = new ArrayList<>();
+		for (int j =15; j>=0; j--) {
+			EventStat stat = eventStatRepository.findByUserAndDate(user, new java.sql.Date(date.minusDays(j).getMillis()));
+			if (stat == null)
+				continue;
+			DateTime curDate = new DateTime(stat.getDate().getTime());
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE dd/MM");
+			String date = fmt.withLocale(Locale.FRENCH).print(curDate);
+			list2.add(date);
+		}
+		logger.info(list2.toString());
+		bar.add(list2);
+		logger.info(Integer.toString(bar.get(0).size()));
+		logger.info("taille de la matrice : " + bar.size());
+		bodyHTML += HTMLGenerator.bar(bar, 1);
+		bodyHTML += HTMLGenerator.value("", 0)+HTMLGenerator.value("", 0)+HTMLGenerator.value("", 0);
 
 		return bodyHTML;
 	}

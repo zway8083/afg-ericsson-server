@@ -18,4 +18,22 @@ $(function() {
 			}
 		});
 	});
+	$(".report-grade .fill span").each(function(){
+		var percent = $(this).html();
+		var pTop = 100 - ( percent.slice(0, percent.length - 1) ) + "%";
+		$(this).parent().css({
+			'height' : percent,
+			'top' : pTop
+		});
+		if (percent.slice(0, percent.length - 1) < 60) {
+			//color = "Red";
+			$(this).parent().css({'background': "#FF0000"});
+		} else if (percent.slice(0, percent.length - 1) < 90) {
+			//color = "Gold";
+			$(this).parent().css({'background': "#FFD700"});
+		} else if (percent.slice(0, percent.length - 1) >= 90 && percent.slice(0, percent.length - 1) <= 100) {
+			//color = "LimeGreen";
+			$(this).parent().css({'background':"#32CD32"});
+		}
+	});
 });

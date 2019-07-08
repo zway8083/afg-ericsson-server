@@ -55,4 +55,45 @@ public class   HTMLGenerator {
 		table += "</tbody></table>\r\n";
 		return table;
 	}
+
+
+	private static String progressBar(final int indentLevel) {
+		if (indentLevel != 0)
+			return String.format("style=\"float: left; height: %dpx; width: 30px; margin-right: 45px;\"", indentLevel * indentBase *10);
+		return "style=\"text-align: center;\"";
+	}
+	private static String progressTrack(final int indentLevel) {
+		if (indentLevel != 0)
+			return String.format("style=\"position: relative; height: 300px; width: %dpx; background: #f5f5f5;\"", indentLevel * indentBase);
+		return "style=\"text-align: center;\"";
+	}
+	private static String progressFill(final int indentLevel) {
+		if (indentLevel != 0)
+			return String.format("style=\"position: relative; width: %dpx; color: #fff; text-align: center; font-size: 12px; line-height: 20px;\" class=\"fill\"", indentLevel * indentBase);
+		return "style=\"text-align: center;\"";
+	}
+
+
+
+
+	public static String bar(final ArrayList<ArrayList<String>> results, int indentLevel){
+		if (results.size() == 0)
+			throw new IllegalArgumentException("Invalid bar size");
+		final int height = results.size();
+		final int width = results.get(0).size();
+
+		int i=0;
+		String bar = String.format("<div %s >","padding-left: 30px;");
+
+		for (int j = 0; j < width; j++) {
+			bar+= String.format("<div %s>", progressBar(indentLevel))+ String.format("<div %s>",progressTrack(indentLevel)) + String.format("<div %s>",progressFill(indentLevel))+ String.format("<span > %s",results.get(i).get(j));
+			bar+="</span>\r\n</div>\r\n </div>\r\n";
+			bar+="<div style=\" text-align : center;\">" + String.format("<span> %s",results.get(1).get(j)) +"</span>\r\n</div>\r\n</div>\r\n";
+
+		}
+		bar+="<div style=\" padding:200px;\">\r\n </div>";
+		bar+="</div>\r\n";
+
+		return bar;
+	}
 }
