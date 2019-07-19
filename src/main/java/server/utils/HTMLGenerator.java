@@ -59,7 +59,7 @@ public class   HTMLGenerator {
 
 	private static String progressBar(final int indentLevel) {
 		if (indentLevel != 0)
-			return String.format("style=\"float: left; height: %dpx; width: 30px; margin-right: 45px;\"", indentLevel * indentBase *10);
+			return String.format("style=\"float: left; height: %dpx; width: 30px; margin-right: 35px;\"", indentLevel * indentBase *10);
 		return "style=\"text-align: center;\"";
 	}
 	private static String progressTrack(final int indentLevel) {
@@ -69,14 +69,14 @@ public class   HTMLGenerator {
 	}
 	private static String progressFill(final int indentLevel) {
 		if (indentLevel != 0)
-			return String.format("style=\"position: relative; width: %dpx; color: #fff; text-align: center; font-size: 12px; line-height: 20px;\" class=\"fill\"", indentLevel * indentBase);
+			return String.format("style=\"position: relative; width: %dpx; color: #000; text-align: center; font-size: 12px; line-height: 20px;\"", indentLevel * indentBase);
 		return "style=\"text-align: center;\"";
 	}
 
 
 
 
-	public static String bar(final ArrayList<ArrayList<String>> results, int indentLevel){
+	public static String barPourcent(final ArrayList<ArrayList<String>> results, int indentLevel){
 		if (results.size() == 0)
 			throw new IllegalArgumentException("Invalid bar size");
 		final int height = results.size();
@@ -86,8 +86,29 @@ public class   HTMLGenerator {
 		String bar = String.format("<div %s >","padding-left: 30px;");
 
 		for (int j = 0; j < width; j++) {
-			bar+= String.format("<div %s>", progressBar(indentLevel))+ String.format("<div %s>",progressTrack(indentLevel)) + String.format("<div %s>",progressFill(indentLevel))+ String.format("<span > %s",results.get(i).get(j));
+			bar+= String.format("<div %s>", progressBar(indentLevel))+ String.format("<div %s>",progressTrack(indentLevel)) + String.format("<div class=\"fill\"  %s>",progressFill(indentLevel))+ String.format("<span > %s",results.get(i).get(j));
 			bar+="</span>\r\n</div>\r\n </div>\r\n";
+			bar+="<div style=\" text-align : center;\">" + String.format("<span> %s",results.get(1).get(j)) +"</span>\r\n</div>\r\n</div>\r\n";
+
+		}
+		bar+="<div style=\" padding:200px;\">\r\n </div>";
+		bar+="</div>\r\n";
+
+		return bar;
+	}
+
+	public static String barHours(final ArrayList<ArrayList<String>> results, int indentLevel){
+		if (results.size() == 0)
+			throw new IllegalArgumentException("Invalid bar size");
+		final int height = results.size();
+		final int width = results.get(0).size();
+
+		int i=0;
+		String bar = String.format("<div %s >","padding-left: 30px;");
+
+		for (int j = 0; j < width; j++) {
+			bar+= String.format("<div class=\"bar\" %s>", progressBar(indentLevel))+ String.format("<div class=\"track\" %s>",progressTrack(indentLevel)) + String.format("<div class=\"hours\" %s>",progressFill(indentLevel))+ String.format("<span > %s",results.get(i).get(j));
+			bar+="</span>\r\n</div>\r\n </div>\r\n" + "<div style=\"padding:10px;\">\r\n </div>\r\n";
 			bar+="<div style=\" text-align : center;\">" + String.format("<span> %s",results.get(1).get(j)) +"</span>\r\n</div>\r\n</div>\r\n";
 
 		}

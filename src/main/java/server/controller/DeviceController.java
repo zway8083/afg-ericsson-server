@@ -191,11 +191,11 @@ public class DeviceController {
 			throws IOException {
 
 		DateTime date = new DateTime();
-		logger.info("path : " +path);
-		logger.info("on prend la date " + date.toString("dd-MM-yyyy"));
+		//logger.info("path : " +path);
+		//logger.info("on prend la date " + date.toString("dd-MM-yyyy"));
 		DeviceTask deviceTask = new DeviceTask(date,eventRepository,deviceRepository,roleRepository,userLinkRepository, path);
 
-		logger.info("je suis avant la création du csv");
+		//logger.info("je suis avant la création du csv");
 		ArrayList<String> files = deviceTask.createCsvActiveListDevice();
 
 		String name = "Liste_Capteurs_déjà_activé_au_moins_une_fois_au_" + date.toString("dd-MM-yyyy") + ".zip";

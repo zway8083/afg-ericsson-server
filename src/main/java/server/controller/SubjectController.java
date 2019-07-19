@@ -97,7 +97,7 @@ public class SubjectController {
 	
 	
 	    @PostMapping(path = "/mysubjects/{idSubject}/delete")
-		public String deleteSubjectLink(Authentication authentication,Model model,
+		public String deleteSubject(Authentication authentication,Model model,
 				@PathVariable("idSubject") long idSubject,final RedirectAttributes redirectAttributes) {
                 
 	    	@SuppressWarnings("unchecked")
@@ -105,13 +105,11 @@ public class SubjectController {
 					.getAuthorities();
 	    	
 				User subject= userRepository.findOne(idSubject);
-				
+				subject.setEmailON("");
+				subject.setFirstName("subject");
+				subject.setLastName("deleted");
+				userRepository.save(subject);
 				userLinkRepository.delete(userLinkRepository.findBySubject(subject));
-				
-				
-		    
-	    	
-	    	
 	    	return "redirect:/mysubjects";
 
 			}

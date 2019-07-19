@@ -1,5 +1,7 @@
 package server.task;
 
+// La maniere de récuperer les données a été modifié. On ne pense 1device=1user mais Xdevices=1user. Les fonctions recherchant par device ont tout de même été gardé si besoin.
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -251,7 +253,7 @@ public class EventTask {
 		return fileNames;
 	}
 
-	public String createHTMLBody() {
+	public String createHTMLBody(String use) {
 		Period period = new Period(eventStat.getDuration().getTime());
 		DateTime dateTime = new DateTime(eventStat.getDate());
 		startNight= new DateTime(eventStat.getStartNight());
@@ -264,34 +266,75 @@ public class EventTask {
 						0)
 				+ HTMLGenerator.strongAttributeValue("Score", String.valueOf(eventStat.getGrade()) + "%", 0)
 				+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventStat.getMvts()), 0)
-				+ HTMLGenerator.strongAttribute("Valeurs éstimées", 0)
+/*				+ HTMLGenerator.strongAttribute("Valeurs éstimées", 0)
 				+ HTMLGenerator.strongAttributeValue("Endormissement", startNight.toString("HH:mm"), 1)
 				+ HTMLGenerator.strongAttributeValue("Réveil",endNight.toString("HH:mm") , 1) + HTMLGenerator
-						.strongAttributeValue("Durée", period.getHours() + "h et " + period.getMinutes() + "m", 1)
+						.strongAttributeValue("Durée", period.getHours() + "h et " + period.getMinutes() + "m", 1)*/
 				+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
 
-		dateTime = startTheo;
-		while (dateTime.isEqual(endNight) == false) {
-			DateTime endTime = dateTime.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
-			if (endTime.isAfter(endNight))
-				endTime = endNight;
+		if (use.equals("webreport")) {
+			ArrayList<ArrayList<String>> CountEachHours = new ArrayList<>();
 
-			Long count = eventRepository.countByUserAndTypeAndBinValueAndDateBetween(user, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
-			//Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
-			bodyHTML += HTMLGenerator.value(dateTime.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count,
-					1);
-			dateTime = endTime;
+			ArrayList<String> CountRow = new ArrayList<>();
+			ArrayList<String> Hours = new ArrayList<>();
+			dateTime = startTheo;
+			while (!dateTime.isEqual(endNight)) {
+				DateTime endTime = dateTime.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
+				if (endTime.isAfter(endNight))
+					endTime = endNight;
+
+				Long count = eventRepository.countByUserAndTypeAndBinValueAndDateBetween(user, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
+				//Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
+				CountRow.add(count.toString());
+				Hours.add(dateTime.toString("HH:mm"));
+				//bodyHTML += HTMLGenerator.value(dateTime.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count, 1);
+				dateTime = endTime;
+			}
+			CountEachHours.add(CountRow);
+			CountEachHours.add(Hours);
+			bodyHTML += HTMLGenerator.barHours(CountEachHours, 1);
+
+
+			bodyHTML += HTMLGenerator.strongAttribute("Tendance de sommeil sur les deux dernières semaines", 0);
+			ArrayList<ArrayList<String>> bar = new ArrayList<>();
+
+			ArrayList<String> firstrow = new ArrayList<>();
+			ArrayList<String> secondrow = new ArrayList<>();
+			for (int i =14; i>=0; i--) {
+				EventStat stat = eventStatRepository.findByUserAndDate(user, new java.sql.Date(date.minusDays(i).getMillis()));
+				if (stat == null)
+					continue;
+				String value = stat.getGrade() != null ? String.valueOf(stat.getGrade()) + "%" : "";
+				firstrow.add(value);
+				DateTime curDate = new DateTime(stat.getDate().getTime());
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE dd/MM");
+				String date = fmt.withLocale(Locale.FRENCH).print(curDate);
+				secondrow.add(date);
+			}
+			bar.add(firstrow);
+			bar.add(secondrow);
+			logger.info(bar.toString());
+			bodyHTML += HTMLGenerator.barPourcent(bar, 1);
 		}
+		else {
+			dateTime = startTheo;
+			while (!dateTime.isEqual(endNight)) {
+				DateTime endTime = dateTime.plusHours(1).withMinuteOfHour(0).withSecondOfMinute(0);
+				if (endTime.isAfter(endNight))
+					endTime = endNight;
 
-		Long count = eventRepository.countByUserAndTypeAndBinValueAndDateBetween(user,sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
-		//Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device,sensorTypeRepository.findByName("tamper"), true, startNight.toDate(), endNight.toDate());
-		bodyHTML += HTMLGenerator.strongAttributeValue("Nombre de secousse", String.valueOf(count), 0);
-
-		bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
+				Long count = eventRepository.countByUserAndTypeAndBinValueAndDateBetween(user, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
+				//Long count = eventRepository.countByDeviceAndTypeAndBinValueAndDateBetween(device, sensorTypeRepository.findByName("motion"), true, dateTime.toDate(), endTime.toDate());
+				bodyHTML += HTMLGenerator.value(dateTime.toString("HH:mm") + " - " + endTime.toString("HH:mm : ") + count,
+						1);
+				dateTime = endTime;
+			}
+		//Mettre les résultats sous forme de tableau
+        bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
 		ArrayList<ArrayList<String>> table = new ArrayList<>();
 		ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Durée", "Mouvements", "Score"));
 		table.add(list);
-		for (int i = 7; i >= 0; i--) {
+		for (int i = 14; i >= 0; i--) {
 			EventStat stat = eventStatRepository.findByUserAndDate(user, new java.sql.Date(date.minusDays(i).getMillis()));
 			//EventStat stat = eventStatRepository.findByDeviceAndDate(device, new java.sql.Date(date.minusDays(i).getMillis()));
 			if (stat == null)
@@ -307,39 +350,11 @@ public class EventTask {
 			logger.info(list.toString());
 			table.add(list);
 		}
-		logger.info("taille de la matrice table : " + table.size());
+
 
 		bodyHTML += HTMLGenerator.table(table, 1);
-
-		bodyHTML += HTMLGenerator.strongAttribute("Tendance de sommeil sur les deux dernières semaines", 0);
-		ArrayList<ArrayList<String>> bar = new ArrayList<>();
-
-		ArrayList<String> list2 = new ArrayList<>();
-		for (int i =15; i>=0; i--) {
-			EventStat stat = eventStatRepository.findByUserAndDate(user, new java.sql.Date(date.minusDays(i).getMillis()));
-			if (stat == null)
-				continue;
-			String value = stat.getGrade() != null ? String.valueOf(stat.getGrade()) + "%" : "";
-			list2.add(value);
 		}
-		logger.info(list2.toString());
-		bar.add(list2);
-		list2 = new ArrayList<>();
-		for (int j =15; j>=0; j--) {
-			EventStat stat = eventStatRepository.findByUserAndDate(user, new java.sql.Date(date.minusDays(j).getMillis()));
-			if (stat == null)
-				continue;
-			DateTime curDate = new DateTime(stat.getDate().getTime());
-			DateTimeFormatter fmt = DateTimeFormat.forPattern("EEEE dd/MM");
-			String date = fmt.withLocale(Locale.FRENCH).print(curDate);
-			list2.add(date);
-		}
-		logger.info(list2.toString());
-		bar.add(list2);
-		logger.info(Integer.toString(bar.get(0).size()));
-		logger.info("taille de la matrice : " + bar.size());
-		bodyHTML += HTMLGenerator.bar(bar, 1);
-		bodyHTML += HTMLGenerator.value("", 0)+HTMLGenerator.value("", 0)+HTMLGenerator.value("", 0);
+
 
 		return bodyHTML;
 	}
@@ -359,7 +374,7 @@ public class EventTask {
 			if (files != null)
 				email.addAttachments(files);
 
-			email.concatBody(createHTMLBody());
+			email.concatBody(createHTMLBody("mail"));
 			email.send();
 
 			String log = "Email report on " + user.getName() + " sent at: ";

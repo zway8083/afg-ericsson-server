@@ -6,6 +6,7 @@
 <head>
 	<link href="/css/account.css" rel="stylesheet" />
     <script src="/scripts/password.js"></script>
+	<script src="/scripts/account.js"></script>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
@@ -20,12 +21,17 @@
    			Le mot de passe a bien été modifié.
  		</div>
 		<h2>Mon compte</h2>
-		<div class="well">
-			<div class="width250">
+		<div class="well clearfix">
+			<div class="form-group">
 				<label for="name" class="control-label">Nom </label>
 				<input id="name" class="form-control" th:placeholder="${name}" disabled="disabled"/>
+			</div>
+			<div class="form-group">
 				<label for="email" class="control-label">Email </label>
 				<input id="email" class="form-control" th:placeholder="${email}" disabled="disabled"/>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-success pull-right" type="submit" style="background:red" th:onclick="'confirmDeleteAccount(\''+ ${name}+'\',\''+ ${email} +'\');'"><span class="glyphicon glyphicon-warning-sign" style="color:red" > </span><a href="/deleteaccount"> Supprimer Mon Compte</a></button>
 			</div>
 		</div>
 		<div class="well clearfix">

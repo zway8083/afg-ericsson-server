@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="header :: head">
+    <title id="pageTitle">Suppression De Mon Compte</title>
+</head>
+<head>
+    <script src="/scripts/deleteaccount.js"></script>
+</head>
+
+<body>
+    <div th:replace="header :: navbar"></div>
+    <div id="main-content" class="container">
+        <div class="form-group" style="background-color:red; text-align: center">
+            <span class="glyphicon glyphicon-warning-sign" style="color:white; font-size: 100px;"></span>
+            <p style="color: white;font-size: 75px;">ATTENTION</p>
+
+            <p style="color: white;font-size: 35px;"> Vous procédez à la fermeture de votre compte. Toute modification sera irréversible. Veuillez sélectionner les éléments que vous désirez supprimer.</p>
+        </div>
+
+        <div class="well clearfix">
+            <form action="#" id="deleteForm" th:action="@{/deleteaccount}" th:object="${form}" method="post">
+                <!-- select all boxes -->
+
+                <div class="form-inline">
+                    <input type="checkbox" name="select-all" id="select-all"/>
+                    <label> Tout Sélectionner</label>
+                </div>
+
+                <div class="form-inline">
+                    <h2>Mon compte</h2>
+                </div>
+                <div class="form-inline">
+                    <input type="checkbox" id="accounttodelete" name="accounttodelete" th:value="${Id}"/>
+                    <label th:text="${name}"></label>
+                </div>
+                <div class="form-inline">
+                    <h2>Mes Sujets</h2>
+                </div>
+                <th:block th:each="subject: ${subjects}">
+                    <div class="form-inline">
+                        <input type="checkbox" id="subjecttodelete" name="subjecttodelete" th:value="${subject.id}"/>
+                        <label th:text="${subject.name}"></label>
+                    </div>
+                </th:block>
+                <div class="form-inline">
+                    <h2>Mes Capteurs</h2>
+                </div>
+                <th:block th:each="device: ${devices}">
+                    <div class="form-inline">
+                        <input type="checkbox" id="devicetodelete" name="devicetodelete" th:value="${device.id}"/>
+                        <label th:text="${device.toString()}"></label><label> associé au sujet : </label><label th:text="${device.getUser().getName()}"></label>
+                    </div>
+                </th:block>
+                <button class="btn btn-success pull-right" type="button" id="button"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+            </form>
+            <form id="logout-form" class="navbar-form" th:action="@{/logout}" method="post"></form>
+        </div>
+    </div>
+    <div th:replace="footer :: footer"></div>
+
+</body>
+</html>

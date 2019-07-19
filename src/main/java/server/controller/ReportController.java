@@ -145,7 +145,7 @@ public class ReportController {
 			return "redirect:/report?error=device";
 		try {
 			EventTask eventTask = new EventTask(user, curDate, sensorTypeRepository, eventRepository,eventStatRepository, userLinkRepository, path);
-			String reportHTML = eventTask.createHTMLBody();
+			String reportHTML = eventTask.createHTMLBody("webreport");
 			model.addAttribute("reportHTML", reportHTML);
 		} catch (MissingSleepTimesException e) {
 			return "redirect:/report?error=sleepTimes";

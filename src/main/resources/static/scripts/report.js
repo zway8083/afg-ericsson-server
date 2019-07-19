@@ -36,4 +36,14 @@ $(function() {
 			$(this).parent().css({'background':"#32CD32"});
 		}
 	});
+	$(".report-grade .hours span").each(function(){
+		var mov = $(this).html();
+		var percenthours = (mov.slice(0, mov.length))/70*100 +"%"; //Define that the maximum accepted movement is 70
+		var pTophours = 100 - ( percenthours.slice(0, percenthours.length - 1) ) + "%";
+		$(this).parent().css({
+			'height' : percenthours,
+			'top' : pTophours
+		});
+		$(this).parent().css({'background': "#626161"});
+	});
 });
