@@ -1,13 +1,15 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title id="pageTitle">Générer un rapport</title>
+    <title id="ReportTitle"></title>
 </head>
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
     <script src="/scripts/report.js"></script>
 	<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
 	<script src="/scripts/fr.js"></script>
+	<script src="/scripts/translate.js"></script>
+	<script src="/scripts/cookie.js"></script>
     <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css"/>
 	<link rel="stylesheet" href="/css/bootstrap.min.css"/>
 </head>
@@ -16,19 +18,19 @@
 	<div id="main-content" class="container">
 		<th:block th:if="${param.error}">
 			<div th:if="${param.error[0] == 'email'} and ${param.email}" class="alert alert-danger" th:text="${'Le rapport n''a pas pu être envoyé à l''adresse : ' + param.email[0]}"></div>
-			<div th:if="${param.error[0] == 'sleepTimes'}" class="alert alert-danger">Les heures de couché et levé du sujet n'ont pas été renseignées.</div>
-			<div th:if="${param.error[0] == 'data'}" class="alert alert-warning">Aucun rapport n'a été trouvé à cette date.</div>
-			<div th:if="${param.error[0] == 'device'}" class="alert alert-warning">Aucun capteur n'est associé à ce sujet.</div>
+			<div th:if="${param.error[0] == 'sleepTimes'}" class="alert alert-danger" id="AlertMessageReportSleepTime"></div>
+			<div th:if="${param.error[0] == 'data'}" class="alert alert-warning" id="AlertMessageReportNoReport"></div>
+			<div th:if="${param.error[0] == 'device'}" class="alert alert-warning" id="AlertMessageReportNoDeviceForThisSubject"></div>
 		</th:block>
 		<th:block th:if="${param.error} == null">
 			<div th:if="${param.email}" class="alert alert-success" th:text="${'Le rapport a bien été envoyé à l''adresse : ' + param.email[0]}"></div>
 		</th:block>
-		<h2>Rapport</h2>
+		<h2 id="ReportChapter"></h2>
 		<th:block th:if="${initForm}">
 	    	<form action="#" th:action="@{/report}" th:object="${report}" method="post">
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="datetimepicker" class="">Date :</label>
+						<label for="datetimepicker" class="" id="ReportDate"></label>
 						<div class='input-group date' id='datetimepicker'>
 		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
 		                    <span class="input-group-addon">
@@ -39,7 +41,7 @@
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="subjectId">Sujet :</label>
+						<label for="subjectId" id="ReportSubject"></label>
 			        	<select id="subjectId" th:field="*{id}" class="form-control" required="required">
 			        		<option th:each="subject : ${subjects}" 
 			        			th:text="${subject.firstName + ' ' + subject.lastName}"
@@ -51,19 +53,20 @@
 
 				<div class="row">
 					<div class="col-md-4">
-						<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+						<button class="btn btn-success pull-right" type="submit" id="ReportValidate"></button>
 					</div>
 				</div>
 
 	    	</form>
 	        <script type="text/javascript">
-	            $(function () {
-	                $('#datetimepicker').datetimepicker({
-	                    locale: 'fr',
-	                    defaultDate: new Date(),
-	                    format: 'DD/MM/YYYY'
-	                });
-	            });
+				$(function () {
+					$('#datetimepicker').datetimepicker({
+						locale: 'fr',
+						defaultDate: new Date(),
+						format: 'DD/MM/YYYY'
+					});
+				});
+
 	        </script>
 		</th:block>
 		
@@ -104,6 +107,22 @@
 		</th:block>
 		
     </div>
+	<div id="footer_tc_privacy" style="border: none; background: rgb(255, 255, 255); width: 100%; position: fixed; z-index: 999998; bottom: 0px; left: 0px; text-align: left; opacity: 0.9;" th:if="ex">
+		<div id="footer_tc_privacy_container_text" style="border: none; background: none; display: inline-block;">
+			<div id="footer_tc_privacy_text" style="border: none; background: none; color: rgb(51, 51, 51); padding: 10px; font-size: 12px; text-align: left;">
+				<p class="MsoNormal" style="margin-bottom: .0001pt; line-height: normal; mso-layout-grid-align: none; text-autospace: none;" id="cookies"></p>
+			</div>
+		</div>
+		<div id="footer_tc_privacy_container_button" style="border: none; background: none; right: 10px; display: inline-block;">
+			<button id="footer_tc_privacy_button" th:onclick="'hideMessage();eraseCookie(\'lang\');createCookie(\'lang\',1,7);submit;'" style="border: none; background: rgb(68, 157, 68); color: rgb(255, 255, 255); display: block; cursor: pointer; font-size: 12px; padding: 5px 10px; margin: 10px 0px;"></button>
+		</div>
+	</div>
     <div th:replace="footer :: footer"></div>
+	<script type="text/javascript" th:inline="javascript">
+		checktranslation();
+	</script>
 </body>
+<script type="text/javascript" th:inline="javascript">
+	check();
+</script>
 </html>

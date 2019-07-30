@@ -51,13 +51,13 @@
 	    	</div></div></div>
 	    </div>
 	    <th:block th:if="${canCreate}">
-			   <h3>Ajouter une observation :</h3>
+			   <h3 th:id="MyObservationChapter"></h3>
            <form id="form" th:action="@{/observation/submit}" th:object="${form}" method="post">
 
 		    <div class="container-fluid">
 		    	<div class="row">
 		    		<div class="col-md-6 form-pad">
-		    			<label for="time">Moment de la journée :</label>
+		    			<label for="time" th:id="MyObservationActivityPeriod"></label>
 						<select class="form-control" th:field="${form.timeId}" required="required">
 					   		<option th:each="time : ${allTimes}"
 					  			th:text="${time.name}"	
@@ -68,7 +68,7 @@
 		    	</div>
 		    	<div class="row form-pad">
 		    		<div class="col-md-6">
-		    			<label for="activity"> Activité :</label>
+		    			<label for="activity" th:id="MyObservationActivity"></label>
 		    			<div class="flexContainer">
 							<input id="activity" class="form-control inputField" type="text" th:field="${form.activity}" maxlength="50" required="required"/>
 							<button class="button-mic" type="button" onclick="dictation('activity', this)"><img src="/img/mic.png" alt="Microphone"/></button>
@@ -77,7 +77,7 @@
 		    	</div>
 		    	<div class="row form-pad">
 		    		<div class="col-md-6">
-		    			<label for="activity"> Observations :</label>
+		    			<label for="activity" th:id="MyObservationObservations"></label>
 						<div class="flexContainer">	
 							<button type="button" id="grade-btn" class="btn btn-default smile"><i class="fa fa-smile-o fa-3x" style="color: LimeGreen"></i></button>
 							<input id="grade" type="hidden" value="0" th:field="${form.grade}"></input>
@@ -90,9 +90,7 @@
 		    		<div class="col-md-6">
 				    	<input type="hidden" th:value="${form.date}" th:field="${form.date}"/>
 				    	<input type="hidden" th:value="${form.subjectId}" th:field="${form.subjectId}"/>
-						<button type="submit" class="btn btn-success pull-right">
-							<span class="glyphicon glyphicon-plus"></span> Ajouter
-						</button>
+						<button type="submit" class="btn btn-success pull-right" th:id="AddMyObservation"></button>
 		    		</div>
 		    	</div>
 			</div>
@@ -102,6 +100,12 @@
 	
     	
    	</th:block>
+	<!--<script type="text/javascript" th:inline="javascript">
+		checktranslation();
+	</script>-->
 </body>
 <script src="/scripts/speech-input.js"></script>
+<!--<script type="text/javascript" th:inline="javascript">
+	check();
+</script>-->
 </html>

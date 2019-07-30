@@ -19,14 +19,24 @@ public class   HTMLGenerator {
 	}
 
 	public static String strongAttributeValue(final String attribute, final String value, final int indentLevel) {
+		return String.format("<p %s><strong id=%s ></strong>%s</p>\r\n", padding(indentLevel), attribute, value,
+				indentLevel * indentBase);
+	}
+
+	public static String strongAttributeValue2(final String attribute, final String value, final int indentLevel) {
 		return String.format("<p %s><strong>%s :&nbsp;</strong>%s</p>\r\n", padding(indentLevel), attribute, value,
 				indentLevel * indentBase);
 	}
 
 	public static String strongAttribute(final String attribute, final int indentLevel) {
+		return String.format("<p %s><strong id=%s ></strong></p>\r\n", padding(indentLevel), attribute);
+	}
+
+	public static String strongAttribute2(final String attribute, final int indentLevel) {
 		return String.format("<p %s><strong>%s :&nbsp;</strong></p>\r\n", padding(indentLevel), attribute);
 	}
-	
+
+
 	public static String value(final String value, final int indentLevel) {
 		return String.format("<p %s>%s</p>\r\n", padding(indentLevel), value);
 	}

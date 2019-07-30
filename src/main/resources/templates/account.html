@@ -1,61 +1,74 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title id="pageTitle">Mon compte</title>
+	<title id="AccountTitle"></title>
 </head>
 <head>
 	<link href="/css/account.css" rel="stylesheet" />
-    <script src="/scripts/password.js"></script>
+	<script src="/scripts/password.js"></script>
 	<script src="/scripts/account.js"></script>
+	<script src="/scripts/cookie.js"></script>
+	<script src="/scripts/translate.js"></script>
 </head>
 <body>
-	<div th:replace="header :: navbar"></div>
-	<div id="main-content" class="container">
-   		<div th:if="${param.error} and ${param.error[0] == 'mismatch'}" class="alert alert-danger">
-   			Mot de passe incorrect.
- 		</div>
-   		<div th:if="${param.error} and ${param.error[0] == 'length'}" class="alert alert-danger">
-   			Le mot de passe doit comporter au moins 6 caractères.
- 		</div>
-   		<div th:if="${param.success}" class="alert alert-success">
-   			Le mot de passe a bien été modifié.
- 		</div>
-		<h2>Mon compte</h2>
-		<div class="well clearfix">
-			<div class="form-group">
-				<label for="name" class="control-label">Nom </label>
-				<input id="name" class="form-control" th:placeholder="${name}" disabled="disabled"/>
-			</div>
-			<div class="form-group">
-				<label for="email" class="control-label">Email </label>
-				<input id="email" class="form-control" th:placeholder="${email}" disabled="disabled"/>
-			</div>
-			<div class="form-group">
-				<button class="btn btn-success pull-right" type="submit" style="background:red" th:onclick="'confirmDeleteAccount(\''+ ${name}+'\',\''+ ${email} +'\');'"><span class="glyphicon glyphicon-warning-sign" style="color:red" > </span><a href="/deleteaccount"> Supprimer Mon Compte</a></button>
-			</div>
+<div th:replace="header :: navbar"></div>
+<div id="main-content" class="container">
+	<div th:if="${param.error} and ${param.error[0] == 'mismatch'}" class="alert alert-danger" id="WrongPass"></div>
+	<div th:if="${param.error} and ${param.error[0] == 'length'}" class="alert alert-danger" id="MissingCharacters"></div>
+	<div th:if="${param.success}" class="alert alert-success" id="PasswordModified"></div>
+	<h2 id="AccountChapter"></h2>
+	<div class="well clearfix">
+		<div class="form-group">
+			<label for="name" class="control-label" id="AccountName"></label>
+			<input id="name" class="form-control" th:placeholder="${name}" disabled="disabled"/>
 		</div>
-		<div class="well clearfix">
-			<h3>Changer de mot de passe</h3>
-	   		<div id="error" class="alert alert-danger"></div>
-	    	<form action="#" id="form-password" th:action="@{/account}" th:object="${form}" method="post">
-	    		<div class="form-group">
-			    	<label for="oldPassword">Ancien mot de passe : </label>
-			    	<input class="form-control" id="oldPassword" type="password" th:field="*{oldPassword}" th:value="*{oldPassword}" placeholder="obligatoire" required="required"/>
-	    		</div>
-	    		<div class="form-group">
-			    	<label for="newPassword">Nouveau mot de passe : </label>
-			    	<input class="form-control" id="newPassword" type="password" th:field="*{newPassword}" th:value="*{newPassword}" placeholder="obligatoire" required="required"/>
-	    		</div>
-	    		<div class="form-group">
-			    	<label for="repeat">Répétez le mot de passe : </label>
-			    	<input class="form-control" id="repeat" type="password" placeholder="obligatoire" required="required"/>
-	    		</div>
-	    		<div class="form-group">
-					<button class="btn btn-success pull-right" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
-				</div>
-	    	</form>
+		<div class="form-group">
+			<label for="email" class="control-label" id="AccountEmail"></label>
+			<input id="email" class="form-control" th:placeholder="${email}" disabled="disabled"/>
+		</div>
+		<div class="form-group">
+			<button class="btn btn-success pull-right" type="submit" style="background:red" th:onclick="'confirmDeleteAccount(\''+ ${name}+'\',\''+ ${email} +'\');'" th:id="deleteaccountid"></button>
 		</div>
 	</div>
-    <div th:replace="footer :: footer"></div>
+	<div class="well clearfix">
+		<h3 id="AccountChapter2"></h3>
+		<div id="error" class="alert alert-danger"></div>
+		<form action="#" id="form-password" th:action="@{/account}" th:object="${form}" method="post">
+			<div class="form-group">
+				<label for="oldPassword" id="OldPass"></label>
+				<input class="form-control" id="oldPassword" type="password" th:field="*{oldPassword}" th:value="*{oldPassword}" placeholder="obligatoire" required="required"/>
+			</div>
+			<div class="form-group">
+				<label for="newPassword" id="NewPass"></label>
+				<input class="form-control" id="newPassword" type="password" th:field="*{newPassword}" th:value="*{newPassword}" placeholder="obligatoire" required="required"/>
+			</div>
+			<div class="form-group">
+				<label for="repeat" id="RepeatPass"></label>
+				<input class="form-control" id="repeat" type="password" placeholder="obligatoire" required="required"/>
+			</div>
+			<div class="form-group">
+				<button class="btn btn-success pull-right" type="submit" id="AddPass"></button>
+			</div>
+		</form>
+	</div>
+</div>
+<div id="footer_tc_privacy" style="border: none; background: rgb(255, 255, 255); width: 100%; position: fixed; z-index: 999998; bottom: 0px; left: 0px; text-align: left; opacity: 0.9;" th:if="ex">
+	<div id="footer_tc_privacy_container_text" style="border: none; background: none; display: inline-block;">
+		<div id="footer_tc_privacy_text" style="border: none; background: none; color: rgb(51, 51, 51); padding: 10px; font-size: 12px; text-align: left;">
+			<p class="MsoNormal" style="margin-bottom: .0001pt; line-height: normal; mso-layout-grid-align: none; text-autospace: none;" id="cookies"></p>
+		</div>
+	</div>
+	<div id="footer_tc_privacy_container_button" style="border: none; background: none; right: 10px; display: inline-block;">
+		<button id="footer_tc_privacy_button" th:onclick="'hideMessage();eraseCookie(\'lang\');createCookie(\'lang\',1,7);submit;'" style="border: none; background: rgb(68, 157, 68); color: rgb(255, 255, 255); display: block; cursor: pointer; font-size: 12px; padding: 5px 10px; margin: 10px 0px;"></button>
+	</div>
+</div>
+<div th:replace="footer :: footer"></div>
+<script type="text/javascript" th:inline="javascript">
+	checktranslation();
+</script>
+
 </body>
+<script type="text/javascript" th:inline="javascript">
+	check();
+</script>
 </html>

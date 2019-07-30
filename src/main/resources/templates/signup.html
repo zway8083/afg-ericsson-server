@@ -3,71 +3,83 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="header :: head">
-<title id="pageTitle">Sign up</title>
+<title id="SignUpTitle"></title>
 </head>
 <head>
- <script src="/scripts/password.js"></script>
+	<script src="/scripts/password.js"></script>
+	<script src="/scripts/translate.js"></script>
+	<script src="/scripts/cookie.js"></script>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
 	<th:block th:if="${!#authorization.expression('isAuthenticated()')}">
 		<div id="main-content" class="container">
-			<div th:if="${param.error} and ${param.error[0] == 'mismatch'}" class="alert alert-danger">
-				Mot de passe incorrect.
-		    </div>
-			<div th:if="${param.error} and ${param.error[0] == 'length'}" class="alert alert-danger">
-				Le mot de passe doit comporter au moins 6 caractères.
-			</div>
-			<div th:if="${param.error}" class="alert alert-danger">
-					L'émail existe déja.
-			</div>
+			<div th:if="${param.error} and ${param.error[0] == 'mismatch'}" class="alert alert-danger" th:id="SignUpAlertMessageWrongPass"></div>
+			<div th:if="${param.error} and ${param.error[0] == 'length'}" class="alert alert-danger" th:id="SignUpAlertMessageMissingCharacters"></div>
+			<div th:if="${param.error}" class="alert alert-danger" th:id="SignUpAlertMessageAccountAlreadyExist"></div>
 			<div id="error" class="alert alert-danger"></div>	
 			<form class="form" id="form-password" action="#" th:object="${form}" th:action="@{/signup}" method="post">
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="name" class="control-label">Nom </label>
+						<label for="name" class="control-label" th:id="SignUpName"></label>
 						<input id="name" th:field="*{name}" class="form-control" type="text" required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="surname" class="control-label">Prénom </label>
+						<label for="surname" class="control-label" th:id="SignUpFirstName"></label>
 						<input id="surname" th:field="*{surname}" class="form-control" type="text" required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label class="control-label">Email </label>
+						<label class="control-label" th:id="SignUpEmail"></label>
 						<input id="email" th:field="*{email}" class="form-control" type="email" required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label class="control-label">Mot de passe  </label>
+						<label class="control-label" th:id="SignUpPassword"></label>
 						<input id="newPassword" th:field="*{password}" name="newPassword" class="form-control" type="password"  required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label  class="control-label">Retapez le mot de passe </label>
+						<label  class="control-label" th:id="SignUpRepeatPassword"></label>
 						<input id="repeat" class="form-control" type="password"  required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<a href="/login">Se connecter</a>
+						<a href="/login" th:id="SignUpConnexion"></a>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
 						<div class="form-group pull-right">
-							<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> S'inscrire</button>
+							<button class="btn btn-success" type="submit" th:id="SignUpValidate"><span class="glyphicon glyphicon-ok"></span></button>
 						</div>
 					</div>
 				</div>
 			</form>
 		</div>
+		<div id="footer_tc_privacy" style="border: none; background: rgb(255, 255, 255); width: 100%; position: fixed; z-index: 999998; bottom: 0px; left: 0px; text-align: left; opacity: 0.9;" th:if="ex">
+			<div id="footer_tc_privacy_container_text" style="border: none; background: none; display: inline-block;">
+				<div id="footer_tc_privacy_text" style="border: none; background: none; color: rgb(51, 51, 51); padding: 10px; font-size: 12px; text-align: left;">
+					<p class="MsoNormal" style="margin-bottom: .0001pt; line-height: normal; mso-layout-grid-align: none; text-autospace: none;" id="cookies"></p>
+				</div>
+			</div>
+			<div id="footer_tc_privacy_container_button" style="border: none; background: none; right: 10px; display: inline-block;">
+				<button id="footer_tc_privacy_button" th:onclick="'hideMessage();eraseCookie(\'lang\');createCookie(\'lang\',1,7);submit;'" style="border: none; background: rgb(68, 157, 68); color: rgb(255, 255, 255); display: block; cursor: pointer; font-size: 12px; padding: 5px 10px; margin: 10px 0px;"></button>
+			</div>
+		</div>
 	    <div th:replace="footer :: footer"></div>
 	</th:block>
+	<script type="text/javascript" th:inline="javascript">
+		checktranslation();
+	</script>
 </body>
+<script type="text/javascript" th:inline="javascript">
+	check();
+</script>
 </html>

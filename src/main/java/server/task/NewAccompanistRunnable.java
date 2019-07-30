@@ -35,8 +35,8 @@ public class NewAccompanistRunnable extends EmailRunnable {
 		String htmlBody = HTMLGenerator.value(line1, 0) + HTMLGenerator.value(line2, 0);
 		if (rawPassword != null) {
 			htmlBody += HTMLGenerator.value("Identifiants :", 0)
-					+ HTMLGenerator.strongAttributeValue("Utilisateur", recipient, 1)
-					+ HTMLGenerator.strongAttributeValue("Mot de passe provisoire", rawPassword, 1);
+					+ HTMLGenerator.strongAttributeValue2("Utilisateur", recipient, 1)
+					+ HTMLGenerator.strongAttributeValue2("Mot de passe provisoire", rawPassword, 1);
 		}
 		final String line3 = "Vous pouvez retrouver les observations de <strong>" + subjectName + "</strong> dans l'onglet <strong>" + "Observation" + "</strong>.";
 		final String line4 = "N'hésitez pas à changer votre mot de passe dans l'onglet <strong>" + "Réglages" + "</strong>.";

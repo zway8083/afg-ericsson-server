@@ -10,6 +10,14 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css"/>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+	<script src="/scripts/translate.js"></script>
+	<script src="/scripts/cookie.js"></script>
+<!--	<script type="text/javascript">
+		var id_list=["afg","lang","signin","ajouts","role","user","device","userlink","Raspberrylink","listuser","Raspberry","eventstat","mydevices","mysubjects","report","accompanist","observation","settings","account","signout"];
+	</script>-->
+	<script type="text/javascript">
+		var id_list=["afg","lang","signin","role","user-name","ajouts","tools","user","device","userlink","Raspberrylink","listuser","Raspberry","eventstat","mydevices","mysubjects","report","accompanist","observation","settings","account","signout","LoginTitle","newaccount","pass","forgotpass","rememberme","validate","alertMessage","signoutmessage","cookies","footer_tc_privacy_button","accompanistTitle","accompanistChapter","subjectColumnforAccompanist","accompanistColumn","AccompanistName","AccompanistFirstName","AccompanistEmail","AccompanistRole","AddAccompanist","AccountTitle","WrongPass","MissingCharacters","PasswordModified","AccountChapter","AccountName","AccountEmail","deleteaccountid","AccountChapter2","OldPass","NewPass","RepeatPass","AddPass","MyDevicesTitle","MyDevicesChapter","MyDevicesSubjectsColumn","MyDevicesDevicesColumn","AddMyDevices","MySubjectsTitle","MySubjectsChapter","MySubjectsColumn","MySubjectsName","MySubjectsFirstname","AddMySubjects","ReportTitle","AlertMessageReportSleepTime","AlertMessageReportNoReport","AlertMessageReportNoDeviceForThisSubject","ReportChapter","ReportDate","ReportSubject","ReportValidate","ObservationTitle","ObservationChapter","ObservationDate","ObservationSubject","ObservationValidate","SettingsTitle","SettingsChapter","SettingsAlertSuggestion","SettingsSleepTimeColumn","SettingsMailColumn","SettingsSleepStart","SettingsSleepEnd","SettingsEmailCheckBox","SettingsValidate","SettingsRename","SettingsSuggestionChapter","SettingsSuggestionsSend","DeleteAccountTitle","DeleteAccountWarning","DeleteAccountHeadMessage","DeleteAccountCheckBoxAllChecked","DeleteAccountMyAccountChapter","DeleteAccountMySubejectsChapter","DeleteAccountMyDevicesChapter","DeleteAccountIsAssociatedto","button","RenameTitle","RenameName","RenameFirstName","RenameValidate","SignUpTitle","SignUpAlertMessageWrongPass","SignUpAlertMessageMissingCharacters","SignUpAlertMessageAccountAlreadyExist","SignUpName","SignUpFirstName","SignUpEmail","SignUpPassword","SignUpRepeatPassword","SignUpConnexion","SignUpValidate","ForgotTitle","ForgotChapter","ForgotUnknownEmail","ForgotMail","ForgotValidate","MyObservationChapter","MyObservationActivityPeriod","MyObservationActivity","MyObservationObservations","AddMyObservation","MyReportSubject","MyReportPeriod","MyReportGrade","MyReportMvtNumber","MyReportMvtEachHours","MyReportSleepTendancy","MyReportScoreForWeek"];
+	</script>
 	<th:block th:replace=":: head-inc"></th:block>
 </head>
 <body>
@@ -22,7 +30,7 @@
 				        <span class="icon-bar"></span>
 				        <span class="icon-bar"></span>
 			        </button>
-					<a class="navbar-brand" style="padding-right: 0px;" href="/">AFG Autisme</a>
+					<a class="navbar-brand" style="padding-right: 0px;" href="/" th:id="afg"></a>
 					<i style="color: white;">(beta)</i>
 				</div>
 				<div class="collapse navbar-collapse" id="navbar">
@@ -30,41 +38,59 @@
 						<ul class="nav navbar-nav">
 							<th:block sec:authorize="hasAuthority('ADD_ANY')">
 								<li class="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown" href="#">Ajouts<span class="caret"></span></a>
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span><label th:id="ajouts"></label></a>
 									<ul class="dropdown-menu">
-										<li><a href="/add/role">Rôle</a></li>
-										<li><a href="/add/user">Utilisateur</a></li>
-										<li><a href="/add/device">Capteur</a></li>
-										<li><a href="/add/link">Liens utilisateurs</a></li>
-										<li><a href="/add/raspberry">Liens Raspberry-utilisateur</a></li>
+										<li><a href="/add/role" th:id="role"></a></li>
+										<li><a href="/add/user" th:id="user"></a></li>
+										<li><a href="/add/device" th:id="device"></a></li>
+										<li><a href="/add/link" th:id="userlink"></a></li>
+										<li><a href="/add/raspberry" th:id="Raspberrylink"></a></li>
 									</ul>
 								</li>
 								<li class ="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown" href="#">Outils<span class="caret"></span></a>
+									<a class="dropdown-toggle" data-toggle="dropdown" href="#" ><span class="caret"></span><label th:id="tools"></label></a>
 									<ul class="dropdown-menu">
-										<li><a href="/get/users">Liste utilisateurs</a></li>
-										<li><a href="/raspberry">Raspberry I/O</a></li>
-										<li><a href="/generate/eventstat">Recalculer les EventStats</a></li>
+										<li><a href="/get/users" th:id="listuser"></a></li>
+										<li><a href="/raspberry" th:id="Raspberry"></a></li>
+										<li><a href="/generate/eventstat" th:id="eventstat"></a></li>
 									</ul>
 								</li>
 							</th:block>
-							<li sec:authorize="hasAuthority('CREATE_DEVICE')"><a href="/mydevices">Mes Capteurs</a></li>
-							<li sec:authorize="hasAuthority('CREATE_SUBJECT')"><a href="/mysubjects">Mes Sujets</a></li>
-							<li sec:authorize="hasAuthority('GENERATE_NIGHT_REPORT')"><a href="/report">Rapport</a></li>
-							<li sec:authorize="hasAuthority('CREATE_ACCOMPANIST')"><a href="/accompanist">Accompagnateurs</a></li>
-							<li sec:authorize="hasAuthority('READ_BEHAVIOUR_OBSERVATION') or hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')"><a href="/observation">Observation</a></li>
+							<li sec:authorize="hasAuthority('CREATE_DEVICE')"><a href="/mydevices" th:id="mydevices"></a></li>
+							<li sec:authorize="hasAuthority('CREATE_SUBJECT')"><a href="/mysubjects" th:id="mysubjects"></a></li>
+							<li sec:authorize="hasAuthority('GENERATE_NIGHT_REPORT')"><a href="/report" th:id="report"></a></li>
+							<li sec:authorize="hasAuthority('CREATE_ACCOMPANIST')"><a href="/accompanist" th:id="accompanist"></a></li>
+							<li sec:authorize="hasAuthority('READ_BEHAVIOUR_OBSERVATION') or hasAuthority('CREATE_BEHAVIOUR_OBSERVATION')"><a href="/observation" th:id="observation"></a></li>
 						</ul>
 					    <ul class="nav navbar-nav navbar-right">
-					    	<li><a href="/settings"><span class="glyphicon glyphicon-cog"></span> Réglages</a></li>
-					    	<li><a href="/account"><span class="glyphicon glyphicon-user"></span> Mon compte</a></li>
-							<li><a href="#" onclick="document.getElementById('logout-form').submit();"><span class="glyphicon glyphicon-log-out"></span> Déconnexion</a></li>
+							<li class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#" ><span class="caret"></span><label th:id="lang"></label></a>
+								<ul class="dropdown-menu">
+									<!--<li><a onclick="eraseCookie('lang');createCookie('lang',1,7);dofr();">FR</a></li>-->
+									<li><img src="/img/fr.svg" alt="French" style="-moz-transform:scale(0.5); -webkit-transform:scale(0.5); transform:scale(0.5);" th:onclick="'eraseCookie(\'lang\');createCookie(\'lang\',1,7);checktranslation();'"/></li>
+									<li><img src="/img/gb.svg" alt="English" style="-moz-transform:scale(0.5); -webkit-transform:scale(0.5); transform:scale(0.5);" th:onclick="'eraseCookie(\'lang\');createCookie(\'lang\',2,7);checktranslation();'"/></li>
+									<li><img src="/img/es.svg" alt="Spanish" style="-moz-transform:scale(0.5); -webkit-transform:scale(0.5); transform:scale(0.5);" th:onclick="'eraseCookie(\'lang\');createCookie(\'lang\',3,7);checktranslation();'"/></li>
+								</ul>
+							</li>
+					    	<li><a href="/settings"><span class="glyphicon glyphicon-cog" ></span><label id="settings"></label></a></li>
+					    	<li><a href="/account"><span class="glyphicon glyphicon-user" ></span><label id="account"></label></a></li>
+							<li><a href="#" onclick="document.getElementById('logout-form').submit();" id="signout"></a></li>
 		            	</ul>
 		            	<form id="logout-form" class="navbar-form" th:action="@{/logout}" method="post"></form>
 					</th:block>
 					<th:block sec:authorize="!isAuthenticated()">
 					    <ul  class="nav navbar-nav navbar-right">
+							<li class="dropdown">
+								<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span><label th:id="lang"></label></a>
+								<ul class="dropdown-menu">
+									<!--<li><a onclick="eraseCookie('lang');createCookie('lang',1,7);dofr();">FR</a></li>-->
+									<li><img src="/img/fr.svg" alt="French" style="-moz-transform:scale(0.5); -webkit-transform:scale(0.5); transform:scale(0.5);" th:onclick="'eraseCookie(\'lang\');createCookie(\'lang\',1,7);checktranslation();'"/></li>
+									<li><img src="/img/gb.svg" alt="English" style="-moz-transform:scale(0.5); -webkit-transform:scale(0.5); transform:scale(0.5);" th:onclick="'eraseCookie(\'lang\');createCookie(\'lang\',2,7);checktranslation();'"/></li>
+									<li><img src="/img/es.svg" alt="Spanish" style="-moz-transform:scale(0.5); -webkit-transform:scale(0.5); transform:scale(0.5);" th:onclick="'eraseCookie(\'lang\');createCookie(\'lang\',3,7);checktranslation();'"/></li>
+								</ul>
+							</li>
 						    <li>
-						    	<a href="/login"><span class="glyphicon glyphicon-log-in"></span> Connexion</a>
+						    	<a href="/login" id="signin"></a>
 						    </li>
 		            	</ul>
 					</th:block>
@@ -72,5 +98,11 @@
 			</div>
 		</nav>
 	</div>
+	<script type="text/javascript" th:inline="javascript">
+		checktranslation();
+	</script>
 </body>
+<script type="text/javascript" th:inline="javascript">
+	check();
+</script>
 </html>

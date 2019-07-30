@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title id="pageTitle">Observation</title>
+    <title id="ObservationTitle"></title>
 </head>
 <head>
 	<link href="/css/observation.css" rel="stylesheet"/>
@@ -10,6 +10,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
 	<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
 	<script src="/scripts/fr.js"></script>
+	<script src="/scripts/translate.js"></script>
+	<script src="/scripts/cookie.js"></script>
     <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css"/>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.matchHeight/0.7.0/jquery.matchHeight-min.js"></script>
@@ -17,13 +19,13 @@
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
-		<h2 style="padding-bottom: 15px;">Observation du comportement</h2>
+		<h2 style="padding-bottom: 15px;" id="ObservationChapter"></h2>
 		
 	    <div th:if="${init}" class="row">
 	        <div class='col-md-4'>
 	        	<form action="/observation" th:action="@{/observation}" th:object="${initForm}" method="post">
 		            <div class="form-group">
-		                <label class="control-label" for="datetimepicker">Date : </label>
+		                <label class="control-label" for="datetimepicker" id="ObservationDate"></label>
 		                <div class='input-group date' id='datetimepicker'>
 		                    <input id="date" type='text' class="form-control" th:field="*{date}" required="required"/>
 		                    <span class="input-group-addon">
@@ -32,7 +34,7 @@
 		                </div>
 		            </div>
 		            <div class="form-group">
-		            	<label class="control-label" for="subject">Sujet : </label>
+		            	<label class="control-label" for="subject" id="ObservationSubject"></label>
 		            	<select id="subject" class="form-control" th:field="*{subjectId}" required="required">
 								<option th:each="subject : ${subjects}"
 									th:text="${subject.firstName + ' ' + subject.lastName}"
@@ -40,7 +42,7 @@
 						</select>
 		            </div>
 		            <div class="form-group pull-right"> 
-						<button type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+						<button type="submit" class="btn btn-success" id="ObservationValidate"></button>
   					</div>
 	            </form>
 	        </div>
@@ -81,6 +83,22 @@
     		</th:block>
 	    </div>
     </div>
+	<div id="footer_tc_privacy" style="border: none; background: rgb(255, 255, 255); width: 100%; position: fixed; z-index: 999998; bottom: 0px; left: 0px; text-align: left; opacity: 0.9;" th:if="ex">
+		<div id="footer_tc_privacy_container_text" style="border: none; background: none; display: inline-block;">
+			<div id="footer_tc_privacy_text" style="border: none; background: none; color: rgb(51, 51, 51); padding: 10px; font-size: 12px; text-align: left;">
+				<p class="MsoNormal" style="margin-bottom: .0001pt; line-height: normal; mso-layout-grid-align: none; text-autospace: none;" id="cookies"></p>
+			</div>
+		</div>
+		<div id="footer_tc_privacy_container_button" style="border: none; background: none; right: 10px; display: inline-block;">
+			<button id="footer_tc_privacy_button" th:onclick="'hideMessage();eraseCookie(\'lang\');createCookie(\'lang\',1,7);submit;'" style="border: none; background: rgb(68, 157, 68); color: rgb(255, 255, 255); display: block; cursor: pointer; font-size: 12px; padding: 5px 10px; margin: 10px 0px;"></button>
+		</div>
+	</div>
     <div th:replace="footer :: footer"></div>
+	<script type="text/javascript" th:inline="javascript">
+		checktranslation();
+	</script>
 </body>
+<script type="text/javascript" th:inline="javascript">
+	check();
+</script>
 </html>

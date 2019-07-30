@@ -3,28 +3,30 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="header :: head">
-	<title id="pageTitle">Réglages</title>
+	<title id="SettingsTitle"></title>
 	<th:block th:fragment="head-inc">
-	<link href="/css/settings.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
-	<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
-    <link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css"/>
-	<script src="/scripts/fr.js"></script>
-	<script th:inline="javascript" src="/scripts/settings.js"></script>
+		<link href="/css/settings.css" rel="stylesheet"/>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
+		<script src="/scripts/bootstrap-datetimepicker.min.js"></script>
+		<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css"/>
+		<script src="/scripts/fr.js"></script>
+		<script th:inline="javascript" src="/scripts/settings.js"></script>
+		<script src="/scripts/translate.js"></script>
+		<script src="/scripts/cookie.js"></script>
 	</th:block>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
 	<div id="main-content" class="container">
-		<div th:if="${param.suggestion}" class="alert alert-info">Merci, nous avons bien reçu votre suggestion.</div>
-		<h2>Réglages</h2>
+		<div th:if="${param.suggestion}" class="alert alert-info" id="SettingsAlertSuggestion"></div>
+		<h2 id="SettingsChapter"></h2>
 		<th:block sec:authorize="hasRole('ROLE_PARENT') or hasRole('ROLE_ADMIN')">
 			<div class="row">
 				<div class="col-md-5 col-xs-5">
-					<h3><span class="glyphicon glyphicon-bed"></span> Horaires de sommeil</h3>
+					<h3><span class="glyphicon glyphicon-bed" ></span><label id="SettingsSleepTimeColumn"></label></h3>
 				</div>
-				<div class="col-md-5 col-xs-5">
-					<h3><span class="glyphicon glyphicon-envelope"></span> Recevoir le rapport par mail quotidiennment</h3>
+				<div class="col-md-6 col-xs-6">
+					<h3><span class="glyphicon glyphicon-envelope" ></span><label id="SettingsMailColumn"></label></h3>
 				</div>
 			</div>
 			<th:block th:each="form,iter: ${forms}">
@@ -34,7 +36,7 @@
 						<form class="form-night" th:action="@{/settings/sleep}" th:object="${nightForm}"  method="post">
 							<div class="col-md-2 col-xs-5">
 								<div class="form-group">
-					                <label class="control-label" for="dpStart">Couché </label>
+					                <label class="SettingsSleepStart" for="dpStart"></label>
 					                <div class="input-group date sleep-start" id="dpStart">
 					                    <input type="button" class="form-control" maxlength="5" name="sleepStart" id="sleepStart" th:value="${form.sleepStart}" required="required"/>
 					                    <span class="input-group-addon">
@@ -45,7 +47,7 @@
 							</div>
 							<div class="col-md-2 col-xs-5">
 								<div class="form-group">
-					                <label class="control-label" for="dpEnd">Levé </label>
+					                <label class="SettingsSleepEnd" for="dpEnd" ></label>
 					                <div class="input-group date sleep-end" id="dpEnd">
 					                    <input type='button' class="form-control" maxlength="5" name="sleepEnd" id="sleepEnd" th:value="${form.sleepEnd}" required="required"/>
 					                    <span class="input-group-addon">
@@ -56,23 +58,25 @@
 							</div>
 							<div class="col-md-1 col-xs-5">
 							</div>
-							<div class="col-md-5 col-xs-5">
+							<div class="col-md-4 col-xs-4">
 								<input type="checkbox" id="emailON" name="emailON" th:attr="value = ${form.emailON}" th:checked="${EmailOnStatus[(iter.count)-1]}"/>
-								<label th:for="${#ids.next('emailON')}">  Oui <span class="glyphicon glyphicon-check"></span> , NON <span class="glyphicon glyphicon glyphicon-unchecked"></span>  <a title = "Si vous cochez cette case, tout les accompagnateurs recevront quotidiennement par email un rapport du sommeil. Si vous la décochez, alors personne ne recevra quotidiennement d'email. "> <span class ="glyphicon glyphicon-info-sign"> </span> </a> </label>
+								<label th:for="${#ids.next('emailON')}" class="SettingsEmailCheckBox"></label>
 							</div>
 							<input type="hidden" th:value="${form.subjectId}" id="subjectId" name="subjectId"/>
 							<div class="col-md-1 col-xs-1">
-								<button type="submit" class="btn btn-success dp-submit"><span class="glyphicon glyphicon-ok"></span> Valider </button>
+								<a th:href="|/rename/${form.subjectId}|" class="SettingsRename"></a>
 							</div>
 
-							<a th:href="|/rename/${form.subjectId}|">Renommer</a>
+							<div class="col-md-1 col-xs-1">
+								<button type="submit" class="btn btn-success dp-submit"><a class="SettingsValidate" style ='color: white;'></a></button>
+							</div>
 
 						</form>
 					</div>
 				</div>
 			</th:block>
 		</th:block>
-		<h3><span class="glyphicon glyphicon-star-empty"></span> Suggestions</h3>
+		<h3 ><span class="glyphicon glyphicon-star-empty"></span><label id="SettingsSuggestionChapter"></label></h3>
 		<form id="suggestionForm" th:action="@{/settings/suggestion}" th:object="${suggestionForm}" method="post">
 			<div class="row">
 				<div class="col-md-8">
@@ -81,11 +85,28 @@
 			</div>
 			<div class="row">
 				<div class="col-md-8">
-					<button class="btn btn-info pull-right sugg-submit"><span class="glyphicon glyphicon-send"></span> Envoyer</button>
+					<button class="btn btn-info pull-right sugg-submit" id="SettingsSuggestionsSend"></button>
 				</div>
 			</div>
 		</form>
 	</div>
+	<div id="footer_tc_privacy" style="border: none; background: rgb(255, 255, 255); width: 100%; position: fixed; z-index: 999998; bottom: 0px; left: 0px; text-align: left; opacity: 0.9;" th:if="ex">
+		<div id="footer_tc_privacy_container_text" style="border: none; background: none; display: inline-block;">
+			<div id="footer_tc_privacy_text" style="border: none; background: none; color: rgb(51, 51, 51); padding: 10px; font-size: 12px; text-align: left;">
+				<p class="MsoNormal" style="margin-bottom: .0001pt; line-height: normal; mso-layout-grid-align: none; text-autospace: none;" id="cookies"></p>
+			</div>
+		</div>
+		<div id="footer_tc_privacy_container_button" style="border: none; background: none; right: 10px; display: inline-block;">
+			<button id="footer_tc_privacy_button" th:onclick="'hideMessage();eraseCookie(\'lang\');createCookie(\'lang\',1,7);submit;'" style="border: none; background: rgb(68, 157, 68); color: rgb(255, 255, 255); display: block; cursor: pointer; font-size: 12px; padding: 5px 10px; margin: 10px 0px;"></button>
+		</div>
+	</div>
    	<div th:replace="footer :: footer"></div>
+	<script type="text/javascript" th:inline="javascript">
+		checktranslation();
+	</script>
 </body>
+<script type="text/javascript" th:inline="javascript">
+	check();
+</script>
 </html>
+

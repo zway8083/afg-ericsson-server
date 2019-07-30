@@ -18,6 +18,7 @@ import server.model.SubjectForm;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,7 @@ public class RenameController {
         Collection<SimpleGrantedAuthority> authorities = (Collection<SimpleGrantedAuthority>) authentication
                 .getAuthorities();
         User subject;
+        logger.info(request.getRequestURI());
         id = getIdUrl(request);
         if(!userRepository.exists(id)){
             return "error";
@@ -62,8 +64,16 @@ public class RenameController {
     {
         String idStr=request.getRequestURL().toString() + "?" + request.getQueryString();
         String[] temp= idStr.split(Pattern.quote("?"));
-        temp=temp[0].split(Pattern.quote("/"));
-        return Integer.parseInt(temp[temp.length-1]);
+        String[] temp2=temp[0].split(Pattern.quote("/"));
+        for (int i=0;i<temp2.length;i++){
+            try {
+                logger.info(temp2[i]);
+                return Integer.parseInt(temp2[i]);
+            }catch (NumberFormatException f){
+            }
+        }
+
+        return 0;
     }
     @PostMapping(path = "/rename")
     public String renameForm(Authentication authentication, Model model,

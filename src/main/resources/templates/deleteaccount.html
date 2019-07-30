@@ -1,10 +1,12 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:include="header :: head">
-    <title id="pageTitle">Suppression De Mon Compte</title>
+    <title id="DeleteAccountTitle"></title>
 </head>
 <head>
     <script src="/scripts/deleteaccount.js"></script>
+    <script src="/scripts/translate.js"></script>
+    <script src="/scripts/cookie.js"></script>
 </head>
 
 <body>
@@ -12,9 +14,9 @@
     <div id="main-content" class="container">
         <div class="form-group" style="background-color:red; text-align: center">
             <span class="glyphicon glyphicon-warning-sign" style="color:white; font-size: 100px;"></span>
-            <p style="color: white;font-size: 75px;">ATTENTION</p>
+            <p style="color: white;font-size: 75px;" th:id="DeleteAccountWarning"></p>
 
-            <p style="color: white;font-size: 35px;"> Vous procédez à la fermeture de votre compte. Toute modification sera irréversible. Veuillez sélectionner les éléments que vous désirez supprimer.</p>
+            <p style="color: white;font-size: 35px;" th:id="DeleteAccountHeadMessage"></p>
         </div>
 
         <div class="well clearfix">
@@ -23,18 +25,18 @@
 
                 <div class="form-inline">
                     <input type="checkbox" name="select-all" id="select-all"/>
-                    <label> Tout Sélectionner</label>
+                    <label th:id="DeleteAccountCheckBoxAllChecked"></label>
                 </div>
 
                 <div class="form-inline">
-                    <h2>Mon compte</h2>
+                    <h2 th:id="DeleteAccountMyAccountChapter"></h2>
                 </div>
                 <div class="form-inline">
                     <input type="checkbox" id="accounttodelete" name="accounttodelete" th:value="${Id}"/>
                     <label th:text="${name}"></label>
                 </div>
                 <div class="form-inline">
-                    <h2>Mes Sujets</h2>
+                    <h2 th:id="DeleteAccountMySubejectsChapter"></h2>
                 </div>
                 <th:block th:each="subject: ${subjects}">
                     <div class="form-inline">
@@ -43,20 +45,36 @@
                     </div>
                 </th:block>
                 <div class="form-inline">
-                    <h2>Mes Capteurs</h2>
+                    <h2 th:id="DeleteAccountMyDevicesChapter"></h2>
                 </div>
                 <th:block th:each="device: ${devices}">
                     <div class="form-inline">
                         <input type="checkbox" id="devicetodelete" name="devicetodelete" th:value="${device.id}"/>
-                        <label th:text="${device.toString()}"></label><label> associé au sujet : </label><label th:text="${device.getUser().getName()}"></label>
+                        <label th:text="${device.toString()}"></label><label th:class="DeleteAccountIsAssociatedto"></label><label th:text="${device.getUser().getName()}"></label>
                     </div>
                 </th:block>
-                <button class="btn btn-success pull-right" type="button" id="button"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+                <button class="btn btn-success pull-right" type="button" id="button"></button>
             </form>
             <form id="logout-form" class="navbar-form" th:action="@{/logout}" method="post"></form>
         </div>
     </div>
+    <div id="footer_tc_privacy" style="border: none; background: rgb(255, 255, 255); width: 100%; position: fixed; z-index: 999998; bottom: 0px; left: 0px; text-align: left; opacity: 0.9;" th:if="ex">
+        <div id="footer_tc_privacy_container_text" style="border: none; background: none; display: inline-block;">
+            <div id="footer_tc_privacy_text" style="border: none; background: none; color: rgb(51, 51, 51); padding: 10px; font-size: 12px; text-align: left;">
+                <p class="MsoNormal" style="margin-bottom: .0001pt; line-height: normal; mso-layout-grid-align: none; text-autospace: none;" id="cookies"></p>
+            </div>
+        </div>
+        <div id="footer_tc_privacy_container_button" style="border: none; background: none; right: 10px; display: inline-block;">
+            <button id="footer_tc_privacy_button" th:onclick="'hideMessage();eraseCookie(\'lang\');createCookie(\'lang\',1,7);submit;'" style="border: none; background: rgb(68, 157, 68); color: rgb(255, 255, 255); display: block; cursor: pointer; font-size: 12px; padding: 5px 10px; margin: 10px 0px;"></button>
+        </div>
+    </div>
     <div th:replace="footer :: footer"></div>
+    <script type="text/javascript" th:inline="javascript">
+        checktranslation();
+    </script>
 
 </body>
+<script type="text/javascript" th:inline="javascript">
+    check();
+</script>
 </html>

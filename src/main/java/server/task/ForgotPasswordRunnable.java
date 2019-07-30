@@ -22,8 +22,8 @@ public class ForgotPasswordRunnable extends EmailRunnable {
 		String htmlBody = "";
 		if (rawPassword != null) {
 			htmlBody += HTMLGenerator.value("Identifiants :", 0)
-					+ HTMLGenerator.strongAttributeValue("Utilisateur", recipient, 1)
-					+ HTMLGenerator.strongAttributeValue("Code", rawPassword, 1);
+					+ HTMLGenerator.strongAttributeValue2("Utilisateur", recipient, 1)
+					+ HTMLGenerator.strongAttributeValue2("Code", rawPassword, 1);
 		}
 		email.concatBody(htmlBody);
 		

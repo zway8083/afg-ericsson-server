@@ -3,52 +3,69 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head th:include="header :: head">
-<title id="pageTitle">Login</title>
+	<script src="/scripts/cookie.js"></script>
+	<script src="/scripts/translate.js"></script>
+	<title id="LoginTitle"></title>
 </head>
 <body>
 	<div th:replace="header :: navbar"></div>
 	<th:block th:if="${!#authorization.expression('isAuthenticated()')}">
 		<div id="main-content" class="container">
 			<form class="form" th:action="@{/login}" method="post">
-				<div th:if="${param.error}" class="alert alert-danger">Utilisateur ou mot de passe invalide.</div>
-				<div th:if="${param.logout}" class="alert alert-info">Vous avez été déconnecté.</div>
+				<div th:if="${param.error}" class="alert alert-danger" id="alertMessage"></div>
+				<div th:if="${param.logout}" class="alert alert-info" id="signoutmessage"></div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="user" class="control-label">Utilisateur : </label>
+						<label for="user" class="control-label" id="user-name"></label>
 						<input id="user" class="form-control" type="text" name="username" required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<label for="password" class="control-label">Mot de passe : </label>
+						<label for="password" class="control-label" id="pass"> </label>
 						<input id="password" class="form-control" type="password" name="password" required="required"/>
 					</div>
 				</div>
 				<div class="row">
 					<div class="form-group col-md-4">
-						<a href="/signup">Créez un nouveau compte</a>
+						<a href="/signup" id="newaccount"></a>
 					</div>
 				</div>
 				<div class="row">
 						<div class="form-group col-md-4">
-							  <a href="/forgot">Mot de passe oublié ?</a>
+							  <a href="/forgot" id="forgotpass"></a>
 						</div>
 				</div>
 				<div class="form-check">
-					<label class="form-check-label">
-						<input type="checkbox" class="form-check-input" name="remember-me"/> Se souvenir de moi
-					</label>
+					<input type="checkbox" class="form-check-input" name="remember-me" />
+					<label class="form-check-label" id="rememberme"></label>
 				</div>
 				<div class="row">
 					<div class="col-md-4">
 						<div class="form-group pull-right">
-							<button class="btn btn-success" type="submit"><span class="glyphicon glyphicon-ok"></span> Valider</button>
+							<button class="btn btn-success" type="submit" id="validate" ></button>
 						</div>
 					</div>
 				</div>
 			</form>
+			<div id="footer_tc_privacy" style="border: none; background: rgb(255, 255, 255); width: 100%; position: fixed; z-index: 999998; bottom: 0px; left: 0px; text-align: left; opacity: 0.9;" th:if="ex">
+				<div id="footer_tc_privacy_container_text" style="border: none; background: none; display: inline-block;">
+					<div id="footer_tc_privacy_text" style="border: none; background: none; color: rgb(51, 51, 51); padding: 10px; font-size: 12px; text-align: left;">
+						<p class="MsoNormal" style="margin-bottom: .0001pt; line-height: normal; mso-layout-grid-align: none; text-autospace: none;" id="cookies"></p>
+					</div>
+				</div>
+				<div id="footer_tc_privacy_container_button" style="border: none; background: none; right: 10px; display: inline-block;">
+					<button id="footer_tc_privacy_button" th:onclick="'hideMessage();eraseCookie(\'lang\');createCookie(\'lang\',1,7);submit;'" style="border: none; background: rgb(68, 157, 68); color: rgb(255, 255, 255); display: block; cursor: pointer; font-size: 12px; padding: 5px 10px; margin: 10px 0px;"></button>
+				</div>
+			</div>
 		</div>
 	    <div th:replace="footer :: footer"></div>
 	</th:block>
+	<script type="text/javascript" th:inline="javascript">
+		checktranslation();
+	</script>
 </body>
+<script type="text/javascript" th:inline="javascript">
+	check();
+</script>
 </html>

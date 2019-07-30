@@ -259,18 +259,18 @@ public class EventTask {
 		startNight= new DateTime(eventStat.getStartNight());
 		endNight= new DateTime(eventStat.getEndNight());
 
-		String bodyHTML = HTMLGenerator.strongAttributeValue("Sujet", user.getName(), 0)
-				+ HTMLGenerator.strongAttributeValue("Période",
+		String bodyHTML = HTMLGenerator.strongAttributeValue("'MyReportSubject'",user.getName(), 0)
+				+ HTMLGenerator.strongAttributeValue("MyReportPeriod",
 						"nuit du " + dateTime.minusDays(1).toString("dd/MM/yyyy") + " au "
 								+ dateTime.toString("dd/MM/yyyy"),
 						0)
-				+ HTMLGenerator.strongAttributeValue("Score", String.valueOf(eventStat.getGrade()) + "%", 0)
-				+ HTMLGenerator.strongAttributeValue("Nombre de mouvement", String.valueOf(eventStat.getMvts()), 0)
+				+ HTMLGenerator.strongAttributeValue("MyReportGrade", String.valueOf(eventStat.getGrade()) + "%", 0)
+				+ HTMLGenerator.strongAttributeValue("MyReportMvtNumber", String.valueOf(eventStat.getMvts()), 0)
 /*				+ HTMLGenerator.strongAttribute("Valeurs éstimées", 0)
 				+ HTMLGenerator.strongAttributeValue("Endormissement", startNight.toString("HH:mm"), 1)
 				+ HTMLGenerator.strongAttributeValue("Réveil",endNight.toString("HH:mm") , 1) + HTMLGenerator
 						.strongAttributeValue("Durée", period.getHours() + "h et " + period.getMinutes() + "m", 1)*/
-				+ HTMLGenerator.strongAttribute("Mouvements par tranche horaire", 0);
+				+ HTMLGenerator.strongAttribute("MyReportMvtEachHours", 0);
 
 		if (use.equals("webreport")) {
 			ArrayList<ArrayList<String>> CountEachHours = new ArrayList<>();
@@ -295,7 +295,7 @@ public class EventTask {
 			bodyHTML += HTMLGenerator.barHours(CountEachHours, 1);
 
 
-			bodyHTML += HTMLGenerator.strongAttribute("Tendance de sommeil sur les deux dernières semaines", 0);
+			bodyHTML += HTMLGenerator.strongAttribute("MyReportSleepTendancy", 0);
 			ArrayList<ArrayList<String>> bar = new ArrayList<>();
 
 			ArrayList<String> firstrow = new ArrayList<>();
@@ -330,7 +330,7 @@ public class EventTask {
 				dateTime = endTime;
 			}
 		//Mettre les résultats sous forme de tableau
-        bodyHTML += HTMLGenerator.strongAttribute("Relevé sur une semaine", 0);
+        bodyHTML += HTMLGenerator.strongAttribute2("Relevé sur une semaine", 0);
 		ArrayList<ArrayList<String>> table = new ArrayList<>();
 		ArrayList<String> list = new ArrayList<>(Arrays.asList("Date", "Durée", "Mouvements", "Score"));
 		table.add(list);
